@@ -208,6 +208,10 @@ void display()
 	glUniform3f(glutils.lightColorLoc, 1.0f, 1.0f, 1.0f);
 	glUniform3f(glutils.lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
 	glUniform3f(glutils.viewPosLoc, cameraPos.x, cameraPos.y, cameraPos.z);
+	glUniform1f(glutils.ambientCoef, 0.1f);
+	glUniform1f(glutils.diffuseCoef, 1.0f);
+	glUniform1f(glutils.specularCoef, 0.7f);
+	glUniform1i(glutils.shininess, 16);
 
 	glViewport(0, 0, SCR_WIDTH / 3, SCR_HEIGHT);
 		
@@ -235,6 +239,10 @@ void display()
 	glUniform3f(glutils.lightColorLoc2, 1.0f, 1.0f, 1.0f);
 	glUniform3f(glutils.lightPosLoc2, lightPos.x, lightPos.y, lightPos.z);
 	glUniform3f(glutils.viewPosLoc2, cameraPos.x, cameraPos.y, cameraPos.z);
+	glUniform1f(glutils.ambientCoef2, 0.1f);
+	glUniform1f(glutils.diffuseCoef2, 1.0f);
+	glUniform1f(glutils.specularCoef2, 0.7f);
+	glUniform1i(glutils.shininess2, 16);
 
 	glViewport(SCR_WIDTH / 3, 0, SCR_WIDTH / 3, SCR_HEIGHT);
 	for (int i = 0; i < numObjects; i++)     // TODO : need to fix this hardcoding

@@ -47,6 +47,10 @@ namespace Lab1
 		GLint lightColorLoc;
 		GLint lightPosLoc;
 		GLint viewPosLoc;
+		GLint ambientCoef;
+		GLint diffuseCoef;
+		GLint specularCoef;
+		GLint shininess;
 
 		// Uniform locations
 		GLint model_mat_location2;
@@ -56,6 +60,10 @@ namespace Lab1
 		GLint lightColorLoc2;
 		GLint lightPosLoc2;
 		GLint viewPosLoc2;
+		GLint ambientCoef2;
+		GLint diffuseCoef2;
+		GLint specularCoef2;
+		GLint shininess2;
 
 		// Uniform locations
 		GLint model_mat_location3;
@@ -207,6 +215,11 @@ namespace Lab1
 			lightPosLoc = glGetUniformLocation(PhongProgramID, "lightPos");
 			viewPosLoc = glGetUniformLocation(PhongProgramID, "viewPos");
 
+			ambientCoef = glGetUniformLocation(PhongProgramID, "ambientCoef");
+			diffuseCoef = glGetUniformLocation(PhongProgramID, "diffuseCoef");
+			specularCoef = glGetUniformLocation(PhongProgramID, "specularCoef");
+			shininess = glGetUniformLocation(PhongProgramID, "shininess");
+
 			// BlinnPhong
 			model_mat_location2 = glGetUniformLocation(BlinnPhongID, "model");
 			view_mat_location2 = glGetUniformLocation(BlinnPhongID, "view");
@@ -216,6 +229,11 @@ namespace Lab1
 			lightColorLoc2 = glGetUniformLocation(BlinnPhongID, "lightColor");
 			lightPosLoc2 = glGetUniformLocation(BlinnPhongID, "lightPos");
 			viewPosLoc2 = glGetUniformLocation(BlinnPhongID, "viewPos");
+			
+			ambientCoef2 = glGetUniformLocation(PhongProgramID, "ambientCoef");
+			diffuseCoef2 = glGetUniformLocation(PhongProgramID, "diffuseCoef");
+			specularCoef2 = glGetUniformLocation(PhongProgramID, "specularCoef");
+			shininess2 = glGetUniformLocation(PhongProgramID, "shininess");
 
 			// Gooch
 			model_mat_location3 = glGetUniformLocation(GoochID, "model");
