@@ -3,15 +3,16 @@ e:\tcd\real-time rendering\projects\dependencies\obj_loader.h(677): warning C401
 e:\tcd\real-time rendering\projects\dependencies\obj_loader.h(714): warning C4018: '<': signed/unsigned mismatch
 e:\tcd\real-time rendering\projects\dependencies\obj_loader.h(720): warning C4018: '<': signed/unsigned mismatch
 e:\tcd\real-time rendering\projects\dependencies\obj_loader.h(974): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-e:\tcd\real-time rendering\projects\lab1\main.cpp(85): warning C4018: '<': signed/unsigned mismatch
-e:\tcd\real-time rendering\projects\lab1\main.cpp(182): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-e:\tcd\real-time rendering\projects\lab1\main.cpp(299): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-e:\tcd\real-time rendering\projects\lab1\main.cpp(327): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-e:\tcd\real-time rendering\projects\lab1\main.cpp(328): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-e:\tcd\real-time rendering\projects\lab1\main.cpp(332): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-e:\tcd\real-time rendering\projects\lab1\main.cpp(333): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-e:\tcd\real-time rendering\projects\lab1\main.cpp(334): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-e:\tcd\real-time rendering\projects\lab1\main.cpp(335): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-e:\tcd\real-time rendering\projects\lab1\main.cpp(362): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+e:\tcd\real-time rendering\projects\lab1\main.cpp(83): warning C4018: '<': signed/unsigned mismatch
+e:\tcd\real-time rendering\projects\lab1\main.cpp(180): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+e:\tcd\real-time rendering\projects\lab1\main.cpp(266): warning C4305: '+=': truncation from 'double' to 'float'
+e:\tcd\real-time rendering\projects\lab1\main.cpp(343): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+e:\tcd\real-time rendering\projects\lab1\main.cpp(371): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+e:\tcd\real-time rendering\projects\lab1\main.cpp(372): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+e:\tcd\real-time rendering\projects\lab1\main.cpp(376): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+e:\tcd\real-time rendering\projects\lab1\main.cpp(377): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+e:\tcd\real-time rendering\projects\lab1\main.cpp(378): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+e:\tcd\real-time rendering\projects\lab1\main.cpp(379): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+e:\tcd\real-time rendering\projects\lab1\main.cpp(406): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
   Lab1.vcxproj -> E:\TCD\Real-time Rendering\Projects\Debug\Lab1.exe
   Lab1.vcxproj -> E:\TCD\Real-time Rendering\Projects\Debug\Lab1.pdb (Partial PDB)

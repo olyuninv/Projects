@@ -63,6 +63,9 @@ glm::vec3 cameraPos = glm::vec3(0.0f, 5.0f, 30.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
+//lighting position
+glm::vec3 lightPos(5.0f, 5.0f, 3.0f);
+
 GLuint VAOs[MAX_OBJECTS];
 int numVAOs = 0;
 
@@ -71,11 +74,6 @@ int n_ibovertices = 0;
 
 CGObject sceneObjects[MAX_OBJECTS];
 int numObjects = 0;
-
-//lighting position
-glm::vec3 lightPos(10.0f, 10.0f, 3.0f);
-
-bool rotateCubes = false;
 
 void addToObjectBuffer(Lab1::CGObject *cg_object)
 {
@@ -152,7 +150,7 @@ void createObjects()
 	
 	const char* boyFileName = "../Lab1/meshes/Boy/boy.obj";
 	vector<objl::Mesh> meshes = loadMeshes(boyFileName);   // returns 2
-	CGObject boyObject = loadObjObject(meshes, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(0.1f, 0.1f, 0.1f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL); //choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
+	CGObject boyObject = loadObjObject(meshes, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(0.1f, 0.1f, 0.1f), vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);  //vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
 	sceneObjects[numObjects] = boyObject;
 	numObjects++;
 	
@@ -198,7 +196,7 @@ void display()
 	glUseProgram(glutils.PhongProgramID);
 
 	// Update projection 
-	glm::mat4 projection = glm::perspective(glm::radians(fov), (float)(SCR_WIDTH) / (float)(SCR_HEIGHT), 0.1f, 100.0f);
+	glm::mat4 projection = glm::perspective(glm::radians(fov), (float)(SCR_WIDTH / 3) / (float)(SCR_HEIGHT), 0.1f, 100.0f);
 	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
 	glm::mat4 local1(1.0f);
@@ -210,23 +208,69 @@ void display()
 	glUniform3f(glutils.lightColorLoc, 1.0f, 1.0f, 1.0f);
 	glUniform3f(glutils.lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
 	glUniform3f(glutils.viewPosLoc, cameraPos.x, cameraPos.y, cameraPos.z);
+
+	glViewport(0, 0, SCR_WIDTH / 3, SCR_HEIGHT);
 		
-	// DRAW objects
+	// DRAW 1st object
 	for (int i = 0; i < numObjects; i++)     // TODO : need to fix this hardcoding
 	{
 		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
 		glutils.updateUniformVariables(globalCGObjectTransform);
-		sceneObjects[i].globalTransform = globalCGObjectTransform; // keep current state		
+		//sceneObjects[i].globalTransform = globalCGObjectTransform; // keep current state		
+
+		glUniform3f(glutils.objectColorLoc, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
+		sceneObjects[i].Draw(glutils);
+	}
+	
+	// Update position and draw again
+	//sceneObjects[0].position.x += 15.0f;
+	/*cameraPos.x += 15.0f;
+	view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+	glutils.updateUniformVariables(global1, view, projection);*/
+
+	// DRAW 2nd object
+	glViewport(SCR_WIDTH / 3, 0, SCR_WIDTH / 3, SCR_HEIGHT);
+	for (int i = 0; i < numObjects; i++)     // TODO : need to fix this hardcoding
+	{
+		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
+		glutils.updateUniformVariables(globalCGObjectTransform);
+		//sceneObjects[i].globalTransform = globalCGObjectTransform; // keep current state		
 
 		glUniform3f(glutils.objectColorLoc, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
 		sceneObjects[i].Draw(glutils);
 	}
 
+	// Update position and draw again
+	//sceneObjects[0].position.x -= 30.0f;
+	/*cameraPos.x -= 30.0f;
+	view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+	glutils.updateUniformVariables(global1, view, projection);*/
+
+	// DRAW 3rd object
+	glViewport(2* SCR_WIDTH / 3, 0, SCR_WIDTH / 3, SCR_HEIGHT);
+	for (int i = 0; i < numObjects; i++)     // TODO : need to fix this hardcoding
+	{
+		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
+		glutils.updateUniformVariables(globalCGObjectTransform);
+		//sceneObjects[i].globalTransform = globalCGObjectTransform; // keep current state		
+
+		glUniform3f(glutils.objectColorLoc, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
+		sceneObjects[i].Draw(glutils);
+	}
+
+	//Restore position
+	//sceneObjects[0].position.x += 15.0f;
+	//cameraPos.x += 15.0f;
+
+	// rotate
+	sceneObjects[0].rotateAngles.y += 0.01;
+
 	glPopMatrix();
 	
-	//glDisableVertexAttribArray(0);
-	//glDisableVertexAttribArray(1);
-	//glDisableVertexAttribArray(2);
+	// disable VAO
+	for (auto const& vao : VAOs) {
+		glDisableVertexAttribArray(vao);
+	}
 
 	// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 	glfwSwapBuffers(window);
