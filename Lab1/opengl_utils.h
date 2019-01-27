@@ -29,17 +29,21 @@ namespace Lab1
 		GLuint loc1;
 		GLuint loc2;
 		GLuint loc3;
+		GLuint loc4;
+		GLuint loc5;
+		GLuint loc6;
 
 		// Shaders
 		GLuint PhongProgramID;
 		GLuint BlinnPhongID;
 		GLuint GoochID;
+		GLuint CookTorrenceID;
 
 		// Buffers
 		GLuint VBO;
 		GLuint IBO;
 
-		// Uniform locations
+		// Uniform locations - Phong	
 		GLint model_mat_location;
 		GLint view_mat_location;
 		GLint proj_mat_location;
@@ -52,7 +56,7 @@ namespace Lab1
 		GLint specularCoef;
 		GLint shininess;
 
-		// Uniform locations
+		// Uniform locations - BlinnPhong
 		GLint model_mat_location2;
 		GLint view_mat_location2;
 		GLint proj_mat_location2;
@@ -65,13 +69,26 @@ namespace Lab1
 		GLint specularCoef2;
 		GLint shininess2;
 
-		// Uniform locations
+		// Uniform locations - Gooch
 		GLint model_mat_location3;
 		GLint view_mat_location3;
 		GLint proj_mat_location3;
 		GLint lightPosLoc3;
 		GLint warmColor;
 		GLint coolColor;
+
+		// Uniform locations - CookTorrence
+		GLint model_mat_location4;
+		GLint view_mat_location4;
+		GLint proj_mat_location4;
+		GLint objectColorLoc4;
+		GLint lightColorLoc4;
+		GLint lightPosLoc4;
+		GLint viewPosLoc4;
+		GLint ambientCoef4;
+		GLint diffuseCoef4;
+		GLint specularCoef4;
+		GLint shininess4;
 
 		static GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path) {
 
@@ -170,6 +187,7 @@ namespace Lab1
 			PhongProgramID = LoadShaders("../Lab1/shaders/phong.vs", "../Lab1/shaders/phong.fs");
 			BlinnPhongID = LoadShaders("../Lab1/shaders/blinnPhong.vs", "../Lab1/shaders/blinnPhong.fs");
 			GoochID = LoadShaders("../Lab1/shaders/Gooch.vs", "../Lab1/shaders/Gooch.fs");
+			CookTorrenceID = LoadShaders("../Lab1/shaders/CookTorrence.vs", "../Lab1/shaders/CookTorrence.fs");
 		}
 
 		void createVBO(int numVertices)
@@ -243,6 +261,21 @@ namespace Lab1
 			lightPosLoc3 = glGetUniformLocation(GoochID, "lightPos");
 			warmColor = glGetUniformLocation(GoochID, "warmColor");
 			coolColor = glGetUniformLocation(GoochID, "coolColor");
+
+			// Cook Torrence
+			model_mat_location4 = glGetUniformLocation(BlinnPhongID, "model");
+			view_mat_location4 = glGetUniformLocation(BlinnPhongID, "view");
+			proj_mat_location4 = glGetUniformLocation(BlinnPhongID, "projection");
+
+			objectColorLoc4 = glGetUniformLocation(BlinnPhongID, "objectColor");
+			lightColorLoc4 = glGetUniformLocation(BlinnPhongID, "lightColor");
+			lightPosLoc4 = glGetUniformLocation(BlinnPhongID, "lightPos");
+			viewPosLoc4 = glGetUniformLocation(BlinnPhongID, "viewPos");
+
+			ambientCoef4 = glGetUniformLocation(PhongProgramID, "ambientCoef");
+			diffuseCoef4 = glGetUniformLocation(PhongProgramID, "diffuseCoef");
+			specularCoef4 = glGetUniformLocation(PhongProgramID, "specularCoef");
+			shininess4 = glGetUniformLocation(PhongProgramID, "shininess");
 		}
 
 		void getAttributeLocationsPhong()
@@ -250,6 +283,13 @@ namespace Lab1
 			loc1 = glGetAttribLocation(PhongProgramID, "position");
 			loc2 = glGetAttribLocation(PhongProgramID, "normal");
 			loc3 = glGetAttribLocation(PhongProgramID, "texture");
+		}
+
+		void getAttributeLocationsCookTorrence()
+		{
+			loc4 = glGetAttribLocation(CookTorrenceID, "position");
+			loc5 = glGetAttribLocation(CookTorrenceID, "normal");
+			loc6 = glGetAttribLocation(CookTorrenceID, "texture");
 		}
 
 		/*void getAttributeLocationsBlinnPhong()
@@ -273,6 +313,18 @@ namespace Lab1
 			bindVertexAttribute(loc1, 3, startVBO, 0);
 			bindVertexAttribute(loc2, 3, startVBO, 3);
 			bindVertexAttribute(loc3, 3, startVBO, 6);
+
+			//IBO
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+		}
+
+		void linkCurrentBuffertoShaderCookTorrence(GLuint VAOindex, int startVBO, int startIBO)
+		{
+			glBindVertexArray(VAOindex);
+
+			bindVertexAttribute(loc4, 3, startVBO, 0);
+			bindVertexAttribute(loc5, 3, startVBO, 3);
+			bindVertexAttribute(loc6, 3, startVBO, 6);
 
 			//IBO
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
@@ -316,6 +368,18 @@ namespace Lab1
 			glUniformMatrix4fv(proj_mat_location3, 1, GL_FALSE, &persp_proj[0][0]);
 			glUniformMatrix4fv(view_mat_location3, 1, GL_FALSE, &view[0][0]);
 			updateUniformVariablesGooch(model);
+		}
+
+		void updateUniformVariablesCookTorrence(glm::mat4 model)
+		{
+			glUniformMatrix4fv(model_mat_location4, 1, GL_FALSE, &model[0][0]);
+		}
+
+		void updateUniformVariablesCookTorrence(glm::mat4 model, glm::mat4 view, glm::mat4 persp_proj)
+		{
+			glUniformMatrix4fv(proj_mat_location4, 1, GL_FALSE, &persp_proj[0][0]);
+			glUniformMatrix4fv(view_mat_location4, 1, GL_FALSE, &view[0][0]);
+			updateUniformVariablesCookTorrence(model);
 		}
 
 		void deleteVertexArrays()

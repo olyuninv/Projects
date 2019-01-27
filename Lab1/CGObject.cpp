@@ -9,13 +9,20 @@ namespace Lab1
 	{
 	}
 
-	void CGObject::Draw(opengl_utils glutils)
+	void CGObject::Draw(opengl_utils glutils, bool cookTorrence)
 	{
 		int VBOindex = this->startVBO;
 		int IBOindex = this->startIBO;
 		for (int i = 0; i < this->Meshes.size(); i++) {
 			
-			glutils.linkCurrentBuffertoShader(this->VAOs[i], VBOindex, IBOindex);
+			if (cookTorrence)
+			{
+				glutils.linkCurrentBuffertoShaderCookTorrence(this->VAOs[i], VBOindex, IBOindex);
+			}
+			else
+			{
+				glutils.linkCurrentBuffertoShader(this->VAOs[i], VBOindex, IBOindex);
+			}
 
 			glDrawElements(GL_TRIANGLES, this->Meshes[i].Indices.size(), GL_UNSIGNED_INT, (void*)(IBOindex * sizeof(unsigned int)));
 			VBOindex += Meshes[i].Vertices.size();

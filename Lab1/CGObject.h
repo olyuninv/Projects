@@ -46,7 +46,7 @@ namespace Lab1
 		
 		CGObject *Parent = nullptr;
 
-		void Draw(opengl_utils glutils);
+		void Draw(opengl_utils glutils, bool cookTorrence);
 		glm::mat4 createTransform();
 	};
 }
