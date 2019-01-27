@@ -33,6 +33,7 @@ namespace Lab1
 		// Shaders
 		GLuint PhongProgramID;
 		GLuint BlinnPhongID;
+		GLuint GoochID;
 
 		// Buffers
 		GLuint VBO;
@@ -55,6 +56,14 @@ namespace Lab1
 		GLint lightColorLoc2;
 		GLint lightPosLoc2;
 		GLint viewPosLoc2;
+
+		// Uniform locations
+		GLint model_mat_location3;
+		GLint view_mat_location3;
+		GLint proj_mat_location3;
+		GLint lightPosLoc3;
+		GLint warmColor;
+		GLint coolColor;
 
 		static GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path) {
 
@@ -152,6 +161,7 @@ namespace Lab1
 			// Create and compile our shaders
 			PhongProgramID = LoadShaders("../Lab1/shaders/phong.vs", "../Lab1/shaders/phong.fs");
 			BlinnPhongID = LoadShaders("../Lab1/shaders/blinnPhong.vs", "../Lab1/shaders/blinnPhong.fs");
+			GoochID = LoadShaders("../Lab1/shaders/Gooch.vs", "../Lab1/shaders/Gooch.fs");
 		}
 
 		void createVBO(int numVertices)
@@ -187,7 +197,7 @@ namespace Lab1
 
 		void setupUniformVariables()
 		{
-			//Declare your uniform variables that will be used in your shader
+			// Phong
 			model_mat_location = glGetUniformLocation(PhongProgramID, "model");
 			view_mat_location = glGetUniformLocation(PhongProgramID, "view");
 			proj_mat_location = glGetUniformLocation(PhongProgramID, "projection");
@@ -197,6 +207,7 @@ namespace Lab1
 			lightPosLoc = glGetUniformLocation(PhongProgramID, "lightPos");
 			viewPosLoc = glGetUniformLocation(PhongProgramID, "viewPos");
 
+			// BlinnPhong
 			model_mat_location2 = glGetUniformLocation(BlinnPhongID, "model");
 			view_mat_location2 = glGetUniformLocation(BlinnPhongID, "view");
 			proj_mat_location2 = glGetUniformLocation(BlinnPhongID, "projection");
@@ -205,6 +216,15 @@ namespace Lab1
 			lightColorLoc2 = glGetUniformLocation(BlinnPhongID, "lightColor");
 			lightPosLoc2 = glGetUniformLocation(BlinnPhongID, "lightPos");
 			viewPosLoc2 = glGetUniformLocation(BlinnPhongID, "viewPos");
+
+			// Gooch
+			model_mat_location3 = glGetUniformLocation(GoochID, "model");
+			view_mat_location3 = glGetUniformLocation(GoochID, "view");
+			proj_mat_location3 = glGetUniformLocation(GoochID, "projection");
+
+			lightPosLoc3 = glGetUniformLocation(GoochID, "lightPos");
+			warmColor = glGetUniformLocation(GoochID, "warmColor");
+			coolColor = glGetUniformLocation(GoochID, "coolColor");
 		}
 
 		void getAttributeLocationsPhong()
@@ -214,12 +234,12 @@ namespace Lab1
 			loc3 = glGetAttribLocation(PhongProgramID, "texture");
 		}
 
-		void getAttributeLocationsBlinnPhong()
+		/*void getAttributeLocationsBlinnPhong()
 		{
 			loc1 = glGetAttribLocation(BlinnPhongID, "position");
 			loc2 = glGetAttribLocation(BlinnPhongID, "normal");
 			loc3 = glGetAttribLocation(BlinnPhongID, "texture");
-		}
+		}*/
 
 		void bindVertexAttribute(int location, int locationSize, int startVBO, int offsetVBO)
 		{
@@ -268,6 +288,18 @@ namespace Lab1
 			updateUniformVariablesBlinnPhong(model);
 		}
 
+		void updateUniformVariablesGooch(glm::mat4 model)
+		{
+			glUniformMatrix4fv(model_mat_location3, 1, GL_FALSE, &model[0][0]);
+		}
+
+		void updateUniformVariablesGooch(glm::mat4 model, glm::mat4 view, glm::mat4 persp_proj)
+		{
+			glUniformMatrix4fv(proj_mat_location3, 1, GL_FALSE, &persp_proj[0][0]);
+			glUniformMatrix4fv(view_mat_location3, 1, GL_FALSE, &view[0][0]);
+			updateUniformVariablesGooch(model);
+		}
+
 		void deleteVertexArrays()
 		{
 			//glDeleteVertexArrays(1, &footballbVAO);
@@ -284,6 +316,7 @@ namespace Lab1
 		{
 			glDeleteProgram(PhongProgramID);
 			glDeleteProgram(BlinnPhongID);
+			glDeleteProgram(GoochID);
 		}
 	};
 }

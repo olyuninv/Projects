@@ -134,6 +134,8 @@
   <ItemGroup>
     <None Include="shaders\blinnPhong.fs" />
     <None Include="shaders\blinnPhong.vs" />
+    <None Include="shaders\Gooch.fs" />
+    <None Include="shaders\Gooch.vs" />
     <None Include="shaders\phong.fs" />
     <None Include="shaders\phong.vs" />
   </ItemGroup>

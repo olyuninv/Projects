@@ -255,16 +255,20 @@ void display()
 
 	// DRAW 3rd object
 	// activate shader
-	glUseProgram(glutils.PhongProgramID);
-
+	glUseProgram(glutils.GoochID);
+	glutils.updateUniformVariablesGooch(global1, view, projection);
+	glUniform3f(glutils.lightPosLoc3, lightPos.x, lightPos.y, lightPos.z);
+	glUniform3f(glutils.coolColor, 159.0f / 255, 148.0f / 255, 255.0f / 255);
+	glUniform3f(glutils.warmColor, 255.0f / 255, 75.0f / 255, 75.0f / 255);
+	
 	glViewport(2* SCR_WIDTH / 3, 0, SCR_WIDTH / 3, SCR_HEIGHT);
 	for (int i = 0; i < numObjects; i++)     // TODO : need to fix this hardcoding
 	{
 		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
-		glutils.updateUniformVariablesPhong(globalCGObjectTransform);
+		glutils.updateUniformVariablesGooch(globalCGObjectTransform);
 		//sceneObjects[i].globalTransform = globalCGObjectTransform; // keep current state		
 
-		glUniform3f(glutils.objectColorLoc, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
+		//glUniform3f(glutils.objectColorLoc, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
 		sceneObjects[i].Draw(glutils);
 	}
 
