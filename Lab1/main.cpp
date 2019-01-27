@@ -146,7 +146,7 @@ Lab1::CGObject loadObjObject(vector<objl::Mesh> meshes, bool addToBuffers, bool 
 void createObjects()
 {
 	// Shader Attribute locations
-	glutils.getAttributeLocations();
+	glutils.getAttributeLocationsPhong();
 	
 	const char* boyFileName = "../Lab1/meshes/Boy/boy.obj";
 	vector<objl::Mesh> meshes = loadMeshes(boyFileName);   // returns 2
@@ -203,7 +203,7 @@ void display()
 	local1 = glm::translate(local1, cameraPos);
 	glm::mat4 global1 = local1;
 
-	glutils.updateUniformVariables(global1, view, projection);
+	glutils.updateUniformVariablesPhong(global1, view, projection);
 		
 	glUniform3f(glutils.lightColorLoc, 1.0f, 1.0f, 1.0f);
 	glUniform3f(glutils.lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
@@ -215,7 +215,7 @@ void display()
 	for (int i = 0; i < numObjects; i++)     // TODO : need to fix this hardcoding
 	{
 		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
-		glutils.updateUniformVariables(globalCGObjectTransform);
+		glutils.updateUniformVariablesPhong(globalCGObjectTransform);
 		//sceneObjects[i].globalTransform = globalCGObjectTransform; // keep current state		
 
 		glUniform3f(glutils.objectColorLoc, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
@@ -229,14 +229,21 @@ void display()
 	glutils.updateUniformVariables(global1, view, projection);*/
 
 	// DRAW 2nd object
+	// activate shader
+	glUseProgram(glutils.BlinnPhongID);
+	glutils.updateUniformVariablesBlinnPhong(global1, view, projection);
+	glUniform3f(glutils.lightColorLoc2, 1.0f, 1.0f, 1.0f);
+	glUniform3f(glutils.lightPosLoc2, lightPos.x, lightPos.y, lightPos.z);
+	glUniform3f(glutils.viewPosLoc2, cameraPos.x, cameraPos.y, cameraPos.z);
+
 	glViewport(SCR_WIDTH / 3, 0, SCR_WIDTH / 3, SCR_HEIGHT);
 	for (int i = 0; i < numObjects; i++)     // TODO : need to fix this hardcoding
 	{
 		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
-		glutils.updateUniformVariables(globalCGObjectTransform);
+		glutils.updateUniformVariablesBlinnPhong(globalCGObjectTransform);
 		//sceneObjects[i].globalTransform = globalCGObjectTransform; // keep current state		
 
-		glUniform3f(glutils.objectColorLoc, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
+		glUniform3f(glutils.objectColorLoc2, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
 		sceneObjects[i].Draw(glutils);
 	}
 
@@ -247,11 +254,14 @@ void display()
 	glutils.updateUniformVariables(global1, view, projection);*/
 
 	// DRAW 3rd object
+	// activate shader
+	glUseProgram(glutils.PhongProgramID);
+
 	glViewport(2* SCR_WIDTH / 3, 0, SCR_WIDTH / 3, SCR_HEIGHT);
 	for (int i = 0; i < numObjects; i++)     // TODO : need to fix this hardcoding
 	{
 		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
-		glutils.updateUniformVariables(globalCGObjectTransform);
+		glutils.updateUniformVariablesPhong(globalCGObjectTransform);
 		//sceneObjects[i].globalTransform = globalCGObjectTransform; // keep current state		
 
 		glUniform3f(glutils.objectColorLoc, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);

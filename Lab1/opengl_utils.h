@@ -32,7 +32,7 @@ namespace Lab1
 
 		// Shaders
 		GLuint PhongProgramID;
-		//GLuint lightingID;
+		GLuint BlinnPhongID;
 
 		// Buffers
 		GLuint VBO;
@@ -46,6 +46,15 @@ namespace Lab1
 		GLint lightColorLoc;
 		GLint lightPosLoc;
 		GLint viewPosLoc;
+
+		// Uniform locations
+		GLint model_mat_location2;
+		GLint view_mat_location2;
+		GLint proj_mat_location2;
+		GLint objectColorLoc2;
+		GLint lightColorLoc2;
+		GLint lightPosLoc2;
+		GLint viewPosLoc2;
 
 		static GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path) {
 
@@ -142,7 +151,7 @@ namespace Lab1
 		{
 			// Create and compile our shaders
 			PhongProgramID = LoadShaders("../Lab1/shaders/phong.vs", "../Lab1/shaders/phong.fs");
-			//lightingID = LoadShaders("../Lab1/shaders/lighting.vs", "../Lab1/shaders/lighting.fs");
+			BlinnPhongID = LoadShaders("../Lab1/shaders/blinnPhong.vs", "../Lab1/shaders/blinnPhong.fs");
 		}
 
 		void createVBO(int numVertices)
@@ -187,13 +196,29 @@ namespace Lab1
 			lightColorLoc = glGetUniformLocation(PhongProgramID, "lightColor");
 			lightPosLoc = glGetUniformLocation(PhongProgramID, "lightPos");
 			viewPosLoc = glGetUniformLocation(PhongProgramID, "viewPos");
+
+			model_mat_location2 = glGetUniformLocation(BlinnPhongID, "model");
+			view_mat_location2 = glGetUniformLocation(BlinnPhongID, "view");
+			proj_mat_location2 = glGetUniformLocation(BlinnPhongID, "projection");
+
+			objectColorLoc2 = glGetUniformLocation(BlinnPhongID, "objectColor");
+			lightColorLoc2 = glGetUniformLocation(BlinnPhongID, "lightColor");
+			lightPosLoc2 = glGetUniformLocation(BlinnPhongID, "lightPos");
+			viewPosLoc2 = glGetUniformLocation(BlinnPhongID, "viewPos");
 		}
 
-		void getAttributeLocations()
+		void getAttributeLocationsPhong()
 		{
 			loc1 = glGetAttribLocation(PhongProgramID, "position");
 			loc2 = glGetAttribLocation(PhongProgramID, "normal");
 			loc3 = glGetAttribLocation(PhongProgramID, "texture");
+		}
+
+		void getAttributeLocationsBlinnPhong()
+		{
+			loc1 = glGetAttribLocation(BlinnPhongID, "position");
+			loc2 = glGetAttribLocation(BlinnPhongID, "normal");
+			loc3 = glGetAttribLocation(BlinnPhongID, "texture");
 		}
 
 		void bindVertexAttribute(int location, int locationSize, int startVBO, int offsetVBO)
@@ -215,7 +240,7 @@ namespace Lab1
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 		}
 		
-		void updateUniformVariables(glm::mat4 model)
+		void updateUniformVariablesPhong(glm::mat4 model)
 		{
 			glUniformMatrix4fv(model_mat_location, 1, GL_FALSE, &model[0][0]);
 
@@ -224,11 +249,23 @@ namespace Lab1
 			//glUniformMatrix4fv(worldNormal, 1, GL_FALSE, normalsTransform.m);
 		}
 
-		void updateUniformVariables(glm::mat4 model, glm::mat4 view, glm::mat4 persp_proj)
+		void updateUniformVariablesPhong(glm::mat4 model, glm::mat4 view, glm::mat4 persp_proj)
 		{
 			glUniformMatrix4fv(proj_mat_location, 1, GL_FALSE, &persp_proj[0][0]);
 			glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, &view[0][0]);
-			updateUniformVariables(model);
+			updateUniformVariablesPhong(model);
+		}
+
+		void updateUniformVariablesBlinnPhong(glm::mat4 model)
+		{
+			glUniformMatrix4fv(model_mat_location2, 1, GL_FALSE, &model[0][0]);
+		}
+
+		void updateUniformVariablesBlinnPhong(glm::mat4 model, glm::mat4 view, glm::mat4 persp_proj)
+		{
+			glUniformMatrix4fv(proj_mat_location2, 1, GL_FALSE, &persp_proj[0][0]);
+			glUniformMatrix4fv(view_mat_location2, 1, GL_FALSE, &view[0][0]);
+			updateUniformVariablesBlinnPhong(model);
 		}
 
 		void deleteVertexArrays()
@@ -246,7 +283,7 @@ namespace Lab1
 		void deletePrograms()
 		{
 			glDeleteProgram(PhongProgramID);
-//			glDeleteProgram(lightingID);
+			glDeleteProgram(BlinnPhongID);
 		}
 	};
 }

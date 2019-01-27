@@ -16,16 +16,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\lighting.fs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\lighting.vs">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="shaders\phong.fs">
       <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\phong.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\blinnPhong.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\blinnPhong.vs">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

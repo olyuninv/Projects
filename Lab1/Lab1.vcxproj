@@ -132,8 +132,8 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\lighting.fs" />
-    <None Include="shaders\lighting.vs" />
+    <None Include="shaders\blinnPhong.fs" />
+    <None Include="shaders\blinnPhong.vs" />
     <None Include="shaders\phong.fs" />
     <None Include="shaders\phong.vs" />
   </ItemGroup>
