@@ -79,27 +79,19 @@ void main()
 
     vec3 specular = vec3 (0.0, 0.0, 0.0);
      
-    //vec3 reflectDir = reflect(-lightDir, norm);  
     float spec = pow(max(dot(norm, halfwayDir), 0.0), shininess);
     
     if (Rs > 0.0)
     {
-        specular = specularCoef * Rs * lightColor;  
+        //specular = specularCoef * Rs * lightColor;  
+        specular = specularCoef * lightColor * diff * (k + Rs * (1.0 - k))
     } 
     else
     {
-        specular = specularCoef * spec * lightColor;  
+        specular = vec3 (0.0, 0.0, 0.0);
+        //specular = specularCoef * spec * lightColor;  
     }
-     
-    //}
-    //else
-    //{
-    //    specular = specularCoef * spec * lightColor;  
-    // }
     
-    //specular = specularCoef * Rs * lightColor;  
-    //specular = lightColor * diff * (k + Rs * (1.0 - k));
-
     vec3 result = (ambient + diffuse + specular) * objectColor;
     FragColor = vec4(result, 1.0);
 } 

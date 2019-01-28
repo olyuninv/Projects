@@ -161,20 +161,20 @@ void createObjects()
 	//sceneObjects[numObjects] = pears;
 	//numObjects++;
 
-	const char* motoFileName = "../Lab1/meshes/Motorbike/BSA_BantamD1_OBJ.obj";
-	vector<objl::Mesh> meshesMoto = loadMeshes(motoFileName);
-	CGObject motoObject = loadObjObject(meshesMoto, true, true, vec3(0.0f, -3.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), vec3(102.0f/255, 204.0f/255, 0.0f), 0.65f, NULL);  //vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
-	sceneObjects[numObjects] = motoObject;
-	numObjects++;
+	//const char* motoFileName = "../Lab1/meshes/Motorbike/P_lea.obj";
+	//vector<objl::Mesh> meshesMoto = loadMeshes(motoFileName);
+	//CGObject motoObject = loadObjObject(meshesMoto, true, true, vec3(0.0f, -3.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), vec3(102.0f/255, 204.0f/255, 0.0f), 0.65f, NULL);  //vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
+	//sceneObjects[numObjects] = motoObject;
+	//numObjects++;
 
 	glutils.createVBO(n_vbovertices);
 
 	glutils.createIBO(n_ibovertices);
 	
 	addToObjectBuffer(&boyObject);
-	addToObjectBuffer(&motoObject);
+	//addToObjectBuffer(&motoObject);
 	addToIndexBuffer(&boyObject);
-	addToIndexBuffer(&motoObject);
+	//addToIndexBuffer(&motoObject);
 }
 
 void init()
