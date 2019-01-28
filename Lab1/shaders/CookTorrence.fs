@@ -10,8 +10,8 @@ uniform float diffuseCoef;
 uniform float specularCoef;
 uniform int shininess;
 
-//uniform float F0 = 0.8;
-//uniform float roughness = 0.1;
+uniform float metallic;
+uniform float roughness;
 //uniform float k = 0.2;
 
 uniform vec3 lightPos; 
@@ -37,10 +37,6 @@ void main()
   	float NdotV = 0.0;
     float VdotH = 0.0;
     float F = 0.0;
-
-    float F0 = 0.8;
-    float roughness = 0.1;
-    float k = 0.2;
     
     if (diff > 0) 
     {
@@ -50,8 +46,8 @@ void main()
 
         // Fresnel reflectance
         F = pow(1.0 - VdotH, 5.0);
-        F *= (1.0 - F0);
-        F += F0;  // wrong formulae
+        F *= (1.0 - metallic);
+        F += metallic;  // wrong formulae
 
         // Microfacet distribution by Beckmann
         float m_squared = roughness * roughness;
@@ -83,13 +79,13 @@ void main()
     
     if (Rs > 0.0)
     {
-        //specular = specularCoef * Rs * lightColor;  
-        specular = specularCoef * lightColor * diff * (k + Rs * (1.0 - k))
+        specular = specularCoef * Rs * lightColor;  
+        //specular = specularCoef * lightColor * diff * (k + Rs * (1.0 - k));
     } 
     else
     {
-        specular = vec3 (0.0, 0.0, 0.0);
-        //specular = specularCoef * spec * lightColor;  
+        //specular = vec3 (0.0, 0.0, 0.0);
+        specular = specularCoef * spec * lightColor;  
     }
     
     vec3 result = (ambient + diffuse + specular) * objectColor;

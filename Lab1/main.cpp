@@ -63,6 +63,8 @@ glm::vec3 cameraPos = glm::vec3(0.0f, 5.0f, 30.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
+bool pause = true;
+
 //lighting position
 glm::vec3 lightPos(5.0f, 5.0f, 3.0f);
 
@@ -161,20 +163,21 @@ void createObjects()
 	//sceneObjects[numObjects] = pears;
 	//numObjects++;
 
-	//const char* motoFileName = "../Lab1/meshes/Motorbike/P_lea.obj";
-	//vector<objl::Mesh> meshesMoto = loadMeshes(motoFileName);
-	//CGObject motoObject = loadObjObject(meshesMoto, true, true, vec3(0.0f, -3.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), vec3(102.0f/255, 204.0f/255, 0.0f), 0.65f, NULL);  //vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
-	//sceneObjects[numObjects] = motoObject;
-	//numObjects++;
+	const char* motoFileName = "../Lab1/meshes/bottlecap/bottlecap.obj";
+	vector<objl::Mesh> meshesMoto = loadMeshes(motoFileName);
+	CGObject motoObject = loadObjObject(meshesMoto, true, true, vec3(0.0f, -4.0f, 0.0f), vec3(0.04f, 0.04f, 0.04f), vec3(136.0f/255, 136.0f/255, 136.0f/255), 0.65f, NULL);  //vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
+	motoObject.initialRotateAngle = vec3(0.0f, 0.0f, 0.7f);
+	sceneObjects[numObjects] = motoObject;
+	numObjects++;
 
 	glutils.createVBO(n_vbovertices);
 
 	glutils.createIBO(n_ibovertices);
 	
 	addToObjectBuffer(&boyObject);
-	//addToObjectBuffer(&motoObject);
+	addToObjectBuffer(&motoObject);
 	addToIndexBuffer(&boyObject);
-	//addToIndexBuffer(&motoObject);
+	addToIndexBuffer(&motoObject);
 }
 
 void init()
@@ -270,10 +273,18 @@ void display()
 	glUniform1f(glutils.diffuseCoef4, 1.0f);
 	glUniform1f(glutils.specularCoef4, 0.7f);
 	glUniform1i(glutils.shininess4, 16);
+	glUniform1f(glutils.metallic, 0.3f);
+	glUniform1f(glutils.roughness, 0.1f);
 	
 	glViewport(2* SCR_WIDTH / 3, 0, SCR_WIDTH / 3, SCR_HEIGHT);
 	for (int i = 0; i < numObjects; i++)     // TODO : need to fix this hardcoding
 	{
+		if (i == 1)
+		{
+			// second object
+			glUniform1f(glutils.metallic, 0.9f);
+		}
+
 		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
 		glutils.updateUniformVariablesCookTorrence(globalCGObjectTransform);
 		//sceneObjects[i].globalTransform = globalCGObjectTransform; // keep current state		
@@ -287,7 +298,11 @@ void display()
 	//cameraPos.x += 15.0f;
 
 	// rotate
-	sceneObjects[0].rotateAngles.y += 0.01;
+	if (!pause)
+	{
+		sceneObjects[0].rotateAngles.y += 0.01;
+		sceneObjects[1].rotateAngles.y += 0.01;
+	}
 
 	glPopMatrix();
 	
@@ -373,8 +388,8 @@ void processInput(GLFWwindow *window)
 		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
-		rotate_angle += 1.0f;	
+	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+		pause = !pause;
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes

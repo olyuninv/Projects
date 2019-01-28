@@ -89,6 +89,8 @@ namespace Lab1
 		GLint diffuseCoef4;
 		GLint specularCoef4;
 		GLint shininess4;
+		GLint metallic;
+		GLint roughness;
 
 		static GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path) {
 
@@ -263,19 +265,22 @@ namespace Lab1
 			coolColor = glGetUniformLocation(GoochID, "coolColor");
 
 			// Cook Torrence
-			model_mat_location4 = glGetUniformLocation(BlinnPhongID, "model");
-			view_mat_location4 = glGetUniformLocation(BlinnPhongID, "view");
-			proj_mat_location4 = glGetUniformLocation(BlinnPhongID, "projection");
+			model_mat_location4 = glGetUniformLocation(CookTorrenceID, "model");
+			view_mat_location4 = glGetUniformLocation(CookTorrenceID, "view");
+			proj_mat_location4 = glGetUniformLocation(CookTorrenceID, "projection");
 
-			objectColorLoc4 = glGetUniformLocation(BlinnPhongID, "objectColor");
-			lightColorLoc4 = glGetUniformLocation(BlinnPhongID, "lightColor");
-			lightPosLoc4 = glGetUniformLocation(BlinnPhongID, "lightPos");
-			viewPosLoc4 = glGetUniformLocation(BlinnPhongID, "viewPos");
+			objectColorLoc4 = glGetUniformLocation(CookTorrenceID, "objectColor");
+			lightColorLoc4 = glGetUniformLocation(CookTorrenceID, "lightColor");
+			lightPosLoc4 = glGetUniformLocation(CookTorrenceID, "lightPos");
+			viewPosLoc4 = glGetUniformLocation(CookTorrenceID, "viewPos");
 
-			ambientCoef4 = glGetUniformLocation(PhongProgramID, "ambientCoef");
-			diffuseCoef4 = glGetUniformLocation(PhongProgramID, "diffuseCoef");
-			specularCoef4 = glGetUniformLocation(PhongProgramID, "specularCoef");
-			shininess4 = glGetUniformLocation(PhongProgramID, "shininess");
+			ambientCoef4 = glGetUniformLocation(CookTorrenceID, "ambientCoef");
+			diffuseCoef4 = glGetUniformLocation(CookTorrenceID, "diffuseCoef");
+			specularCoef4 = glGetUniformLocation(CookTorrenceID, "specularCoef");
+			metallic = glGetUniformLocation(CookTorrenceID, "metallic");
+			roughness = glGetUniformLocation(CookTorrenceID, "roughness");
+			shininess4 = glGetUniformLocation(CookTorrenceID, "shininess");
+			
 		}
 
 		void getAttributeLocationsPhong()
