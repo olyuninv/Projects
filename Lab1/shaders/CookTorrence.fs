@@ -8,7 +8,7 @@ in vec3 FragPos;
 uniform float ambientCoef;
 uniform float diffuseCoef;
 uniform float specularCoef;
-uniform int shininess;
+//uniform int shininess;
 
 uniform float metallic;
 uniform float roughness;
@@ -38,6 +38,8 @@ void main()
     float VdotH = 0.0;
     float F = 0.0;
     
+    float k = 0.2;
+
     if (diff > 0) 
     {
         NdotH = max(dot(norm, halfwayDir), 0.0);
@@ -75,19 +77,11 @@ void main()
 
     vec3 specular = vec3 (0.0, 0.0, 0.0);
      
-    float spec = pow(max(dot(norm, halfwayDir), 0.0), shininess);
+    //float spec = pow(max(dot(norm, halfwayDir), 0.0), shininess);
     
-    if (Rs > 0.0)
-    {
-        specular = specularCoef * Rs * lightColor;  
-        //specular = specularCoef * lightColor * diff * (k + Rs * (1.0 - k));
-    } 
-    else
-    {
-        //specular = vec3 (0.0, 0.0, 0.0);
-        specular = specularCoef * spec * lightColor;  
-    }
-    
+    specular = specularCoef *  diff * Rs * lightColor;  
+    //specular = specularCoef * lightColor * diff * (k + Rs * (1.0 - k));
+
     vec3 result = (ambient + diffuse + specular) * objectColor;
     FragColor = vec4(result, 1.0);
 } 

@@ -153,7 +153,7 @@ void createObjects()
 	
 	const char* boyFileName = "../Lab1/meshes/Boy/boy.obj";
 	vector<objl::Mesh> meshes = loadMeshes(boyFileName);   
-	CGObject boyObject = loadObjObject(meshes, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(0.1f, 0.1f, 0.1f), vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);  //vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
+	CGObject boyObject = loadObjObject(meshes, true, true, vec3(0.0f, 2.5f, 0.0f), vec3(0.1f, 0.1f, 0.1f), vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);  //vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
 	sceneObjects[numObjects] = boyObject;
 	numObjects++;
 
@@ -165,7 +165,7 @@ void createObjects()
 
 	const char* motoFileName = "../Lab1/meshes/bottlecap/bottlecap.obj";
 	vector<objl::Mesh> meshesMoto = loadMeshes(motoFileName);
-	CGObject motoObject = loadObjObject(meshesMoto, true, true, vec3(0.0f, -4.0f, 0.0f), vec3(0.04f, 0.04f, 0.04f), vec3(136.0f/255, 136.0f/255, 136.0f/255), 0.65f, NULL);  //vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
+	CGObject motoObject = loadObjObject(meshesMoto, true, true, vec3(0.0f, -2.0f, 0.0f), vec3(0.04f, 0.04f, 0.04f), vec3(136.0f/255, 136.0f/255, 136.0f/255), 0.65f, NULL);  //vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
 	motoObject.initialRotateAngle = vec3(0.0f, 0.0f, 0.7f);
 	sceneObjects[numObjects] = motoObject;
 	numObjects++;
@@ -227,14 +227,21 @@ void display()
 	glUniform3f(glutils.viewPosLoc2, cameraPos.x, cameraPos.y, cameraPos.z);
 	glUniform1f(glutils.ambientCoef2, 0.1f);
 	glUniform1f(glutils.diffuseCoef2, 1.0f);
-	glUniform1f(glutils.specularCoef2, 0.7f);
-	glUniform1i(glutils.shininess2, 16);
+	glUniform1f(glutils.specularCoef2, 0.5f);
+	glUniform1i(glutils.shininess2, 32);
 
 	glViewport(0, 0, SCR_WIDTH / 3, SCR_HEIGHT);
 		
 	// DRAW 1st object
 	for (int i = 0; i < numObjects; i++)     // TODO : need to fix this hardcoding
 	{
+		if (i == 1)
+		{
+			// second object
+			glUniform1f(glutils.specularCoef2, 0.7f);
+			glUniform1i(glutils.shininess2, 128);
+		}
+
 		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
 		glutils.updateUniformVariablesBlinnPhong(globalCGObjectTransform);
 		//sceneObjects[i].globalTransform = globalCGObjectTransform; // keep current state		
@@ -271,10 +278,10 @@ void display()
 	glUniform3f(glutils.viewPosLoc4, cameraPos.x, cameraPos.y, cameraPos.z);
 	glUniform1f(glutils.ambientCoef4, 0.1f);
 	glUniform1f(glutils.diffuseCoef4, 1.0f);
-	glUniform1f(glutils.specularCoef4, 0.7f);
-	glUniform1i(glutils.shininess4, 16);
+	glUniform1f(glutils.specularCoef4, 0.5f);
+	//glUniform1i(glutils.shininess4, 32);
 	glUniform1f(glutils.metallic, 0.3f);
-	glUniform1f(glutils.roughness, 0.1f);
+	glUniform1f(glutils.roughness, 0.5f);
 	
 	glViewport(2* SCR_WIDTH / 3, 0, SCR_WIDTH / 3, SCR_HEIGHT);
 	for (int i = 0; i < numObjects; i++)     // TODO : need to fix this hardcoding
@@ -282,7 +289,10 @@ void display()
 		if (i == 1)
 		{
 			// second object
+			glUniform1f(glutils.specularCoef4, 0.7f);
+			//glUniform1i(glutils.shininess4, 128);
 			glUniform1f(glutils.metallic, 0.9f);
+			glUniform1f(glutils.roughness, 0.1f);
 		}
 
 		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
@@ -314,6 +324,66 @@ void display()
 	// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 	glfwSwapBuffers(window);
 	glfwPollEvents();
+}
+
+void display2()
+{
+	// Compare shininess
+
+	float currentFrame = glfwGetTime();
+	deltaTime = currentFrame - lastFrame;
+	lastFrame = currentFrame;
+
+	// inpuT
+	processInput(window);
+
+	// render
+	glClearColor(0.78f, 0.84f, 0.49f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glPushMatrix();
+
+	glLoadIdentity();
+
+	// activate shader
+	glUseProgram(glutils.BlinnPhongID);
+
+	// Update projection 
+	glm::mat4 projection = glm::perspective(glm::radians(fov), (float)(SCR_WIDTH / 3) / (float)(SCR_HEIGHT), 0.1f, 100.0f);
+	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+
+	glm::mat4 local1(1.0f);
+	local1 = glm::translate(local1, cameraPos);
+	glm::mat4 global1 = local1;
+
+	glutils.updateUniformVariablesBlinnPhong(global1, view, projection);
+	glUniform3f(glutils.lightColorLoc2, 1.0f, 1.0f, 1.0f);
+	glUniform3f(glutils.lightPosLoc2, lightPos.x, lightPos.y, lightPos.z);
+	glUniform3f(glutils.viewPosLoc2, cameraPos.x, cameraPos.y, cameraPos.z);
+	glUniform1f(glutils.ambientCoef2, 0.1f);
+	glUniform1f(glutils.diffuseCoef2, 1.0f);
+	glUniform1f(glutils.specularCoef2, 0.5f);
+	glUniform1i(glutils.shininess2, 32);
+		
+	glViewport(0, 0, SCR_WIDTH / 3, SCR_HEIGHT);
+
+	// DRAW 1st object
+	for (int i = 0; i < numObjects; i++)     // TODO : need to fix this hardcoding
+	{
+		if (i == 1)
+		{
+			// second object
+			glUniform1f(glutils.specularCoef2, 0.7f);
+			glUniform1i(glutils.shininess2, 128);
+		}
+
+		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
+		glutils.updateUniformVariablesBlinnPhong(globalCGObjectTransform);
+		//sceneObjects[i].globalTransform = globalCGObjectTransform; // keep current state		
+
+		glUniform3f(glutils.objectColorLoc2, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
+		sceneObjects[i].Draw(glutils, false);
+	}
 }
 
 int main(void) {
