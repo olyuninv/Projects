@@ -150,17 +150,31 @@ void createObjects()
 	glutils.getAttributeLocationsCookTorrence();
 	
 	const char* boyFileName = "../Lab1/meshes/Boy/boy.obj";
-	vector<objl::Mesh> meshes = loadMeshes(boyFileName);   // returns 2
+	vector<objl::Mesh> meshes = loadMeshes(boyFileName);   
 	CGObject boyObject = loadObjObject(meshes, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(0.1f, 0.1f, 0.1f), vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);  //vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
 	sceneObjects[numObjects] = boyObject;
 	numObjects++;
-	
+
+	//const char* pearsFileName = "../Lab1/meshes/Pears/pear_export.obj";
+	//vector<objl::Mesh> meshesPears = loadMeshes(pearsFileName);
+	//CGObject pears = loadObjObject(meshesPears, true, true, vec3(0.0f, -3.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), vec3(102.0f/255, 204.0f/255, 0.0f), 0.65f, NULL);  //vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
+	//sceneObjects[numObjects] = pears;
+	//numObjects++;
+
+	const char* motoFileName = "../Lab1/meshes/Motorbike/BSA_BantamD1_OBJ.obj";
+	vector<objl::Mesh> meshesMoto = loadMeshes(motoFileName);
+	CGObject motoObject = loadObjObject(meshesMoto, true, true, vec3(0.0f, -3.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), vec3(102.0f/255, 204.0f/255, 0.0f), 0.65f, NULL);  //vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
+	sceneObjects[numObjects] = motoObject;
+	numObjects++;
+
 	glutils.createVBO(n_vbovertices);
 
 	glutils.createIBO(n_ibovertices);
 	
 	addToObjectBuffer(&boyObject);
+	addToObjectBuffer(&motoObject);
 	addToIndexBuffer(&boyObject);
+	addToIndexBuffer(&motoObject);
 }
 
 void init()
