@@ -26,7 +26,7 @@
 
 // Macro for indexing vertex buffer
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
-#define MAX_OBJECTS 30
+#define MAX_OBJECTS 50
 
 using namespace glm;
 using namespace std;
@@ -153,7 +153,7 @@ void createObjects()
 	
 	const char* boyFileName = "../Lab1/meshes/Boy/boy.obj";
 	vector<objl::Mesh> meshes = loadMeshes(boyFileName);   
-	CGObject boyObject = loadObjObject(meshes, true, true, vec3(0.0f, 2.5f, 0.0f), vec3(0.1f, 0.1f, 0.1f), vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);  //vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
+	CGObject boyObject = loadObjObject(meshes, true, true, vec3(0.0f, 4.0f, 0.0f), vec3(0.08f, 0.08f, 0.08f), vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);  //vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
 	sceneObjects[numObjects] = boyObject;
 	numObjects++;
 
@@ -163,10 +163,11 @@ void createObjects()
 	//sceneObjects[numObjects] = pears;
 	//numObjects++;
 
-	const char* motoFileName = "../Lab1/meshes/bottlecap/bottlecap.obj";
+//	const char* motoFileName = "../Lab1/meshes/bottlecap/bottlecap.obj";
+	const char* motoFileName = "../Lab1/meshes/moto2/moto2.obj";
 	vector<objl::Mesh> meshesMoto = loadMeshes(motoFileName);
-	CGObject motoObject = loadObjObject(meshesMoto, true, true, vec3(0.0f, -2.0f, 0.0f), vec3(0.04f, 0.04f, 0.04f), vec3(136.0f/255, 136.0f/255, 136.0f/255), 0.65f, NULL);  //vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
-	motoObject.initialRotateAngle = vec3(0.0f, 0.0f, 0.7f);
+	CGObject motoObject = loadObjObject(meshesMoto, true, true, vec3(0.0f, -0.5f, 0.0f), vec3(2.0f, 2.0f, 2.0f), vec3(136.0f/255, 136.0f/255, 136.0f/255), 0.65f, NULL);  //vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
+	motoObject.initialRotateAngle = vec3(0.0f, 0.0f, 0.3f);
 	sceneObjects[numObjects] = motoObject;
 	numObjects++;
 
@@ -238,7 +239,7 @@ void display()
 		if (i == 1)
 		{
 			// second object
-			glUniform1f(glutils.specularCoef2, 0.7f);
+			glUniform1f(glutils.specularCoef2, 0.8f);
 			glUniform1i(glutils.shininess2, 128);
 		}
 
@@ -249,6 +250,8 @@ void display()
 		glUniform3f(glutils.objectColorLoc2, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
 		sceneObjects[i].Draw(glutils, false);
 	}
+
+	glLoadIdentity();
 
 	// DRAW 2nd object
 	// activate shader
@@ -269,6 +272,8 @@ void display()
 		sceneObjects[i].Draw(glutils, false);
 	}
 	
+	glLoadIdentity();
+
 	// DRAW 3rd object
 	// activate shader
 	glUseProgram(glutils.CookTorrenceID);
@@ -281,7 +286,7 @@ void display()
 	glUniform1f(glutils.specularCoef4, 0.5f);
 	//glUniform1i(glutils.shininess4, 32);
 	glUniform1f(glutils.metallic, 0.3f);
-	glUniform1f(glutils.roughness, 0.5f);
+	glUniform1f(glutils.roughness, 0.3f);
 	
 	glViewport(2* SCR_WIDTH / 3, 0, SCR_WIDTH / 3, SCR_HEIGHT);
 	for (int i = 0; i < numObjects; i++)     // TODO : need to fix this hardcoding
@@ -289,7 +294,7 @@ void display()
 		if (i == 1)
 		{
 			// second object
-			glUniform1f(glutils.specularCoef4, 0.7f);
+			glUniform1f(glutils.specularCoef4, 0.8f);
 			//glUniform1i(glutils.shininess4, 128);
 			glUniform1f(glutils.metallic, 0.9f);
 			glUniform1f(glutils.roughness, 0.1f);
@@ -302,11 +307,7 @@ void display()
 		glUniform3f(glutils.objectColorLoc4, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
 		sceneObjects[i].Draw(glutils, true);
 	}
-
-	//Restore position
-	//sceneObjects[0].position.x += 15.0f;
-	//cameraPos.x += 15.0f;
-
+	
 	// rotate
 	if (!pause)
 	{
@@ -363,9 +364,11 @@ void display2()
 	glUniform1f(glutils.ambientCoef2, 0.1f);
 	glUniform1f(glutils.diffuseCoef2, 1.0f);
 	glUniform1f(glutils.specularCoef2, 0.5f);
-	glUniform1i(glutils.shininess2, 32);
-		
+			
+	//sceneObjects[0].position = vec3(0.0, 0.0, 0.0);
+
 	glViewport(0, 0, SCR_WIDTH / 3, SCR_HEIGHT);
+	glUniform1i(glutils.shininess2, 16);
 
 	// DRAW 1st object
 	for (int i = 0; i < numObjects; i++)     // TODO : need to fix this hardcoding
@@ -373,8 +376,7 @@ void display2()
 		if (i == 1)
 		{
 			// second object
-			glUniform1f(glutils.specularCoef2, 0.7f);
-			glUniform1i(glutils.shininess2, 128);
+			glUniform1f(glutils.specularCoef2, 0.8f);
 		}
 
 		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
@@ -384,6 +386,319 @@ void display2()
 		glUniform3f(glutils.objectColorLoc2, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
 		sceneObjects[i].Draw(glutils, false);
 	}
+
+	glViewport(SCR_WIDTH / 3, 0, SCR_WIDTH / 3, SCR_HEIGHT);
+	glUniform1f(glutils.specularCoef2, 0.5f);
+	glUniform1i(glutils.shininess2, 128);
+
+	// DRAW 2nd object
+	for (int i = 0; i < numObjects; i++)     // TODO : need to fix this hardcoding
+	{
+		if (i == 1)
+		{
+			// second object
+			glUniform1f(glutils.specularCoef2, 0.8f);
+		}
+
+		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
+		glutils.updateUniformVariablesBlinnPhong(globalCGObjectTransform);
+		//sceneObjects[i].globalTransform = globalCGObjectTransform; // keep current state		
+
+		glUniform3f(glutils.objectColorLoc2, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
+		sceneObjects[i].Draw(glutils, false);
+	}
+
+	// DRAW 3rd object
+	glViewport(2 * SCR_WIDTH / 3, 0, SCR_WIDTH / 3, SCR_HEIGHT);
+	glUniform1f(glutils.specularCoef2, 0.5f);
+	glUniform1i(glutils.shininess2, 256);
+		
+	for (int i = 0; i < numObjects; i++)     // TODO : need to fix this hardcoding
+	{
+		if (i == 1)
+		{
+			// second object
+			glUniform1f(glutils.specularCoef2, 0.8f);
+		}
+
+		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
+		glutils.updateUniformVariablesBlinnPhong(globalCGObjectTransform);
+		//sceneObjects[i].globalTransform = globalCGObjectTransform; // keep current state		
+
+		glUniform3f(glutils.objectColorLoc2, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
+		sceneObjects[i].Draw(glutils, false);
+	}
+	
+	// rotate
+	if (!pause)
+	{
+		sceneObjects[0].rotateAngles.y += 0.01;
+		sceneObjects[1].rotateAngles.y += 0.01;
+	}
+
+	glPopMatrix();
+
+	// disable VAO
+	for (auto const& vao : VAOs) {
+		glDisableVertexAttribArray(vao);
+	}
+
+	// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+	glfwSwapBuffers(window);
+	glfwPollEvents();
+}
+
+void display3()
+{
+	// Compare shininess
+
+	float currentFrame = glfwGetTime();
+	deltaTime = currentFrame - lastFrame;
+	lastFrame = currentFrame;
+
+	// inpuT
+	processInput(window);
+
+	// render
+	glClearColor(0.78f, 0.84f, 0.49f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glPushMatrix();
+
+	glLoadIdentity();
+
+	// activate shader
+	glUseProgram(glutils.CookTorrenceID);
+
+	// Update projection 
+	glm::mat4 projection = glm::perspective(glm::radians(fov), (float)(SCR_WIDTH / 3) / (float)(SCR_HEIGHT), 0.1f, 100.0f);
+	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+
+	glm::mat4 local1(1.0f);
+	local1 = glm::translate(local1, cameraPos);
+	glm::mat4 global1 = local1;
+
+	glutils.updateUniformVariablesCookTorrence(global1, view, projection);
+	
+	glUniform3f(glutils.lightColorLoc4, 1.0f, 1.0f, 1.0f);
+	glUniform3f(glutils.lightPosLoc4, lightPos.x, lightPos.y, lightPos.z);
+	glUniform3f(glutils.viewPosLoc4, cameraPos.x, cameraPos.y, cameraPos.z);
+	glUniform1f(glutils.ambientCoef4, 0.1f);
+	glUniform1f(glutils.diffuseCoef4, 1.0f);
+	glUniform1f(glutils.specularCoef4, 0.5f);
+
+	glUniform1f(glutils.roughness, 0.3f);
+
+	glViewport(0, 0, SCR_WIDTH / 3, SCR_HEIGHT);
+	glUniform1f(glutils.metallic, 0.1f);
+
+	// DRAW 1st object
+	for (int i = 0; i < numObjects; i++)     // TODO : need to fix this hardcoding
+	{
+		if (i == 1)
+		{
+			// second object
+			glUniform1f(glutils.specularCoef4, 0.8f);			
+			glUniform1f(glutils.roughness, 0.1f);
+		}
+
+		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
+		glutils.updateUniformVariablesCookTorrence(globalCGObjectTransform);
+		//sceneObjects[i].globalTransform = globalCGObjectTransform; // keep current state		
+
+		glUniform3f(glutils.objectColorLoc4, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
+		sceneObjects[i].Draw(glutils, false);
+	}
+
+	glViewport(SCR_WIDTH / 3, 0, SCR_WIDTH / 3, SCR_HEIGHT);
+	glUniform1f(glutils.specularCoef4, 0.5f);
+	glUniform1f(glutils.roughness, 0.3f);
+	glUniform1f(glutils.metallic, 0.5f);
+
+	// DRAW 2nd object
+	for (int i = 0; i < numObjects; i++)     // TODO : need to fix this hardcoding
+	{
+		if (i == 1)
+		{
+			// second object
+			glUniform1f(glutils.specularCoef4, 0.8f);
+			glUniform1f(glutils.roughness, 0.1f);
+		}
+
+		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
+		glutils.updateUniformVariablesCookTorrence(globalCGObjectTransform);
+		//sceneObjects[i].globalTransform = globalCGObjectTransform; // keep current state		
+
+		glUniform3f(glutils.objectColorLoc4, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
+		sceneObjects[i].Draw(glutils, false);
+	}
+
+	glViewport(2* SCR_WIDTH / 3, 0, SCR_WIDTH / 3, SCR_HEIGHT);
+	glUniform1f(glutils.specularCoef4, 0.5f);
+	glUniform1f(glutils.roughness, 0.3f);
+	glUniform1f(glutils.metallic, 0.9f);
+
+	// DRAW 3rd object
+	for (int i = 0; i < numObjects; i++)     // TODO : need to fix this hardcoding
+	{
+		if (i == 1)
+		{
+			// second object
+			glUniform1f(glutils.specularCoef4, 0.8f);
+			glUniform1f(glutils.roughness, 0.1f);
+		}
+
+		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
+		glutils.updateUniformVariablesCookTorrence(globalCGObjectTransform);
+		//sceneObjects[i].globalTransform = globalCGObjectTransform; // keep current state		
+
+		glUniform3f(glutils.objectColorLoc4, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
+		sceneObjects[i].Draw(glutils, false);
+	}
+
+	// rotate
+	if (!pause)
+	{
+		sceneObjects[0].rotateAngles.y += 0.01;
+		sceneObjects[1].rotateAngles.y += 0.01;
+	}
+
+	glPopMatrix();
+
+	// disable VAO
+	for (auto const& vao : VAOs) {
+		glDisableVertexAttribArray(vao);
+	}
+
+	// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+	glfwSwapBuffers(window);
+	glfwPollEvents();
+}
+
+void display4()
+{
+	// Compare shininess
+
+	float currentFrame = glfwGetTime();
+	deltaTime = currentFrame - lastFrame;
+	lastFrame = currentFrame;
+
+	// inpuT
+	processInput(window);
+
+	// render
+	glClearColor(0.78f, 0.84f, 0.49f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glPushMatrix();
+
+	glLoadIdentity();
+
+	// activate shader
+	glUseProgram(glutils.CookTorrenceID);
+
+	// Update projection 
+	glm::mat4 projection = glm::perspective(glm::radians(fov), (float)(SCR_WIDTH / 3) / (float)(SCR_HEIGHT), 0.1f, 100.0f);
+	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+
+	glm::mat4 local1(1.0f);
+	local1 = glm::translate(local1, cameraPos);
+	glm::mat4 global1 = local1;
+
+	glutils.updateUniformVariablesCookTorrence(global1, view, projection);
+
+	glUniform3f(glutils.lightColorLoc4, 1.0f, 1.0f, 1.0f);
+	glUniform3f(glutils.lightPosLoc4, lightPos.x, lightPos.y, lightPos.z);
+	glUniform3f(glutils.viewPosLoc4, cameraPos.x, cameraPos.y, cameraPos.z);
+	glUniform1f(glutils.ambientCoef4, 0.1f);
+	glUniform1f(glutils.diffuseCoef4, 1.0f);
+	glUniform1f(glutils.specularCoef4, 0.5f);
+	
+	glViewport(0, 0, SCR_WIDTH / 3, SCR_HEIGHT);
+	glUniform1f(glutils.metallic, 0.3f);
+	glUniform1f(glutils.roughness, 0.1f);
+
+	// DRAW 1st object
+	for (int i = 0; i < numObjects; i++)     // TODO : need to fix this hardcoding
+	{
+		if (i == 1)
+		{
+			// second object
+			glUniform1f(glutils.specularCoef4, 0.8f);
+			glUniform1f(glutils.metallic, 0.9f);
+		}
+
+		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
+		glutils.updateUniformVariablesCookTorrence(globalCGObjectTransform);
+		//sceneObjects[i].globalTransform = globalCGObjectTransform; // keep current state		
+
+		glUniform3f(glutils.objectColorLoc4, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
+		sceneObjects[i].Draw(glutils, false);
+	}
+
+	glViewport(SCR_WIDTH / 3, 0, SCR_WIDTH / 3, SCR_HEIGHT);
+	glUniform1f(glutils.specularCoef4, 0.5f);
+	glUniform1f(glutils.metallic, 0.3f);
+	glUniform1f(glutils.roughness, 0.5f);
+
+	// DRAW 2nd object
+	for (int i = 0; i < numObjects; i++)     // TODO : need to fix this hardcoding
+	{
+		if (i == 1)
+		{
+			// second object
+			glUniform1f(glutils.specularCoef4, 0.8f);
+			glUniform1f(glutils.metallic, 0.9f);
+		}
+
+		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
+		glutils.updateUniformVariablesCookTorrence(globalCGObjectTransform);
+		//sceneObjects[i].globalTransform = globalCGObjectTransform; // keep current state		
+
+		glUniform3f(glutils.objectColorLoc4, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
+		sceneObjects[i].Draw(glutils, false);
+	}
+
+	glViewport(2 * SCR_WIDTH / 3, 0, SCR_WIDTH / 3, SCR_HEIGHT);
+	glUniform1f(glutils.specularCoef4, 0.5f);
+	glUniform1f(glutils.metallic, 0.3f);
+	glUniform1f(glutils.roughness, 0.9f);
+
+	// DRAW 3rd object
+	for (int i = 0; i < numObjects; i++)     // TODO : need to fix this hardcoding
+	{
+		if (i == 1)
+		{
+			// second object
+			glUniform1f(glutils.specularCoef4, 0.8f);
+			glUniform1f(glutils.metallic, 0.9f);
+		}
+
+		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
+		glutils.updateUniformVariablesCookTorrence(globalCGObjectTransform);
+		//sceneObjects[i].globalTransform = globalCGObjectTransform; // keep current state		
+
+		glUniform3f(glutils.objectColorLoc4, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
+		sceneObjects[i].Draw(glutils, false);
+	}
+
+	// rotate
+	if (!pause)
+	{
+		sceneObjects[0].rotateAngles.y += 0.01;
+		sceneObjects[1].rotateAngles.y += 0.01;
+	}
+
+	glPopMatrix();
+
+	// disable VAO
+	for (auto const& vao : VAOs) {
+		glDisableVertexAttribArray(vao);
+	}
+
+	// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+	glfwSwapBuffers(window);
+	glfwPollEvents();
 }
 
 int main(void) {
@@ -432,7 +747,7 @@ int main(void) {
 
 	while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0)
 	{
-		display();
+		display4();
 	}
 
 	// optional: de-allocate all resources once they've outlived their purpose:	

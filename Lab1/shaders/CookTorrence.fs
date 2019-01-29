@@ -63,24 +63,14 @@ void main()
         float g2 = (two_NdotH * diff) / VdotH;
         float G = min(1.0, min(g1, g2));
 
-        Rs = max((F * D * G) / (PI * diff * NdotV), 0.0);
+        Rs = (F * D * G) / (PI * diff * NdotV);
     }
-    //// diffuse 
-    //vec3 norm = normalize(Normal);
-    //vec3 lightDir = normalize(lightPos - FragPos);
-    //float diff = max(dot(norm, lightDir), 0.0);
+   
+    // diffuse     
     vec3 diffuse = diffuseCoef * diff * lightColor;
     
-    //// specular
-    //vec3 viewDir = normalize(viewPos - FragPos);
-    //vec3 halfwayDir = normalize(lightDir + viewDir);
-
-    vec3 specular = vec3 (0.0, 0.0, 0.0);
-     
-    //float spec = pow(max(dot(norm, halfwayDir), 0.0), shininess);
-    
-    specular = specularCoef *  diff * Rs * lightColor;  
-    //specular = specularCoef * lightColor * diff * (k + Rs * (1.0 - k));
+    // specular    
+    vec3 specular = lightColor * diff * (k + Rs * (1.0 - k));
 
     vec3 result = (ambient + diffuse + specular) * objectColor;
     FragColor = vec4(result, 1.0);
