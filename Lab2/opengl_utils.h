@@ -240,6 +240,13 @@ namespace Lab2
 			glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, &view[0][0]);
 			updateUniformVariables(model);
 		}
+				
+		void updateUniformVariablesCubeMap(glm::mat4 view, glm::mat4 persp_proj)
+		{
+			glUniformMatrix4fv(proj_mat_location2, 1, GL_FALSE, &persp_proj[0][0]);
+			glUniformMatrix4fv(view_mat_location2, 1, GL_FALSE, &view[0][0]);
+		//	updateUniformVariables(model);
+		}
 
 		void deleteVertexArrays()
 		{

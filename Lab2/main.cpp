@@ -62,12 +62,14 @@ float lastY = SCR_HEIGHT / 2.0; //600.0 / 2.0;
 float fov = 45.0f;
 
 // camera
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 10.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -6.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 3.0f, 0.0f);
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 GLuint VAOs[MAX_OBJECTS];
 int numVAOs = 0;
+
+unsigned int textureID;
 
 int n_vbovertices = 0;
 int n_ibovertices = 0;
@@ -80,7 +82,7 @@ glm::vec3 lightPos(10.0f, 10.0f, 3.0f);
 
 bool rotateCubes = false;
 
-void addToObjectBuffer(Lab1::CGObject *cg_object)
+void addToObjectBuffer(Lab2::CGObject *cg_object)
 {
 	int VBOindex = cg_object->startVBO;
 	int IBOindex = cg_object->startIBO;
@@ -95,7 +97,7 @@ void addToObjectBuffer(Lab1::CGObject *cg_object)
 	}
 }
 
-void addToIndexBuffer(Lab1::CGObject *cg_object)
+void addToIndexBuffer(Lab2::CGObject *cg_object)
 {
 	int IBOindex = cg_object->startIBO;
 	for (auto const& mesh : cg_object->Meshes) {
@@ -119,9 +121,9 @@ std::vector<objl::Mesh> loadMeshes(const char* objFileLocation)
 		throw new exception("Could not load mesh");
 }
 
-Lab1::CGObject loadObjObject(vector<objl::Mesh> meshes, bool addToBuffers, bool subjectToGravity, vec3 initTransformVector, vec3 initScaleVector, vec3 color, float coef, CGObject* parent)
+Lab2::CGObject loadObjObject(vector<objl::Mesh> meshes, bool addToBuffers, bool subjectToGravity, vec3 initTransformVector, vec3 initScaleVector, vec3 color, float coef, CGObject* parent)
 {
-	Lab1::CGObject object = Lab1::CGObject();
+	Lab2::CGObject object = Lab2::CGObject();
 	object.Meshes = meshes;	
 	object.subjectToGravity = subjectToGravity;
 	object.initialTranslateVector = initTransformVector;
@@ -156,13 +158,13 @@ void createObjects()
 	
 	const char* cubeFileName = "../Lab2/meshes/Cube/Cube.obj";
 	vector<objl::Mesh> cubeMesh = loadMeshes(cubeFileName);   // returns 2
-	CGObject cubeObject = loadObjObject(cubeMesh, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(12.0f, 12.0f, 12.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL); //choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
+	CGObject cubeObject = loadObjObject(cubeMesh, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(20.0f, 20.0f, 20.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL); //choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
 	sceneObjects[numObjects] = cubeObject;
 	numObjects++;
 
 	const char* boyFileName = "../Lab2/meshes/Torus/Torus.obj"; 
 	vector<objl::Mesh> meshes = loadMeshes(boyFileName);   // returns 2
-	CGObject boyObject = loadObjObject(meshes, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 2.0f, 1.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL); //choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
+	CGObject boyObject = loadObjObject(meshes, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(0.4f, 0.8f, 0.4f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL); //choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
 	sceneObjects[numObjects] = boyObject;
 	numObjects++;
 	
@@ -181,8 +183,8 @@ void loadCube()
 	vector<std::string> faces = vector<std::string>();
 	faces.push_back("../Lab2/meshes/mp_alpha/alpha-island_lf.tga");
 	faces.push_back("../Lab2/meshes/mp_alpha/alpha-island_rt.tga");
-	faces.push_back("../Lab2/meshes/mp_alpha/alpha-island_up.tga");
-	faces.push_back("../Lab2/meshes/mp_alpha/alpha-island_dn.tga");
+	faces.push_back("../Lab2/meshes/mp_alpha/alpha-island_up3.tga");
+	faces.push_back("../Lab2/meshes/mp_alpha/alpha-island_dn3.tga");
 	faces.push_back("../Lab2/meshes/mp_alpha/alpha-island_ft.tga");
 	faces.push_back("../Lab2/meshes/mp_alpha/alpha-island_bk.tga");
 
@@ -213,7 +215,6 @@ void init()
 
 	glutils.createShaders();
 	
-	unsigned int textureID;
 	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 
@@ -246,26 +247,48 @@ void display()
 	glPushMatrix();
 
 	glLoadIdentity();
-
-	// activate shader
-	glUseProgram(glutils.PhongProgramID);
-
+		
 	// Update projection 
 	glm::mat4 projection = glm::perspective(glm::radians(fov), (float)(SCR_WIDTH) / (float)(SCR_HEIGHT), 0.1f, 100.0f);
 	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+		
+	// First Draw cube map - sceneObjects[0]
+	glDepthMask(GL_FALSE);
+	glUseProgram(glutils.CubeMapID);
+
+	glm::mat4 viewCube = glm::mat4(glm::mat3(view));
+	glutils.updateUniformVariablesCubeMap(viewCube, projection);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+	
+	glBindVertexArray(VAOs[0]);
+
+	glutils.bindVertexAttribute(glutils.loc4, 3, sceneObjects[0].startVBO, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glutils.IBO);
+	
+	glDrawElements(GL_TRIANGLES, sceneObjects[0].Meshes[0].Indices.size(), GL_UNSIGNED_INT, (void*)(sceneObjects[0].startIBO * sizeof(unsigned int)));
+
+	glDepthMask(GL_TRUE);
+
+	glPopMatrix();
+
+	glPushMatrix();
+
+	glLoadIdentity();
+
+	glUseProgram(glutils.PhongProgramID);
 
 	glm::mat4 local1(1.0f);
 	local1 = glm::translate(local1, cameraPos);
 	glm::mat4 global1 = local1;
 
 	glutils.updateUniformVariables(global1, view, projection);
-		
+
 	glUniform3f(glutils.lightColorLoc, 1.0f, 1.0f, 1.0f);
 	glUniform3f(glutils.lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
 	glUniform3f(glutils.viewPosLoc, cameraPos.x, cameraPos.y, cameraPos.z);
-		
+
 	// DRAW objects
-	for (int i = 0; i < numObjects; i++)     // TODO : need to fix this hardcoding
+	for (int i = 1; i < numObjects; i++)     // TODO : need to fix this hardcoding
 	{
 		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
 		glutils.updateUniformVariables(globalCGObjectTransform);
