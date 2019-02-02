@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="CGObject.cpp" />
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CGObject.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Dependencies\OBJ_Loader.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="opengl_utils.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\phong.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\phong.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\cubeMap.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\cubeMap.vs">
+      <Filter>Shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{ad119c2d-155b-4693-a9c7-987f67db9741}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers">
+      <UniqueIdentifier>{54cd1425-7063-4165-847a-6452ff3a604b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
