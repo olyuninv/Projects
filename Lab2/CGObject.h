@@ -46,7 +46,7 @@ namespace Lab2
 		
 		CGObject *Parent = nullptr;
 
-		void Draw(opengl_utils glutils);
+		void Draw(opengl_utils glutils, GLuint programID);
 		glm::mat4 createTransform();
 	};
 }

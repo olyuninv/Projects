@@ -275,27 +275,28 @@ void display()
 
 	glLoadIdentity();
 
-	glUseProgram(glutils.PhongProgramID);
+	glUseProgram(glutils.ReflectionID);
 
 	glm::mat4 local1(1.0f);
 	local1 = glm::translate(local1, cameraPos);
 	glm::mat4 global1 = local1;
 
-	glutils.updateUniformVariables(global1, view, projection);
+	glutils.updateUniformVariablesReflectance(global1, view, projection);
 
-	glUniform3f(glutils.lightColorLoc, 1.0f, 1.0f, 1.0f);
-	glUniform3f(glutils.lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
-	glUniform3f(glutils.viewPosLoc, cameraPos.x, cameraPos.y, cameraPos.z);
+	//glUniform3f(glutils.lightColorLoc, 1.0f, 1.0f, 1.0f);
+	//glUniform3f(glutils.lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
+	glUniform3f(glutils.viewPosLoc3, cameraPos.x, cameraPos.y, cameraPos.z);
+	glUniform3f(glutils.lightPosLoc3, lightPos.x, lightPos.y, lightPos.z);
 
 	// DRAW objects
 	for (int i = 1; i < numObjects; i++)     // TODO : need to fix this hardcoding
 	{
 		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
-		glutils.updateUniformVariables(globalCGObjectTransform);
+		glutils.updateUniformVariablesReflectance(globalCGObjectTransform);
 		sceneObjects[i].globalTransform = globalCGObjectTransform; // keep current state		
-
+				
 		glUniform3f(glutils.objectColorLoc, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
-		sceneObjects[i].Draw(glutils);
+		sceneObjects[i].Draw(glutils, glutils.ReflectionID);
 	}
 
 	glPopMatrix();

@@ -30,10 +30,13 @@ namespace Lab2
 		GLuint loc2;
 		GLuint loc3;
 		GLuint loc4;
+		GLuint loc5;
+		GLuint loc6;
 
 		// Shaders
 		GLuint PhongProgramID;
 		GLuint CubeMapID;
+		GLuint ReflectionID;
 
 		// Buffers
 		GLuint VBO;
@@ -51,6 +54,14 @@ namespace Lab2
 		// Uniform - cubemap
 		GLint view_mat_location2;
 		GLint proj_mat_location2;
+
+		// Reflection
+		GLint model_mat_location3;
+		GLint view_mat_location3;
+		GLint proj_mat_location3;
+		GLint camera_position3;
+		GLint lightPosLoc3;
+		GLint viewPosLoc3;
 
 		static GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path) {
 
@@ -148,6 +159,7 @@ namespace Lab2
 			// Create and compile our shaders
 			PhongProgramID = LoadShaders("../Lab2/shaders/phong.vs", "../Lab2/shaders/phong.fs");
 			CubeMapID = LoadShaders("../Lab2/shaders/cubeMap.vs", "../Lab2/shaders/cubeMap.fs");
+			ReflectionID = LoadShaders("../Lab2/shaders/Reflection.vs", "../Lab2/shaders/Reflection.fs");
 		}
 
 		void createVBO(int numVertices)
@@ -195,6 +207,13 @@ namespace Lab2
 
 			view_mat_location2 = glGetUniformLocation(CubeMapID, "view");
 			proj_mat_location2 = glGetUniformLocation(CubeMapID, "projection");
+
+			model_mat_location3 = glGetUniformLocation(ReflectionID, "model");
+			view_mat_location3 = glGetUniformLocation(ReflectionID, "view");
+			proj_mat_location3 = glGetUniformLocation(ReflectionID, "projection");
+			camera_position3 = glGetUniformLocation(ReflectionID, "cameraPos");
+			lightPosLoc3 = glGetUniformLocation(ReflectionID, "lightPos");
+			viewPosLoc3 = glGetUniformLocation(ReflectionID, "viewPos");
 		}
 
 		void getAttributeLocations()
@@ -204,6 +223,9 @@ namespace Lab2
 			loc3 = glGetAttribLocation(PhongProgramID, "texture");
 
 			loc4 = glGetAttribLocation(CubeMapID, "aPos");
+
+			loc5 = glGetAttribLocation(ReflectionID, "position");
+			loc6 = glGetAttribLocation(ReflectionID, "normal");
 		}
 
 		void bindVertexAttribute(int location, int locationSize, int startVBO, int offsetVBO)
@@ -222,6 +244,16 @@ namespace Lab2
 			bindVertexAttribute(loc3, 3, startVBO, 6);
 
 			//IBO
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+		}
+
+		void linkCurrentBuffertoShaderReflectance(GLuint VAOindex, int startVBO, int startIBO)
+		{
+			glBindVertexArray(VAOindex);
+			
+			bindVertexAttribute(loc5, 3, startVBO, 0);
+			bindVertexAttribute(loc6, 3, startVBO, 3);
+
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 		}
 		
@@ -245,7 +277,18 @@ namespace Lab2
 		{
 			glUniformMatrix4fv(proj_mat_location2, 1, GL_FALSE, &persp_proj[0][0]);
 			glUniformMatrix4fv(view_mat_location2, 1, GL_FALSE, &view[0][0]);
-		//	updateUniformVariables(model);
+		}
+
+		void updateUniformVariablesReflectance(glm::mat4 model)
+		{
+			glUniformMatrix4fv(model_mat_location3, 1, GL_FALSE, &model[0][0]);
+		}
+
+		void updateUniformVariablesReflectance(glm::mat4 model, glm::mat4 view, glm::mat4 persp_proj)
+		{
+			glUniformMatrix4fv(proj_mat_location3, 1, GL_FALSE, &persp_proj[0][0]);
+			glUniformMatrix4fv(view_mat_location3, 1, GL_FALSE, &view[0][0]);
+			updateUniformVariablesReflectance(model);
 		}
 
 		void deleteVertexArrays()

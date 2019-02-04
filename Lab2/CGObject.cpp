@@ -9,13 +9,20 @@ namespace Lab2
 	{
 	}
 
-	void CGObject::Draw(opengl_utils glutils)
+	void CGObject::Draw(opengl_utils glutils, GLuint programID)
 	{
 		int VBOindex = this->startVBO;
 		int IBOindex = this->startIBO;
 		for (int i = 0; i < this->Meshes.size(); i++) {
 			
-			glutils.linkCurrentBuffertoShader(this->VAOs[i], VBOindex, IBOindex);
+			if (programID == glutils.PhongProgramID)
+			{
+				glutils.linkCurrentBuffertoShader(this->VAOs[i], VBOindex, IBOindex);
+			}
+			else if (programID == glutils.ReflectionID)
+			{
+				glutils.linkCurrentBuffertoShaderReflectance(this->VAOs[i], VBOindex, IBOindex);
+			}
 
 			glDrawElements(GL_TRIANGLES, this->Meshes[i].Indices.size(), GL_UNSIGNED_INT, (void*)(IBOindex * sizeof(unsigned int)));
 			VBOindex += Meshes[i].Vertices.size();

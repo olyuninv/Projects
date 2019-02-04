@@ -136,11 +136,16 @@
     <None Include="shaders\cubeMap.vs" />
     <None Include="shaders\phong.fs" />
     <None Include="shaders\phong.vs" />
+    <None Include="shaders\Reflection.fs" />
+    <None Include="shaders\Reflection.vs" />
+    <None Include="shaders\Refraction.fs" />
+    <None Include="shaders\Refraction.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Dependencies\OBJ_Loader.h" />
     <ClInclude Include="CGObject.h" />
     <ClInclude Include="opengl_utils.h" />
+    <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
