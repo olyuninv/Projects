@@ -23,6 +23,10 @@ namespace Lab2
 			{
 				glutils.linkCurrentBuffertoShaderReflectance(this->VAOs[i], VBOindex, IBOindex);
 			}
+			else if (programID == glutils.RefractionID)
+			{
+				glutils.linkCurrentBuffertoShaderRefraction(this->VAOs[i], VBOindex, IBOindex);
+			}
 
 			glDrawElements(GL_TRIANGLES, this->Meshes[i].Indices.size(), GL_UNSIGNED_INT, (void*)(IBOindex * sizeof(unsigned int)));
 			VBOindex += Meshes[i].Vertices.size();

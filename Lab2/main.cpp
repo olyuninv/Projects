@@ -166,19 +166,19 @@ void createObjects()
 
 	const char* torusFileName = "../Lab2/meshes/Torus/Torus.obj"; 
 	vector<objl::Mesh> meshesTorus = loadMeshes(torusFileName);   // returns 2
-	CGObject torusObject = loadObjObject(meshesTorus, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(0.6f, 1.2f, 0.6f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL); //choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
+	CGObject torusObject = loadObjObject(meshesTorus, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(0.6f, 1.2f, 0.6f), vec3(1.0f, 1.0f, 0.0f), 0.65f, NULL); //choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
 	sceneObjects[numObjects] = torusObject;
 	numObjects++;
 
 	const char* suzanneFileName = "../Lab2/meshes/suzanne/suzanne.obj";
 	vector<objl::Mesh> meshesSuzanne = loadMeshes(suzanneFileName);   // returns 2
-	CGObject suzanneObject = loadObjObject(meshesSuzanne, true, true, vec3(-3.0f, 0.0f, 0.0f), vec3(0.6f, 0.6f, 0.6f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL); //choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
+	CGObject suzanneObject = loadObjObject(meshesSuzanne, true, true, vec3(-3.0f, 0.0f, 0.0f), vec3(0.6f, 0.6f, 0.6f), vec3(1.0f, 0.0f, 0.0f), 0.65f, NULL); //choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
 	sceneObjects[numObjects] = suzanneObject;
 	numObjects++;
 
 	const char* teapotFileName = "../Lab2/meshes/teapot/teapot.obj";
 	vector<objl::Mesh> meshesTeapot = loadMeshes(teapotFileName);   // returns 2
-	CGObject teapotObject = loadObjObject(meshesTeapot, true, true, vec3(3.0f, 0.0f, 0.0f), vec3(2.0f, 2.0f, 2.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL); //choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
+	CGObject teapotObject = loadObjObject(meshesTeapot, true, true, vec3(3.0f, 0.0f, 0.0f), vec3(3.0f, 3.0f, 3.0f), vec3(0.0f, 1.0f, 0.0f), 0.65f, NULL); //choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
 	sceneObjects[numObjects] = teapotObject;
 	numObjects++;
 	
@@ -314,7 +314,7 @@ void display()
 		glutils.updateUniformVariablesReflectance(globalCGObjectTransform);
 		sceneObjects[i].globalTransform = globalCGObjectTransform; // keep current state		
 				
-		glUniform3f(glutils.objectColorLoc, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
+		glUniform3f(glutils.objectColorLoc3, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
 		sceneObjects[i].Draw(glutils, glutils.ReflectionID);
 	}
 
@@ -328,9 +328,10 @@ void display()
 		sceneObjects[3].rotateAngles.y += 0.01;
 	}
 	
-	//glDisableVertexAttribArray(0);
-	//glDisableVertexAttribArray(1);
-	//glDisableVertexAttribArray(2);
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
+	glDisableVertexAttribArray(3);
 
 	// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 	glfwSwapBuffers(window);

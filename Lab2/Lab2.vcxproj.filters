@@ -43,6 +43,12 @@
     <None Include="shaders\Refraction.vs">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="shaders\Fresnel.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\Fresnel.vs">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">

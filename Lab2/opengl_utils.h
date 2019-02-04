@@ -62,6 +62,7 @@ namespace Lab2
 		GLint model_mat_location3;
 		GLint view_mat_location3;
 		GLint proj_mat_location3;
+		GLint objectColorLoc3;
 		GLint camera_position3;
 		GLint lightPosLoc3;
 		GLint viewPosLoc3;
@@ -71,6 +72,7 @@ namespace Lab2
 		GLint model_mat_location4;
 		GLint view_mat_location4;
 		GLint proj_mat_location4;
+		GLint objectColorLoc4;
 		GLint camera_position4;
 		GLint lightPosLoc4;
 		GLint viewPosLoc4;
@@ -172,8 +174,8 @@ namespace Lab2
 			// Create and compile our shaders
 			PhongProgramID = LoadShaders("../Lab2/shaders/phong.vs", "../Lab2/shaders/phong.fs");
 			CubeMapID = LoadShaders("../Lab2/shaders/cubeMap.vs", "../Lab2/shaders/cubeMap.fs");
-			ReflectionID = LoadShaders("../Lab2/shaders/Refraction.vs", "../Lab2/shaders/Refraction.fs");//Reflection
-			//RefractionID = LoadShaders("../Lab2/shaders/Refraction.vs", "../Lab2/shaders/Refraction.fs");
+			ReflectionID = LoadShaders("../Lab2/shaders/fresnel.vs", "../Lab2/shaders/fresnel.fs"); //Reflection
+			RefractionID = LoadShaders("../Lab2/shaders/Refraction.vs", "../Lab2/shaders/Refraction.fs");
 		}
 
 		void createVBO(int numVertices)
@@ -225,6 +227,7 @@ namespace Lab2
 			model_mat_location3 = glGetUniformLocation(ReflectionID, "model");
 			view_mat_location3 = glGetUniformLocation(ReflectionID, "view");
 			proj_mat_location3 = glGetUniformLocation(ReflectionID, "projection");
+			objectColorLoc3 = glGetUniformLocation(ReflectionID, "objectColor");
 			camera_position3 = glGetUniformLocation(ReflectionID, "cameraPos");
 			lightPosLoc3 = glGetUniformLocation(ReflectionID, "lightPos");
 			viewPosLoc3 = glGetUniformLocation(ReflectionID, "viewPos");
@@ -234,6 +237,7 @@ namespace Lab2
 			model_mat_location4 = glGetUniformLocation(RefractionID, "model");
 			view_mat_location4 = glGetUniformLocation(RefractionID, "view");
 			proj_mat_location4 = glGetUniformLocation(RefractionID, "projection");
+			objectColorLoc4 = glGetUniformLocation(RefractionID, "objectColor");
 			camera_position4 = glGetUniformLocation(RefractionID, "cameraPos");
 			lightPosLoc4 = glGetUniformLocation(RefractionID, "lightPos");
 			viewPosLoc4 = glGetUniformLocation(RefractionID, "viewPos");
