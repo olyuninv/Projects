@@ -12,7 +12,7 @@ out vec3 FragPos;
 
 out vec3 pass_normal;
 out vec3 reflectedVector; 
-out vec3 refractedVector; 
+//out vec3 refractedVector; 
 
 void main()
 {
@@ -28,5 +28,5 @@ void main()
     vec3 viewDirection = normalize(worldPosition.xyz - viewPos);
             
     reflectedVector = reflect (viewDirection, unitNormal);
-	refractedVector = refract (viewDirection, unitNormal, 1.0/ 1.33);  // TODO: eta?
+	//refractedVector = refract (viewDirection, unitNormal, 1.0/ 1.33);  // TODO: eta?
 }

@@ -164,10 +164,22 @@ void createObjects()
 	sceneObjects[numObjects] = cubeObject;
 	numObjects++;
 
-	const char* boyFileName = "../Lab2/meshes/Torus/Torus.obj"; 
-	vector<objl::Mesh> meshes = loadMeshes(boyFileName);   // returns 2
-	CGObject boyObject = loadObjObject(meshes, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(0.6f, 1.2f, 0.6f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL); //choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
-	sceneObjects[numObjects] = boyObject;
+	const char* torusFileName = "../Lab2/meshes/Torus/Torus.obj"; 
+	vector<objl::Mesh> meshesTorus = loadMeshes(torusFileName);   // returns 2
+	CGObject torusObject = loadObjObject(meshesTorus, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(0.6f, 1.2f, 0.6f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL); //choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
+	sceneObjects[numObjects] = torusObject;
+	numObjects++;
+
+	const char* suzanneFileName = "../Lab2/meshes/suzanne/suzanne.obj";
+	vector<objl::Mesh> meshesSuzanne = loadMeshes(suzanneFileName);   // returns 2
+	CGObject suzanneObject = loadObjObject(meshesSuzanne, true, true, vec3(-3.0f, 0.0f, 0.0f), vec3(0.6f, 0.6f, 0.6f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL); //choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
+	sceneObjects[numObjects] = suzanneObject;
+	numObjects++;
+
+	const char* teapotFileName = "../Lab2/meshes/teapot/teapot.obj";
+	vector<objl::Mesh> meshesTeapot = loadMeshes(teapotFileName);   // returns 2
+	CGObject teapotObject = loadObjObject(meshesTeapot, true, true, vec3(3.0f, 0.0f, 0.0f), vec3(2.0f, 2.0f, 2.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL); //choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
+	sceneObjects[numObjects] = teapotObject;
 	numObjects++;
 	
 	glutils.createVBO(n_vbovertices);
@@ -175,9 +187,13 @@ void createObjects()
 	glutils.createIBO(n_ibovertices);
 	
 	addToObjectBuffer(&cubeObject);
-	addToObjectBuffer(&boyObject);
+	addToObjectBuffer(&torusObject);
+	addToObjectBuffer(&suzanneObject);
+	addToObjectBuffer(&teapotObject);
 	addToIndexBuffer(&cubeObject);
-	addToIndexBuffer(&boyObject);
+	addToIndexBuffer(&torusObject);
+	addToIndexBuffer(&suzanneObject);
+	addToIndexBuffer(&teapotObject);
 }
 
 void loadCube()
@@ -306,9 +322,10 @@ void display()
 
 	// rotate
 	if (!pause)
-	{
-		//sceneObjects[0].rotateAngles.y += 0.01;
+	{		
 		sceneObjects[1].rotateAngles.x += 0.01;
+		sceneObjects[2].rotateAngles.y += 0.01;
+		sceneObjects[3].rotateAngles.y += 0.01;
 	}
 	
 	//glDisableVertexAttribArray(0);

@@ -3,7 +3,7 @@
 
 in vec3 pass_normal;
 in vec3 reflectedVector; 
-in vec3 refractedVector; 
+//in vec3 refractedVector; 
 in vec3 Normal;  
 in vec3 FragPos;  
 
@@ -29,9 +29,9 @@ void main()
     FragColor = vec4(result, 1.0);
 
     vec4 reflectedColour = texture(skybox, reflectedVector);
-    vec4 refractedColour = texture(skybox, refractedVector);  // ADDED
+    //vec4 refractedColour = texture(skybox, refractedVector);  // ADDED
 
-    vec4 environmentColour = mix(reflectedColour, refractedColour, 0.5f);  // ADDED
+    //vec4 environmentColour = mix(reflectedColour, refractedColour, 0.5f);  // ADDED
 
-    FragColor = mix(FragColor, environmentColour, 1.0f);  // reflectedColour, 0.6); 
+    FragColor = mix(FragColor, reflectedColour, 0.6); //environmentColour, 1.0f);
 }

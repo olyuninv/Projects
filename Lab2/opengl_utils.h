@@ -32,11 +32,14 @@ namespace Lab2
 		GLuint loc4;
 		GLuint loc5;
 		GLuint loc6;
+		GLuint loc7;
+		GLuint loc8;
 
 		// Shaders
 		GLuint PhongProgramID;
 		GLuint CubeMapID;
 		GLuint ReflectionID;
+		GLuint RefractionID;
 
 		// Buffers
 		GLuint VBO;
@@ -63,6 +66,15 @@ namespace Lab2
 		GLint lightPosLoc3;
 		GLint viewPosLoc3;
 		GLint cubeLocation3;
+
+		// Refraction
+		GLint model_mat_location4;
+		GLint view_mat_location4;
+		GLint proj_mat_location4;
+		GLint camera_position4;
+		GLint lightPosLoc4;
+		GLint viewPosLoc4;
+		GLint cubeLocation4;
 
 		static GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path) {
 
@@ -160,7 +172,8 @@ namespace Lab2
 			// Create and compile our shaders
 			PhongProgramID = LoadShaders("../Lab2/shaders/phong.vs", "../Lab2/shaders/phong.fs");
 			CubeMapID = LoadShaders("../Lab2/shaders/cubeMap.vs", "../Lab2/shaders/cubeMap.fs");
-			ReflectionID = LoadShaders("../Lab2/shaders/Reflection.vs", "../Lab2/shaders/Reflection.fs");
+			ReflectionID = LoadShaders("../Lab2/shaders/Refraction.vs", "../Lab2/shaders/Refraction.fs");//Reflection
+			//RefractionID = LoadShaders("../Lab2/shaders/Refraction.vs", "../Lab2/shaders/Refraction.fs");
 		}
 
 		void createVBO(int numVertices)
@@ -217,6 +230,15 @@ namespace Lab2
 			viewPosLoc3 = glGetUniformLocation(ReflectionID, "viewPos");
 
 			cubeLocation3 = glGetUniformLocation(ReflectionID, "skybox");
+
+			model_mat_location4 = glGetUniformLocation(RefractionID, "model");
+			view_mat_location4 = glGetUniformLocation(RefractionID, "view");
+			proj_mat_location4 = glGetUniformLocation(RefractionID, "projection");
+			camera_position4 = glGetUniformLocation(RefractionID, "cameraPos");
+			lightPosLoc4 = glGetUniformLocation(RefractionID, "lightPos");
+			viewPosLoc4 = glGetUniformLocation(RefractionID, "viewPos");
+
+			cubeLocation4 = glGetUniformLocation(RefractionID, "skybox");
 		}
 
 		void getAttributeLocations()
@@ -229,6 +251,9 @@ namespace Lab2
 
 			loc5 = glGetAttribLocation(ReflectionID, "position");
 			loc6 = glGetAttribLocation(ReflectionID, "normal");
+
+			loc7 = glGetAttribLocation(RefractionID, "position");
+			loc8 = glGetAttribLocation(RefractionID, "normal");
 		}
 
 		void bindVertexAttribute(int location, int locationSize, int startVBO, int offsetVBO)
@@ -256,6 +281,16 @@ namespace Lab2
 			
 			bindVertexAttribute(loc5, 3, startVBO, 0);
 			bindVertexAttribute(loc6, 3, startVBO, 3);
+
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+		}
+
+		void linkCurrentBuffertoShaderRefraction(GLuint VAOindex, int startVBO, int startIBO)
+		{
+			glBindVertexArray(VAOindex);
+
+			bindVertexAttribute(loc7, 3, startVBO, 0);
+			bindVertexAttribute(loc8, 3, startVBO, 3);
 
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 		}
@@ -292,6 +327,18 @@ namespace Lab2
 			glUniformMatrix4fv(proj_mat_location3, 1, GL_FALSE, &persp_proj[0][0]);
 			glUniformMatrix4fv(view_mat_location3, 1, GL_FALSE, &view[0][0]);
 			updateUniformVariablesReflectance(model);
+		}
+
+		void updateUniformVariablesRefraction(glm::mat4 model)
+		{
+			glUniformMatrix4fv(model_mat_location4, 1, GL_FALSE, &model[0][0]);
+		}
+
+		void updateUniformVariablesRefraction(glm::mat4 model, glm::mat4 view, glm::mat4 persp_proj)
+		{
+			glUniformMatrix4fv(proj_mat_location4, 1, GL_FALSE, &persp_proj[0][0]);
+			glUniformMatrix4fv(view_mat_location4, 1, GL_FALSE, &view[0][0]);
+			updateUniformVariablesRefraction(model);
 		}
 
 		void deleteVertexArrays()
