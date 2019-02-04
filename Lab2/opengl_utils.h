@@ -62,6 +62,7 @@ namespace Lab2
 		GLint camera_position3;
 		GLint lightPosLoc3;
 		GLint viewPosLoc3;
+		GLint cubeLocation3;
 
 		static GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path) {
 
@@ -214,6 +215,8 @@ namespace Lab2
 			camera_position3 = glGetUniformLocation(ReflectionID, "cameraPos");
 			lightPosLoc3 = glGetUniformLocation(ReflectionID, "lightPos");
 			viewPosLoc3 = glGetUniformLocation(ReflectionID, "viewPos");
+
+			cubeLocation3 = glGetUniformLocation(ReflectionID, "skybox");
 		}
 
 		void getAttributeLocations()

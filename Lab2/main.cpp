@@ -66,6 +66,8 @@ glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
+bool pause = true;
+
 GLuint VAOs[MAX_OBJECTS];
 int numVAOs = 0;
 
@@ -164,7 +166,7 @@ void createObjects()
 
 	const char* boyFileName = "../Lab2/meshes/Torus/Torus.obj"; 
 	vector<objl::Mesh> meshes = loadMeshes(boyFileName);   // returns 2
-	CGObject boyObject = loadObjObject(meshes, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(0.4f, 0.8f, 0.4f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL); //choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
+	CGObject boyObject = loadObjObject(meshes, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(0.6f, 1.2f, 0.6f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL); //choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
 	sceneObjects[numObjects] = boyObject;
 	numObjects++;
 	
@@ -225,7 +227,7 @@ void init()
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
+		
 	glutils.setupUniformVariables();
 
 	createObjects();
@@ -264,6 +266,7 @@ void display()
 
 	glutils.bindVertexAttribute(glutils.loc4, 3, sceneObjects[0].startVBO, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glutils.IBO);
+	glUniform1i(glutils.cubeLocation3, textureID);
 	
 	glDrawElements(GL_TRIANGLES, sceneObjects[0].Meshes[0].Indices.size(), GL_UNSIGNED_INT, (void*)(sceneObjects[0].startIBO * sizeof(unsigned int)));
 
@@ -300,6 +303,13 @@ void display()
 	}
 
 	glPopMatrix();
+
+	// rotate
+	if (!pause)
+	{
+		//sceneObjects[0].rotateAngles.y += 0.01;
+		sceneObjects[1].rotateAngles.x += 0.01;
+	}
 	
 	//glDisableVertexAttribArray(0);
 	//glDisableVertexAttribArray(1);
@@ -384,6 +394,8 @@ void processInput(GLFWwindow *window)
 		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
 		rotate_angle += 1.0f;	
+	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+		pause = !pause;
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
