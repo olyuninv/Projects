@@ -132,6 +132,8 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\chromaticDispersion.fs" />
+    <None Include="shaders\chromaticDispersion.vs" />
     <None Include="shaders\cubeMap.fs" />
     <None Include="shaders\cubeMap.vs" />
     <None Include="shaders\Fresnel.fs" />
