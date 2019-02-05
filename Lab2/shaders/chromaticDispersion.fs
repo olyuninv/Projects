@@ -43,11 +43,11 @@ void main()
 
 
     vec3 viewVector = normalize(toCameraVector);
-    float refractiveFactor = dot (viewVector, vec3 (0.0, 1.0, 0.0));
-    refractiveFactor = pow(refractiveFactor, 2.0);
+    float refractiveFactor = dot (viewVector, vec3 (1.0, 0.0, 1.0));
+    refractiveFactor = pow(refractiveFactor, 3);
 
     vec4 environmentColour = mix(reflectedColour, color, refractiveFactor); //0.5f);  // ADDED
-
-    // FragColor = mix (environmentColour, vec4(0.0, 0.3, 0.5, 1.0), 0.2);
+    //FragColor = environmentColour;
+    //FragColor = mix (environmentColour, vec4(0.0, 0.3, 0.5, 1.0), 0.2);
     FragColor = mix(FragColor, environmentColour, 0.4f);  //refractedColour, 1.0); 
 }

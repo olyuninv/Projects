@@ -1,7 +1,6 @@
 #version 330 core
 #extension GL_NV_shadow_samplers_cube : enable
 
-in vec3 pass_normal;
 in vec3 reflectedVector; 
 in vec3 refractedVector; 
 in vec3 Normal;  
@@ -39,6 +38,6 @@ void main()
 
     vec4 environmentColour = mix(reflectedColour, refractedColour, refractiveFactor); //0.5f);  // ADDED
 
-    FragColor = mix (environmentColour, vec4(0.0, 0.3, 0.5, 1.0), 0.2);
-    //FragColor = mix(FragColor, environmentColour, 1.0f);  //refractedColour, 1.0); 
+    //FragColor = mix (environmentColour, vec4(0.0, 0.3, 0.5, 1.0), 0.2);
+    FragColor = mix(FragColor, environmentColour, 0.4f);  //refractedColour, 1.0); 
 }

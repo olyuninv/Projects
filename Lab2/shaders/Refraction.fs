@@ -1,7 +1,6 @@
 #version 330 core
 #extension GL_NV_shadow_samplers_cube : enable
 
-in vec3 pass_normal;
 //in vec3 reflectedVector; 
 in vec3 refractedVector; 
 in vec3 Normal;  

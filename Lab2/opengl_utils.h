@@ -174,7 +174,7 @@ namespace Lab2
 			// Create and compile our shaders
 			PhongProgramID = LoadShaders("../Lab2/shaders/phong.vs", "../Lab2/shaders/phong.fs");
 			CubeMapID = LoadShaders("../Lab2/shaders/cubeMap.vs", "../Lab2/shaders/cubeMap.fs");
-			ReflectionID = LoadShaders("../Lab2/shaders/fresnel.vs", "../Lab2/shaders/fresnel.fs"); //Reflection
+			ReflectionID = LoadShaders("../Lab2/shaders/Reflection.vs", "../Lab2/shaders/Reflection.fs"); //Reflection, fresnel, chromaticDispersion
 			RefractionID = LoadShaders("../Lab2/shaders/Refraction.vs", "../Lab2/shaders/Refraction.fs");
 		}
 

@@ -62,7 +62,7 @@ float lastY = SCR_HEIGHT / 2.0; //600.0 / 2.0;
 float fov = 45.0f;
 
 // camera
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.5f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -159,26 +159,26 @@ void createObjects()
 	glutils.getAttributeLocations();
 	
 	const char* cubeFileName = "../Lab2/meshes/Cube/Cube.obj";
-	vector<objl::Mesh> cubeMesh = loadMeshes(cubeFileName);   // returns 2
-	CGObject cubeObject = loadObjObject(cubeMesh, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(20.0f, 20.0f, 20.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL); //choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
+	vector<objl::Mesh> cubeMesh = loadMeshes(cubeFileName);
+	CGObject cubeObject = loadObjObject(cubeMesh, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(20.0f, 20.0f, 20.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);
 	sceneObjects[numObjects] = cubeObject;
 	numObjects++;
 
-	const char* torusFileName = "../Lab2/meshes/Torus/Torus.obj"; 
-	vector<objl::Mesh> meshesTorus = loadMeshes(torusFileName);   // returns 2
-	CGObject torusObject = loadObjObject(meshesTorus, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(0.6f, 1.2f, 0.6f), vec3(1.0f, 1.0f, 0.0f), 0.65f, NULL); //choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
+	const char* torusFileName = "../Lab2/meshes/Torus/Torus.obj";
+	vector<objl::Mesh> meshesTorus = loadMeshes(torusFileName);
+	CGObject torusObject = loadObjObject(meshesTorus, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(0.6f, 1.2f, 0.6f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);
 	sceneObjects[numObjects] = torusObject;
 	numObjects++;
 
 	const char* suzanneFileName = "../Lab2/meshes/suzanne/suzanne.obj";
-	vector<objl::Mesh> meshesSuzanne = loadMeshes(suzanneFileName);   // returns 2
-	CGObject suzanneObject = loadObjObject(meshesSuzanne, true, true, vec3(-3.0f, 0.0f, 0.0f), vec3(0.6f, 0.6f, 0.6f), vec3(1.0f, 0.0f, 0.0f), 0.65f, NULL); //choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
+	vector<objl::Mesh> meshesSuzanne = loadMeshes(suzanneFileName);
+	CGObject suzanneObject = loadObjObject(meshesSuzanne, true, true, vec3(-3.0f, 0.0f, 0.0f), vec3(0.6f, 0.6f, 0.6f), vec3(1.0f, 1.0f, 0.0f), 0.65f, NULL);
 	sceneObjects[numObjects] = suzanneObject;
 	numObjects++;
 
 	const char* teapotFileName = "../Lab2/meshes/teapot/teapot.obj";
-	vector<objl::Mesh> meshesTeapot = loadMeshes(teapotFileName);   // returns 2
-	CGObject teapotObject = loadObjObject(meshesTeapot, true, true, vec3(3.0f, 0.0f, 0.0f), vec3(3.0f, 3.0f, 3.0f), vec3(0.0f, 1.0f, 0.0f), 0.65f, NULL); //choco - vec3(0.4f, 0.2f, 0.0f), 0.65f, NULL);
+	vector<objl::Mesh> meshesTeapot = loadMeshes(teapotFileName);
+	CGObject teapotObject = loadObjObject(meshesTeapot, true, true, vec3(3.0f, 0.0f, 0.0f), vec3(3.0f, 3.0f, 3.0f), vec3(0.0f, 1.0f, 0.0f), 0.65f, NULL);
 	sceneObjects[numObjects] = teapotObject;
 	numObjects++;
 	
@@ -353,7 +353,7 @@ int main(void) {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Open a window and create its OpenGL context
-	window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "BRDFs", NULL, NULL);
+	window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Transmittance", NULL, NULL);
 	if (window == NULL) {
 		fprintf(stderr, "Failed to open GLFW window.\n");
 		getchar();

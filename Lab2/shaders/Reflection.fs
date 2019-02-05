@@ -1,7 +1,6 @@
 #version 330 core
 #extension GL_NV_shadow_samplers_cube : enable
 
-in vec3 pass_normal;
 in vec3 reflectedVector; 
 //in vec3 refractedVector; 
 in vec3 Normal;  
@@ -25,7 +24,7 @@ void main()
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = diff * vec3(1.0f, 1.0f, 1.0f); // TODO: light color
     
-    vec3 result = (ambient + diffuse) * objectColor; //vec3(1.0f, 1.0f, 1.0f); // TODO: object color
+    vec3 result = (ambient + diffuse) * objectColor; 
 
     FragColor = vec4(result, 1.0);
 

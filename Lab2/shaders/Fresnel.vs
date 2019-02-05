@@ -12,7 +12,6 @@ out vec3 Normal;
 out vec3 FragPos;
 out vec3 toCameraVector;
 
-out vec3 pass_normal;
 out vec3 reflectedVector; 
 out vec3 refractedVector; 
 
@@ -28,7 +27,6 @@ void main()
     Normal = mat3(transpose(inverse(model))) * normal;
     	
 	vec3 unitNormal = normalize (Normal);
-	pass_normal = Normal;
 	
     vec3 viewDirection = normalize(worldPosition.xyz - viewPos);
             

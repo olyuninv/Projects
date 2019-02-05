@@ -7,9 +7,9 @@ uniform mat4 view;
 uniform mat4 projection;
 uniform vec3 viewPos;
 
-float iorRatioR = 1.5204;
-float iorRatioG = 1.5230;
-float iorRatioB = 1.5293;
+float iorRatioR = 1.51124;
+float iorRatioG = 1.51534;
+float iorRatioB = 1.51690;
 
 out vec4 clipSpace;
 out vec3 Normal;
