@@ -39,7 +39,7 @@ void main()
             
     reflectedVector = reflect (viewDirection, unitNormal);
 	//refractedVector = refract (viewDirection, unitNormal, 1.0/ 1.33);  // TODO: eta?
-	refractVecR = refract(viewDirection, unitNormal, iorRatioR);
-    refractVecG = refract(viewDirection, unitNormal, iorRatioG);
-	refractVecB = refract(viewDirection, unitNormal, iorRatioB);
+	refractVecR = refract(viewDirection, unitNormal, iorRatioR - 0.1);
+    refractVecG = refract(viewDirection, unitNormal, iorRatioG - 0.2);
+	refractVecB = refract(viewDirection, unitNormal, iorRatioB - 0.3);
 }
