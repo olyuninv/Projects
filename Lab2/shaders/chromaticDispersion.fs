@@ -32,7 +32,7 @@ void main()
 
     FragColor = vec4(result, 1.0);   //NOT USED LATER
 
-    vec4 reflectedColour = texture(skybox, refractVecR);
+    vec4 reflectedColour = texture(skybox, reflectedVector);
     //vec4 refractedColour = texture(skybox, refractedVector);  
 
     vec4 color = vec4(0.0);
@@ -43,11 +43,13 @@ void main()
 
 
     vec3 viewVector = normalize(toCameraVector);
-    float refractiveFactor = dot (viewVector, vec3 (1.0, 0.0, 1.0));
-    refractiveFactor = pow(refractiveFactor, 3);
+    float refractiveFactor = clamp(dot (viewVector, norm), 0, 1);
 
-    vec4 environmentColour = mix(reflectedColour, color, refractiveFactor); //0.5f);  // ADDED
+    //refractiveFactor = pow(refractiveFactor, 3);
+    
+    //vec4 environmentColour = mix(reflectedColour, color, refractiveFactor); //0.5f);  // ADDED
     //FragColor = environmentColour;
     //FragColor = mix (environmentColour, vec4(0.0, 0.3, 0.5, 1.0), 0.2);
-    FragColor = mix(FragColor, environmentColour, 0.4f);  //refractedColour, 1.0); 
+    //FragColor = mix(FragColor, environmentColour, 1.0f);  //refractedColour, 1.0); 
+    FragColor = color;
 }
