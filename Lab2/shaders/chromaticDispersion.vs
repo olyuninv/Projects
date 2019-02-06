@@ -7,17 +7,15 @@ uniform mat4 view;
 uniform mat4 projection;
 uniform vec3 viewPos;
 
-float iorRatioR = 1.51124;
-float iorRatioG = 1.51534;
-float iorRatioB = 1.51690;
+float iorRatioR = 1.51;
+float iorRatioG = 1.52;
+float iorRatioB = 1.53;
 
 out vec4 clipSpace;
 out vec3 Normal;
 out vec3 FragPos;
-out vec3 toCameraVector;
 
 out vec3 reflectedVector; 
-//out vec3 refractedVector; 
 out vec3 refractVecR;
 out vec3 refractVecG;
 out vec3 refractVecB;
@@ -27,8 +25,6 @@ void main()
     vec4 worldPosition = model * vec4(position, 1.0f);
 	clipSpace = projection * view *  worldPosition;	
 	gl_Position = clipSpace;
-	  
-	toCameraVector = viewPos -   worldPosition.xyz;
 
 	FragPos = vec3(model * vec4(position, 1.0f));
     Normal = mat3(transpose(inverse(model))) * normal;
@@ -38,8 +34,7 @@ void main()
     vec3 viewDirection = normalize(worldPosition.xyz - viewPos);
             
     reflectedVector = reflect (viewDirection, unitNormal);
-	//refractedVector = refract (viewDirection, unitNormal, 1.0/ 1.33);  // TODO: eta?
-	refractVecR = refract(viewDirection, unitNormal, 1.0 / (iorRatioR - 0.1));
+	refractVecR = refract(viewDirection, unitNormal, 1.0 / (iorRatioR - 0.3));
     refractVecG = refract(viewDirection, unitNormal, 1.0 / (iorRatioG - 0.2));
-	refractVecB = refract(viewDirection, unitNormal, 1.0 / (iorRatioB - 0.3));
+	refractVecB = refract(viewDirection, unitNormal, 1.0 / (iorRatioB - 0.1));
 }

@@ -9,6 +9,7 @@ in vec3 FragPos;
 uniform samplerCube skybox;
 uniform vec3 lightPos;
 uniform vec3 objectColor;
+uniform vec3 viewPos;
 
 out vec4 FragColor;
 
@@ -24,14 +25,19 @@ void main()
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = diff * vec3(1.0f, 1.0f, 1.0f); // TODO: light color
     
-    vec3 result = (ambient + diffuse) * objectColor; 
-
+    // specular
+    float specularStrength = 0.8;
+    
+    vec3 viewDir = normalize(viewPos - FragPos);
+    vec3 halfwayDir = normalize(lightDir + viewDir);
+    float spec = pow(max(dot(norm, halfwayDir), 0.0), 128);
+    vec3 specular = 0.5 * spec *  vec3(1.0f, 1.0f, 1.0f);  // TODO: light color
+        
+    vec3 result = (ambient + diffuse + specular) * objectColor; 
+    
     FragColor = vec4(result, 1.0);
 
     vec4 reflectedColour = texture(skybox, reflectedVector);
-    //vec4 refractedColour = texture(skybox, refractedVector);  // ADDED
-
-    //vec4 environmentColour = mix(reflectedColour, refractedColour, 0.5f);  // ADDED
-
-    FragColor = mix(FragColor, reflectedColour, 0.6); //environmentColour, 1.0f);
+    
+    //FragColor = mix(FragColor, reflectedColour, 0.7);
 }

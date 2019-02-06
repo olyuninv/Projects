@@ -7,10 +7,11 @@ uniform mat4 view;
 uniform mat4 projection;
 uniform vec3 viewPos;
 
+float IOR = 1.52;
+
 out vec3 Normal;
 out vec3 FragPos;
 
-//out vec3 reflectedVector; 
 out vec3 refractedVector; 
 
 void main()
@@ -25,6 +26,5 @@ void main()
    
     vec3 viewDirection = normalize(worldPosition.xyz - viewPos);
             
-   // reflectedVector = reflect (viewDirection, unitNormal); 
-	refractedVector = refract (viewDirection, unitNormal, 1.0/ 1.33); 
+	refractedVector = refract (viewDirection, unitNormal, 1.0/ 1.52); 
 }

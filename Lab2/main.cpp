@@ -160,13 +160,13 @@ void createObjects()
 	
 	const char* cubeFileName = "../Lab2/meshes/Cube/Cube.obj";
 	vector<objl::Mesh> cubeMesh = loadMeshes(cubeFileName);
-	CGObject cubeObject = loadObjObject(cubeMesh, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(20.0f, 20.0f, 20.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);
+	CGObject cubeObject = loadObjObject(cubeMesh, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);
 	sceneObjects[numObjects] = cubeObject;
 	numObjects++;
 
-	const char* torusFileName = "../Lab2/meshes/Torus/Torus.obj";
+	const char* torusFileName = "../Lab2/meshes/Cube/Cube.obj";
 	vector<objl::Mesh> meshesTorus = loadMeshes(torusFileName);
-	CGObject torusObject = loadObjObject(meshesTorus, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(0.6f, 1.2f, 0.6f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);
+	CGObject torusObject = loadObjObject(meshesTorus, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(0.6f, 0.6f, 0.6f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);
 	sceneObjects[numObjects] = torusObject;
 	numObjects++;
 
@@ -178,7 +178,7 @@ void createObjects()
 
 	const char* teapotFileName = "../Lab2/meshes/teapot/teapot.obj";
 	vector<objl::Mesh> meshesTeapot = loadMeshes(teapotFileName);
-	CGObject teapotObject = loadObjObject(meshesTeapot, true, true, vec3(3.0f, 0.0f, 0.0f), vec3(3.0f, 3.0f, 3.0f), vec3(0.0f, 1.0f, 0.0f), 0.65f, NULL);
+	CGObject teapotObject = loadObjObject(meshesTeapot, true, true, vec3(3.0f, -0.5f, 0.0f), vec3(5.0f, 5.0f, 5.0f), vec3(0.0f, 1.0f, 0.0f), 0.65f, NULL);
 	sceneObjects[numObjects] = teapotObject;
 	numObjects++;
 	
@@ -199,12 +199,12 @@ void createObjects()
 void loadCube()
 {
 	vector<std::string> faces = vector<std::string>();
-	faces.push_back("../Lab2/meshes/mp_alpha/alpha-island_lf.tga");
-	faces.push_back("../Lab2/meshes/mp_alpha/alpha-island_rt.tga");
-	faces.push_back("../Lab2/meshes/mp_alpha/alpha-island_up3.tga");
-	faces.push_back("../Lab2/meshes/mp_alpha/alpha-island_dn3.tga");
-	faces.push_back("../Lab2/meshes/mp_alpha/alpha-island_ft.tga");
-	faces.push_back("../Lab2/meshes/mp_alpha/alpha-island_bk.tga");
+	faces.push_back("../Lab2/meshes/mp_bleak/bleak-outlook_lf.tga");
+	faces.push_back("../Lab2/meshes/mp_bleak/bleak-outlook_rt.tga");
+	faces.push_back("../Lab2/meshes/mp_bleak/bleak-outlook_up.tga");
+	faces.push_back("../Lab2/meshes/mp_bleak/bleak-outlook_dn.tga");
+	faces.push_back("../Lab2/meshes/mp_bleak/bleak-outlook_ft.tga");
+	faces.push_back("../Lab2/meshes/mp_bleak/bleak-outlook_bk.tga");
 
 	int width, height, nrChannels;
 	for (unsigned int i = 0; i < faces.size(); i++)
@@ -323,7 +323,7 @@ void display()
 	// rotate
 	if (!pause)
 	{		
-		sceneObjects[1].rotateAngles.x += 0.01;
+		sceneObjects[1].rotateAngles.y += 0.01;
 		sceneObjects[2].rotateAngles.y += 0.01;
 		sceneObjects[3].rotateAngles.y += 0.01;
 	}
