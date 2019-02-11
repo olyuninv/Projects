@@ -213,7 +213,7 @@ void createObjects()
 	sceneObjects[numObjects] = torusObject;
 	numObjects++;*/
 
-	const char* suzanneFileName = "../Lab3/meshes/cube/cube.obj"; // / Lotus_OBJ_low / Lotus_OBJ_low.obj"; // apple/apple obj/one_apple.obj";
+	const char* suzanneFileName = "../Lab3/meshes/Lotus_OBJ_low/Lotus_OBJ_low.obj"; ///cube/cube.obj"// apple/apple obj/one_apple.obj";
 	vector<objl::Mesh> meshesSuzanne = loadMeshes(suzanneFileName);
 
 	std::vector<objl::Mesh> new_meshesSuzanne;
@@ -343,7 +343,6 @@ void init()
 	}	
 
 	// Setup lotus texture  - bump
-
 	glBindTexture(GL_TEXTURE_2D, textures[2]); 
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -352,18 +351,18 @@ void init()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	// load and generate the texture
-	width, height, nrChannels;
-	data = stbi_load("../Lab3/meshes/lotus_OBJ_low/lotus_petal_bump.jpg", &width, &height, &nrChannels, 3);
-	if (data)
+	int width1, height1, nrChannels1;
+	unsigned char *data1 = stbi_load("../Lab3/meshes/lotus_OBJ_low/lotus_petal_bump.jpg", &width1, &height1, &nrChannels1, 3);
+	if (data1)
 	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width1, height1, 0, GL_RGB, GL_UNSIGNED_BYTE, data1);
 		glGenerateMipmap(GL_TEXTURE_2D);
-		stbi_image_free(data);
+		stbi_image_free(data1);
 	}
 	else
 	{
 		std::cout << "Failed to load texture" << std::endl;
-		stbi_image_free(data);
+		stbi_image_free(data1);
 	}
 
 	glutils.setupUniformVariables();
@@ -434,7 +433,7 @@ void display()
 	for (int i = 1; i < numObjects; i++)     // TODO : need to fix this hardcoding
 	{
 		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
-		glutils.updateUniformVariablesReflectance(globalCGObjectTransform);
+		glutils.updateUniformVariablesReflectance(globalCGObjectTransform, view);
 		sceneObjects[i].globalTransform = globalCGObjectTransform; // keep current state		
 			
 		//glActiveTexture(GL_TEXTURE0);

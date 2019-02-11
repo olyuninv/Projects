@@ -37,6 +37,9 @@ namespace Lab3
 		GLuint loc9;
 		GLuint loc10;
 
+		GLuint loc11;
+		GLuint loc12;
+
 		// Shaders
 		GLuint PhongProgramID;
 		GLuint CubeMapID;
@@ -66,6 +69,7 @@ namespace Lab3
 		GLint model_mat_location3;
 		GLint view_mat_location3;
 		GLint proj_mat_location3;
+		GLint model_view_matrix3_3;
 		GLint objectColorLoc3;
 		GLint camera_position3;
 		GLint lightPosLoc3;
@@ -259,14 +263,15 @@ namespace Lab3
 			model_mat_location3 = glGetUniformLocation(ReflectionID, "model");
 			view_mat_location3 = glGetUniformLocation(ReflectionID, "view");
 			proj_mat_location3 = glGetUniformLocation(ReflectionID, "projection");
+			model_view_matrix3_3 = glGetUniformLocation(ReflectionID, "modelView3x3");
 			objectColorLoc3 = glGetUniformLocation(ReflectionID, "objectColor");
 			camera_position3 = glGetUniformLocation(ReflectionID, "cameraPos");
 			lightPosLoc3 = glGetUniformLocation(ReflectionID, "lightPos");
 			viewPosLoc3 = glGetUniformLocation(ReflectionID, "viewPos");
 
 			cubeLocation3 = glGetUniformLocation(ReflectionID, "skybox");
-			texture3 = glGetUniformLocation(ReflectionID, "ourTexture");
-			normalMap3 = glGetUniformLocation(ReflectionID, "normalMap");
+			texture3 = glGetUniformLocation(ReflectionID, "diffuseTexture");
+			normalMap3 = glGetUniformLocation(ReflectionID, "normalTexture");
 
 			model_mat_location4 = glGetUniformLocation(RefractionID, "model");
 			view_mat_location4 = glGetUniformLocation(RefractionID, "view");
@@ -290,6 +295,8 @@ namespace Lab3
 			loc5 = glGetAttribLocation(ReflectionID, "position");
 			loc6 = glGetAttribLocation(ReflectionID, "normal");
 			loc7 = glGetAttribLocation(ReflectionID, "texture");
+			loc11 = glGetAttribLocation(ReflectionID, "tangent");
+			loc12 = glGetAttribLocation(ReflectionID, "bitangent");
 
 			loc8 = glGetAttribLocation(RefractionID, "position");
 			loc9 = glGetAttribLocation(RefractionID, "normal");
@@ -319,9 +326,16 @@ namespace Lab3
 		{
 			glBindVertexArray(VAOindex);
 
+			glBindBuffer(GL_ARRAY_BUFFER, VBO);
 			bindVertexAttribute(loc5, 3, startVBO, 0);
 			bindVertexAttribute(loc6, 3, startVBO, 3);
 			bindVertexAttribute(loc7, 2, startVBO, 6);
+
+			glBindBuffer(GL_ARRAY_BUFFER, TBO);
+			bindVertexAttribute(loc11, 3, startVBO, 0);
+			
+			glBindBuffer(GL_ARRAY_BUFFER, BTBO);
+			bindVertexAttribute(loc12, 3, startVBO, 0);
 
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 		}
@@ -359,16 +373,19 @@ namespace Lab3
 			glUniformMatrix4fv(view_mat_location2, 1, GL_FALSE, &view[0][0]);
 		}
 
-		void updateUniformVariablesReflectance(glm::mat4 model)
+		void updateUniformVariablesReflectance(glm::mat4 model, glm::mat4 view)
 		{
 			glUniformMatrix4fv(model_mat_location3, 1, GL_FALSE, &model[0][0]);
+			glm::mat3 viewModel = glm::mat3 (view * model);
+			glUniformMatrix4fv(model_view_matrix3_3, 1, GL_FALSE, &viewModel[0][0]);
 		}
 
 		void updateUniformVariablesReflectance(glm::mat4 model, glm::mat4 view, glm::mat4 persp_proj)
 		{
 			glUniformMatrix4fv(proj_mat_location3, 1, GL_FALSE, &persp_proj[0][0]);
 			glUniformMatrix4fv(view_mat_location3, 1, GL_FALSE, &view[0][0]);
-			updateUniformVariablesReflectance(model);
+			
+			updateUniformVariablesReflectance(model, view);
 		}
 
 		void updateUniformVariablesRefraction(glm::mat4 model)
