@@ -77,14 +77,17 @@ unsigned int textureIDcubemap;
 unsigned int textureIDlotus;
 unsigned int textureIDlotusBump;
 
-int n_vbovertices = 0;
-int n_ibovertices = 0;
+unsigned int n_vbovertices = 0;
+unsigned int n_ibovertices = 0;
+//unsigned int n_tangents = 0;
+//unsigned int n_bitangents = 0;
 
 CGObject sceneObjects[MAX_OBJECTS];
 int numObjects = 0;
 
 //lighting position
 glm::vec3 lightPos(10.0f, 10.0f, 3.0f);
+
 
 void addToObjectBuffer(CGObject *cg_object)
 {
@@ -95,7 +98,37 @@ void addToObjectBuffer(CGObject *cg_object)
 
 		//TODO: Remove call to gl to glutils
 		glutils.addVBOBufferSubData(VBOindex, cg_object->Meshes[i].Vertices.size(), &cg_object->Meshes[i].Vertices[0].Position.X);
-		glutils.linkCurrentBuffertoShader(cg_object->VAOs[i], VBOindex, IBOindex);
+		//glutils.linkCurrentBuffertoShader(cg_object->VAOs[i], VBOindex, IBOindex);
+		VBOindex += cg_object->Meshes[i].Vertices.size();
+		IBOindex += cg_object->Meshes[i].Indices.size();
+	}
+}
+
+void addToTangentBuffer(CGObject *cg_object)
+{
+	int VBOindex = cg_object->startVBO;
+	int IBOindex = cg_object->startIBO;
+
+	for (int i = 0; i < cg_object->Meshes.size(); i++) {
+
+		//TODO: Remove call to gl to glutils
+		glutils.addTBOBufferSubData(VBOindex, cg_object->tangentMeshes[i].tangents.size(), &cg_object->tangentMeshes[i].tangents[0].x);
+		//glutils.linkCurrentBuffertoShader(cg_object->VAOs[i], VBOindex, IBOindex);
+		VBOindex += cg_object->Meshes[i].Vertices.size();
+		IBOindex += cg_object->Meshes[i].Indices.size();
+	}
+}
+
+void addToBitangentBuffer(CGObject *cg_object)
+{
+	int VBOindex = cg_object->startVBO;
+	int IBOindex = cg_object->startIBO;
+
+	for (int i = 0; i < cg_object->Meshes.size(); i++) {
+
+		//TODO: Remove call to gl to glutils
+		glutils.addBTBOBufferSubData(VBOindex, cg_object->tangentMeshes[i].bitangents.size(), &cg_object->tangentMeshes[i].bitangents[0].x);
+		//glutils.linkCurrentBuffertoShader(cg_object->VAOs[i], VBOindex, IBOindex);
 		VBOindex += cg_object->Meshes[i].Vertices.size();
 		IBOindex += cg_object->Meshes[i].Indices.size();
 	}
@@ -125,10 +158,11 @@ std::vector<objl::Mesh> loadMeshes(const char* objFileLocation)
 		throw new exception("Could not load mesh");
 }
 
-CGObject loadObjObject(vector<objl::Mesh> meshes, bool addToBuffers, bool subjectToGravity, vec3 initTransformVector, vec3 initScaleVector, vec3 color, float coef, CGObject* parent)
+CGObject loadObjObject(vector<objl::Mesh> meshes, vector<TangentMesh> tangentMeshes, bool addToBuffers, bool subjectToGravity, vec3 initTransformVector, vec3 initScaleVector, vec3 color, float coef, CGObject* parent)
 {
 	CGObject object = CGObject();
 	object.Meshes = meshes;	
+	object.tangentMeshes = tangentMeshes;
 	object.subjectToGravity = subjectToGravity;
 	object.initialTranslateVector = initTransformVector;
 	object.position = initTransformVector;
@@ -162,7 +196,12 @@ void createObjects()
 	
 	const char* cubeFileName = "../Lab3/meshes/Cube/Cube.obj";
 	vector<objl::Mesh> cubeMesh = loadMeshes(cubeFileName);
-	CGObject cubeObject = loadObjObject(cubeMesh, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);
+
+	std::vector<objl::Mesh> dummy_cubeMeshes = std::vector<objl::Mesh>();
+	std::vector<TangentMesh> dummy_cubeTangents = std::vector<TangentMesh>();
+	CGObject::recalculateVerticesAndIndexes(cubeMesh, dummy_cubeMeshes, dummy_cubeTangents);
+
+	CGObject cubeObject = loadObjObject(dummy_cubeMeshes, dummy_cubeTangents, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);
 	sceneObjects[numObjects] = cubeObject;
 	numObjects++;
 
@@ -176,9 +215,16 @@ void createObjects()
 
 	const char* suzanneFileName = "../Lab3/meshes/Lotus_OBJ_low/Lotus_OBJ_low.obj";
 	vector<objl::Mesh> meshesSuzanne = loadMeshes(suzanneFileName);
-	CGObject suzanneObject = loadObjObject(meshesSuzanne, true, true, vec3(-3.0f, 0.0f, 0.0f), vec3(0.6f, 0.6f, 0.6f), vec3(1.0f, 1.0f, 0.0f), 0.65f, NULL);
+
+	std::vector<objl::Mesh> new_meshesSuzanne;
+	std::vector<TangentMesh> new_tangentMeshesSuzanne;
+
+	//recalculate meshes
+	CGObject::recalculateVerticesAndIndexes(meshesSuzanne, new_meshesSuzanne, new_tangentMeshesSuzanne);
+
+	CGObject suzanneObject = loadObjObject(new_meshesSuzanne, new_tangentMeshesSuzanne, true, true, vec3(-3.0f, 0.0f, 0.0f), vec3(0.6f, 0.6f, 0.6f), vec3(1.0f, 1.0f, 0.0f), 0.65f, NULL);
 	//suzanneObject.computeTangentBasis();
-	//suzanneObject.recalculateVerticesAndIndexes();
+	//suzanneObject.recalculateVerticesAndIndexes(n_vbovertices, n_ibovertices, n_tangents, n_bitangents);
 	sceneObjects[numObjects] = suzanneObject;
 	numObjects++;
 
@@ -206,6 +252,15 @@ void createObjects()
 	//addToIndexBuffer(&torusObject);
 	addToIndexBuffer(&suzanneObject);
 	//addToIndexBuffer(&teapotObject);
+
+	glutils.createTBO(n_vbovertices);
+	addToTangentBuffer(&cubeObject);
+	addToTangentBuffer(&suzanneObject);
+
+	glutils.createBTBO(n_vbovertices);
+	addToBitangentBuffer(&cubeObject);
+	addToBitangentBuffer(&suzanneObject);
+
 }
 
 void loadCube()
@@ -325,8 +380,8 @@ void display()
 	glBindVertexArray(VAOs[0]);
 
 	glutils.bindVertexAttribute(glutils.loc4, 3, sceneObjects[0].startVBO, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glutils.VBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glutils.IBO);
-	glUniform1i(glutils.cubeLocation3, textures[0]); //textureIDcubemap);
 	
 	glDrawElements(GL_TRIANGLES, sceneObjects[0].Meshes[0].Indices.size(), GL_UNSIGNED_INT, (void*)(sceneObjects[0].startIBO * sizeof(unsigned int)));
 
@@ -362,6 +417,10 @@ void display()
 		glBindTexture(GL_TEXTURE_2D, textures[1]); //textureIDcubemap);
 		//glUniform1i(glutils.texture3, textures[1]); 
 		glUniform3f(glutils.objectColorLoc3, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
+		glUniform1i(glutils.cubeLocation3, textures[0]); //textureIDcubemap);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glutils.VBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glutils.IBO);
 		sceneObjects[i].Draw(glutils, glutils.ReflectionID);
 	}
 

@@ -46,6 +46,8 @@ namespace Lab3
 		// Buffers
 		GLuint VBO;
 		GLuint IBO;
+		GLuint TBO;
+		GLuint BTBO;
 
 		// Uniform locations
 		GLint model_mat_location;
@@ -201,6 +203,22 @@ namespace Lab3
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, numVertices * sizeof(unsigned int), NULL, GL_STATIC_DRAW);
 		}
 
+		void createTBO(int numVertices)
+		{
+			// Create IBO
+			glGenBuffers(1, &TBO);
+			glBindBuffer(GL_ARRAY_BUFFER, TBO);
+			glBufferData(GL_ARRAY_BUFFER, numVertices * 3 * sizeof(float), NULL, GL_STATIC_DRAW);
+		}
+		
+		void createBTBO(int numVertices)
+		{
+			// Create IBO
+			glGenBuffers(1, &BTBO);
+			glBindBuffer(GL_ARRAY_BUFFER, BTBO);
+			glBufferData(GL_ARRAY_BUFFER, numVertices * 3 * sizeof(float), NULL, GL_STATIC_DRAW);
+		}
+
 		void addVBOBufferSubData(int startIndex, int meshSize, float *meshAddress)
 		{
 			glBufferSubData(GL_ARRAY_BUFFER, startIndex * 8 * sizeof(GLfloat), meshSize * 8 * sizeof(GLfloat), meshAddress);
@@ -209,6 +227,16 @@ namespace Lab3
 		void addIBOBufferSubData(int startIndex, int meshSize, const GLuint *meshAddress)
 		{
 			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, startIndex * sizeof(GLuint), sizeof(GLuint) * meshSize, meshAddress);
+		}
+
+		void addTBOBufferSubData(int startIndex, int meshSize, float *meshAddress)
+		{
+			glBufferSubData(GL_ARRAY_BUFFER, startIndex * 3 * sizeof(GLfloat), meshSize * 3 * sizeof(GLfloat), meshAddress);
+		}
+
+		void addBTBOBufferSubData(int startIndex, int meshSize, float *meshAddress)
+		{
+			glBufferSubData(GL_ARRAY_BUFFER, startIndex * 3 * sizeof(GLfloat), meshSize * 3 * sizeof(GLfloat), meshAddress);
 		}
 
 		void generateVertexArray(GLuint *array)
@@ -374,5 +402,6 @@ namespace Lab3
 			glDeleteProgram(PhongProgramID);
 			//			glDeleteProgram(lightingID);
 		}
+
 	};
 }

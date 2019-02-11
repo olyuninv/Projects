@@ -47,31 +47,33 @@ namespace Lab3
 		return parentTransform * localTransform;
 	}
 
-	void CGObject::computeTangentBasis()
+	std::vector<TangentMesh> CGObject::computeTangentBasis(std::vector<objl::Mesh> Meshes)
 	{
+		std::vector<TangentMesh> tangentMeshes = std::vector<TangentMesh>();
+
 		// Do computation for each mesh in the object
-		for (int meshCounter = 0; meshCounter < this->Meshes.size(); meshCounter++)
+		for (int meshCounter = 0; meshCounter < Meshes.size(); meshCounter++)
 		{
-			objl::Mesh curr_mesh = this->Meshes[meshCounter];
+			objl::Mesh curr_mesh = Meshes[meshCounter];
 
 			std::vector<glm::vec3> tangents = std::vector<glm::vec3>();
 			std::vector<glm::vec3> bitangents = std::vector<glm::vec3>();
-			this->tangentMeshes.push_back(TangentMesh(tangents, bitangents));
-						
-			for (int i = 0; i < curr_mesh.Vertices.size(); i += 3) {
+			tangentMeshes.push_back(TangentMesh(tangents, bitangents));
+
+			for (int i = 0; i < curr_mesh.Indices.size(); i += 3) {
 
 				// Shortcuts for vertices				
-				glm::vec3 v0_vec = glm::vec3(curr_mesh.Vertices[i + 0].Position.X, curr_mesh.Vertices[i + 0].Position.Y, curr_mesh.Vertices[i + 0].Position.Z);
-				glm::vec3 v1_vec = glm::vec3(curr_mesh.Vertices[i + 1].Position.X, curr_mesh.Vertices[i + 1].Position.Y, curr_mesh.Vertices[i + 1].Position.Z);
-				glm::vec3 v2_vec = glm::vec3(curr_mesh.Vertices[i + 2].Position.X, curr_mesh.Vertices[i + 2].Position.Y, curr_mesh.Vertices[i + 2].Position.Z);
+				glm::vec3 v0_vec = glm::vec3(curr_mesh.Vertices[curr_mesh.Indices[i + 0]].Position.X, curr_mesh.Vertices[curr_mesh.Indices[i + 0]].Position.Y, curr_mesh.Vertices[curr_mesh.Indices[i + 0]].Position.Z);
+				glm::vec3 v1_vec = glm::vec3(curr_mesh.Vertices[curr_mesh.Indices[i + 1]].Position.X, curr_mesh.Vertices[curr_mesh.Indices[i + 1]].Position.Y, curr_mesh.Vertices[curr_mesh.Indices[i + 1]].Position.Z);
+				glm::vec3 v2_vec = glm::vec3(curr_mesh.Vertices[curr_mesh.Indices[i + 2]].Position.X, curr_mesh.Vertices[curr_mesh.Indices[i + 2]].Position.Y, curr_mesh.Vertices[curr_mesh.Indices[i + 2]].Position.Z);
 				glm::vec3 & v0 = v0_vec;
 				glm::vec3 & v1 = v1_vec;
 				glm::vec3 & v2 = v2_vec;
 
 				// Shortcuts for UVs
-				glm::vec2 uv0_vec = glm::vec2(curr_mesh.Vertices[i + 0].TextureCoordinate.X, curr_mesh.Vertices[i + 0].TextureCoordinate.Y);
-				glm::vec2 uv1_vec = glm::vec2(curr_mesh.Vertices[i + 1].TextureCoordinate.X, curr_mesh.Vertices[i + 1].TextureCoordinate.Y);
-				glm::vec2 uv2_vec = glm::vec2(curr_mesh.Vertices[i + 2].TextureCoordinate.X, curr_mesh.Vertices[i + 2].TextureCoordinate.Y);
+				glm::vec2 uv0_vec = glm::vec2(curr_mesh.Vertices[curr_mesh.Indices[i + 0]].TextureCoordinate.X, curr_mesh.Vertices[curr_mesh.Indices[i + 0]].TextureCoordinate.Y);
+				glm::vec2 uv1_vec = glm::vec2(curr_mesh.Vertices[curr_mesh.Indices[i + 1]].TextureCoordinate.X, curr_mesh.Vertices[curr_mesh.Indices[i + 1]].TextureCoordinate.Y);
+				glm::vec2 uv2_vec = glm::vec2(curr_mesh.Vertices[curr_mesh.Indices[i + 2]].TextureCoordinate.X, curr_mesh.Vertices[curr_mesh.Indices[i + 2]].TextureCoordinate.Y);
 				glm::vec2 & uv0 = uv0_vec;
 				glm::vec2 & uv1 = uv1_vec;
 				glm::vec2 & uv2 = uv2_vec;
@@ -101,67 +103,23 @@ namespace Lab3
 
 				// Set the same tangent for all three vertices of the triangle.
 				// They will be merged later, in vboindexer.cpp
-				this->tangentMeshes[meshCounter].tangents.push_back(tangent);
-				this->tangentMeshes[meshCounter].tangents.push_back(tangent);
-				this->tangentMeshes[meshCounter].tangents.push_back(tangent);
+				tangentMeshes[meshCounter].tangents.push_back(tangent);
+				tangentMeshes[meshCounter].tangents.push_back(tangent);
+				tangentMeshes[meshCounter].tangents.push_back(tangent);
 
 				// Same thing for bitangents
-				this->tangentMeshes[meshCounter].bitangents.push_back(bitangent);
-				this->tangentMeshes[meshCounter].bitangents.push_back(bitangent);
-				this->tangentMeshes[meshCounter].bitangents.push_back(bitangent);
+				tangentMeshes[meshCounter].bitangents.push_back(bitangent);
+				tangentMeshes[meshCounter].bitangents.push_back(bitangent);
+				tangentMeshes[meshCounter].bitangents.push_back(bitangent);
 			}
 		}
+
+		return tangentMeshes;
 	}
 
-	/// This function is based on code from: http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-9-vbo-indexing/
-	void CGObject::recalculateVerticesAndIndexes()
-	{
-		std::vector<objl::Mesh> newMeshesObject = std::vector<objl::Mesh>();
-		std::vector<TangentMesh> newTangentMeshesObject = std::vector<TangentMesh>();
-
-		// Do computation for each mesh in the object
-		for (int meshCounter = 0; meshCounter < this->Meshes.size(); meshCounter++)
-		{
-			objl::Mesh curr_mesh = this->Meshes[meshCounter];
-
-			// Create new mesh - we will overwrite the existing mesh with it
-			std::vector <objl::Vertex> newVertices = std::vector <objl::Vertex>();
-			std::vector <GLuint> newIndices = std::vector <GLuint>();
-			objl::Mesh new_mesh = objl::Mesh(newVertices, newIndices);
-
-			// Create new tangent mesh - we will overwrite the existing mesh with it
-			std::vector<glm::vec3> newTangents = std::vector<glm::vec3>();
-			std::vector<glm::vec3> newBitangents = std::vector<glm::vec3>();
-			TangentMesh new_tangentMesh = TangentMesh(newTangents, newBitangents);
-			
-			// For each input vertex
-			for (unsigned int i = 0; i < curr_mesh.Vertices.size(); i++) {
-
-				// Try to find a similar vertex in out_XXXX
-				unsigned short index;
-				bool found = getSimilarVertexIndex(curr_mesh.Vertices[i], new_mesh.Vertices, index);
-
-				if (found) { // A similar vertex is already in the VBO, use it instead !
-					new_mesh.Indices.push_back(index);
-
-					// Average the tangents and the bitangents
-					new_tangentMesh.tangents[index] += this->tangentMeshes[meshCounter].tangents[i];
-					new_tangentMesh.bitangents[index] += this->tangentMeshes[meshCounter].bitangents[i];
-				}
-				else { // If not, it needs to be added in the output data.
-					new_mesh.Vertices.push_back(objl::Vertex (this->Meshes[meshCounter].Vertices[i]));
-					new_tangentMesh.tangents.push_back(this->tangentMeshes[meshCounter].tangents[i]);
-					new_tangentMesh.bitangents.push_back(this->tangentMeshes[meshCounter].bitangents[i]);
-					new_mesh.Indices.push_back((unsigned short)new_mesh.Vertices.size() - 1);
-				}
-			}
-
-			newMeshesObject.push_back(new_mesh);
-			newTangentMeshesObject.push_back(new_tangentMesh);
-		}
-
-		this->Meshes = newMeshesObject;
-		this->tangentMeshes = newTangentMeshesObject;
+	/// This function is copied from: http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-9-vbo-indexing/
+	bool CGObject::is_near(float v1, float v2) {
+		return fabs(v1 - v2) < 0.01f;
 	}
 
 	/// This function is based on code from: http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-9-vbo-indexing/
@@ -192,9 +150,58 @@ namespace Lab3
 		return false;
 	}
 
-	/// This function is copied from: http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-9-vbo-indexing/
-	bool CGObject::is_near(float v1, float v2) {
-		return fabs(v1 - v2) < 0.01f;
+	/// This function is based on code from: http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-9-vbo-indexing/
+	void CGObject::recalculateVerticesAndIndexes(std::vector<objl::Mesh> Meshes,
+		std::vector<objl::Mesh> &new_meshes,
+		std::vector<TangentMesh> &new_tangentMeshes)
+	{
+		std::vector<TangentMesh> currTangentMeshes = computeTangentBasis(Meshes);
+		std::vector<objl::Mesh> newMeshesObject = std::vector<objl::Mesh>();
+		std::vector<TangentMesh> newTangentMeshesObject = std::vector<TangentMesh>();
+
+		// Do computation for each mesh in the object
+		for (int meshCounter = 0; meshCounter < Meshes.size(); meshCounter++)
+		{
+			objl::Mesh curr_mesh = Meshes[meshCounter];
+
+			// Create new mesh - we will overwrite the existing mesh with it
+			std::vector <objl::Vertex> newVertices = std::vector <objl::Vertex>();
+			std::vector <GLuint> newIndices = std::vector <GLuint>();
+			objl::Mesh new_mesh = objl::Mesh(newVertices, newIndices);
+
+			// Create new tangent mesh - we will overwrite the existing mesh with it
+			std::vector<glm::vec3> newTangents = std::vector<glm::vec3>();
+			std::vector<glm::vec3> newBitangents = std::vector<glm::vec3>();
+			TangentMesh new_tangentMesh = TangentMesh(newTangents, newBitangents);
+
+			// For each input vertex
+			for (unsigned int i = 0; i < curr_mesh.Indices.size(); i++) {
+
+				// Try to find a similar vertex in out_XXXX
+				unsigned short index;
+				bool found = getSimilarVertexIndex(curr_mesh.Vertices[curr_mesh.Indices[i]], new_mesh.Vertices, index);
+
+				if (found) { // A similar vertex is already in the VBO, use it instead !
+					new_mesh.Indices.push_back(index);
+
+					// Average the tangents and the bitangents
+					new_tangentMesh.tangents[index] += currTangentMeshes[meshCounter].tangents[i];
+					new_tangentMesh.bitangents[index] += currTangentMeshes[meshCounter].bitangents[i];
+				}
+				else { // If not, it needs to be added in the output data.
+					new_mesh.Vertices.push_back(objl::Vertex(Meshes[meshCounter].Vertices[curr_mesh.Indices[i]]));
+					new_tangentMesh.tangents.push_back(currTangentMeshes[meshCounter].tangents[i]);
+					new_tangentMesh.bitangents.push_back(currTangentMeshes[meshCounter].bitangents[i]);
+					new_mesh.Indices.push_back((unsigned short)new_mesh.Vertices.size() - 1);
+				}
+			}
+
+			newMeshesObject.push_back(new_mesh);
+			newTangentMeshesObject.push_back(new_tangentMesh);
+		}
+
+		new_meshes = newMeshesObject;
+		new_tangentMeshes = newTangentMeshesObject;
 	}
 
 	TangentMesh::TangentMesh(std::vector<glm::vec3>& _tangents, std::vector<glm::vec3>& _bitangents)

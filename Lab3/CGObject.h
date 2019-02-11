@@ -25,7 +25,7 @@ namespace Lab3
 	public:
 		CGObject();
 		~CGObject();
-
+		
 		std::vector<objl::Mesh> Meshes;
 		std::vector<TangentMesh> tangentMeshes;
 
@@ -61,15 +61,18 @@ namespace Lab3
 
 		void Draw(opengl_utils glutils, GLuint programID);
 		glm::mat4 createTransform();
-		void computeTangentBasis();
-		void recalculateVerticesAndIndexes();
+		
+		static std::vector<TangentMesh> computeTangentBasis(std::vector<objl::Mesh> Meshes);
+		
+		static void recalculateVerticesAndIndexes(std::vector<objl::Mesh> Meshes,
+			std::vector<objl::Mesh> &new_meshes,
+			std::vector<TangentMesh> &new_tangentMeshes);
 
 	private:
-		bool is_near(float v1, float v2);
-		bool getSimilarVertexIndex(objl::Vertex & in_vertex,
+		static bool is_near(float v1, float v2);
+		static bool getSimilarVertexIndex(
+			objl::Vertex & in_vertex,
 			std::vector<objl::Vertex> & out_vertices,
 			unsigned short & result);
 	};
-
-
 }
