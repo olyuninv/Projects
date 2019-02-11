@@ -64,6 +64,7 @@ namespace Lab3
 		// Uniform - cubemap
 		GLint view_mat_location2;
 		GLint proj_mat_location2;
+		GLuint cubeLocation2;
 
 		// Reflection
 		GLint model_mat_location3;
@@ -259,6 +260,7 @@ namespace Lab3
 
 			view_mat_location2 = glGetUniformLocation(CubeMapID, "view");
 			proj_mat_location2 = glGetUniformLocation(CubeMapID, "projection");
+			cubeLocation2 = glGetUniformLocation(CubeMapID, "skybox");
 
 			model_mat_location3 = glGetUniformLocation(ReflectionID, "model");
 			view_mat_location3 = glGetUniformLocation(ReflectionID, "view");

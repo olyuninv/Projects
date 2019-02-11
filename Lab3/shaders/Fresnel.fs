@@ -92,7 +92,7 @@ void main()
 	//  - Looking elsewhere -> < 1
 	float cosAlpha = clamp( dot( E,R ), 0,1 );
 
-    FragColor = vec4 ( ambient + 
-    texture(diffuseTexture, TexCoord).rgb * cosTheta / (distance*distance) + 
-    0.5 * pow(cosAlpha, 5)/ (distance*distance), 1.0);
+    //FragColor = vec4 ( ambient + 
+    //texture(diffuseTexture, TexCoord).rgb * cosTheta / (distance*distance) + 
+    //0.5 * pow(cosAlpha, 5)/ (distance*distance), 1.0);
 }
