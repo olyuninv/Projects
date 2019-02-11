@@ -379,7 +379,7 @@ namespace Lab3
 		{
 			glUniformMatrix4fv(model_mat_location3, 1, GL_FALSE, &model[0][0]);
 			glm::mat3 viewModel = glm::mat3 (view * model);
-			glUniformMatrix4fv(model_view_matrix3_3, 1, GL_FALSE, &viewModel[0][0]);
+			glUniformMatrix3fv(model_view_matrix3_3, 1, GL_FALSE, &viewModel[0][0]);
 		}
 
 		void updateUniformVariablesReflectance(glm::mat4 model, glm::mat4 view, glm::mat4 persp_proj)
@@ -417,7 +417,9 @@ namespace Lab3
 		void deletePrograms()
 		{
 			glDeleteProgram(PhongProgramID);
-			//			glDeleteProgram(lightingID);
+			glDeleteProgram(CubeMapID);
+			glDeleteProgram(ReflectionID);
+			glDeleteProgram(RefractionID);
 		}
 
 	};
