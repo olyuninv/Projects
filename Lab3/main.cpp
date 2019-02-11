@@ -177,8 +177,8 @@ void createObjects()
 	const char* suzanneFileName = "../Lab3/meshes/Lotus_OBJ_low/Lotus_OBJ_low.obj";
 	vector<objl::Mesh> meshesSuzanne = loadMeshes(suzanneFileName);
 	CGObject suzanneObject = loadObjObject(meshesSuzanne, true, true, vec3(-3.0f, 0.0f, 0.0f), vec3(0.6f, 0.6f, 0.6f), vec3(1.0f, 1.0f, 0.0f), 0.65f, NULL);
-	suzanneObject.computeTangentBasis();
-	suzanneObject.recalculateVerticesAndIndexes();
+	//suzanneObject.computeTangentBasis();
+	//suzanneObject.recalculateVerticesAndIndexes();
 	sceneObjects[numObjects] = suzanneObject;
 	numObjects++;
 
@@ -221,7 +221,7 @@ void loadCube()
 	int width, height, nrChannels;
 	for (unsigned int i = 0; i < faces.size(); i++)
 	{
-		unsigned char *data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 3);
+		unsigned char *data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
 		if (data)
 		{
 			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
@@ -240,6 +240,9 @@ void loadCube()
 void init()
 {
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);// you enable blending function
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_TEXTURE_2D);
 
 	glutils = opengl_utils();
 
@@ -271,11 +274,11 @@ void init()
 
 	// load and generate the texture
 	int width, height, nrChannels;
-	unsigned char *data = stbi_load("../Lab3/meshes/lotus_OBJ_low/lotus_petal_diffuse.jpg", &width, &height, &nrChannels, 4);
+	unsigned char *data = stbi_load("../Lab3/meshes/lotus_OBJ_low/lotus_petal_diffuse.jpg", &width, &height, &nrChannels, 3);
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		//glGenerateMipmap(GL_TEXTURE_2D);
+		glGenerateMipmap(GL_TEXTURE_2D);
 		stbi_image_free(data);
 	}
 	else
@@ -316,6 +319,7 @@ void display()
 
 	glm::mat4 viewCube = glm::mat4(glm::mat3(view));
 	glutils.updateUniformVariablesCubeMap(viewCube, projection);
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, textures[0]); //textureIDcubemap);
 
 	glBindVertexArray(VAOs[0]);
@@ -354,8 +358,9 @@ void display()
 		glutils.updateUniformVariablesReflectance(globalCGObjectTransform);
 		sceneObjects[i].globalTransform = globalCGObjectTransform; // keep current state		
 				
+		//glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, textures[1]); //textureIDcubemap);
-		glUniform1i(glutils.texture3, textures[1]); 
+		//glUniform1i(glutils.texture3, textures[1]); 
 		glUniform3f(glutils.objectColorLoc3, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
 		sceneObjects[i].Draw(glutils, glutils.ReflectionID);
 	}

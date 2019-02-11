@@ -38,7 +38,7 @@ void main()
         
     vec3 result = (ambient + diffuse + specular) * objectColor; 
 
-    //FragColor = vec4(result, 1.0);
+    FragColor = vec4(result, 1.0);
 
     vec4 reflectedColour = texture(skybox, reflectedVector);
     vec4 refractedColour = texture(skybox, refractedVector);  
