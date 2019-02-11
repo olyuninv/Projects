@@ -36,7 +36,7 @@ void main()
     float spec = pow(max(dot(norm, halfwayDir), 0.0), 128);
     vec3 specular = 0.5 * spec *  vec3(1.0f, 1.0f, 1.0f);  // TODO: light color
         
-    vec3 result = (ambient + diffuse + specular) * objectColor; 
+    vec3 result = (ambient + diffuse + specular) * texture(ourTexture, TexCoord).rgb; 
 
     FragColor = vec4(result, 1.0);
 
@@ -57,9 +57,9 @@ void main()
     refractiveFactor = clamp (refractiveFactor, 0, 1);
     vec4 environmentColour = mix( reflectedColour, refractedColour, refractiveFactor); 
         
-    //FragColor = mix(FragColor, environmentColour, 0.7f);  
+    FragColor = mix(FragColor, environmentColour, 0.5f);  
     //FragColor = vec4(refractiveFactor, 0.0, 0.0, 0.0);
 
-    FragColor = texture(ourTexture, TexCoord);
+    //FragColor = texture(ourTexture, TexCoord);
     //FragColor = vec3(TexCoord, 0.0);
 }

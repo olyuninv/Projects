@@ -213,7 +213,7 @@ void createObjects()
 	sceneObjects[numObjects] = torusObject;
 	numObjects++;*/
 
-	const char* suzanneFileName = "../Lab3/meshes/Lotus_OBJ_low/Lotus_OBJ_low.obj";
+	const char* suzanneFileName = "../Lab3/meshes/cube/cube.obj"; // / Lotus_OBJ_low / Lotus_OBJ_low.obj"; // apple/apple obj/one_apple.obj";
 	vector<objl::Mesh> meshesSuzanne = loadMeshes(suzanneFileName);
 
 	std::vector<objl::Mesh> new_meshesSuzanne;
@@ -304,7 +304,7 @@ void init()
 	glutils.createShaders();
 	
 	// Setup cubemap texture
-	glGenTextures(2, textures);  //1, &textureIDcubemap);
+	glGenTextures(3, textures);  //1, &textureIDcubemap);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, textures[0]); //textureIDcubemap);
 
 	loadCube();
@@ -341,6 +341,30 @@ void init()
 		std::cout << "Failed to load texture" << std::endl;
 		stbi_image_free(data);
 	}	
+
+	// Setup lotus texture  - bump
+
+	glBindTexture(GL_TEXTURE_2D, textures[2]); 
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// load and generate the texture
+	width, height, nrChannels;
+	data = stbi_load("../Lab3/meshes/lotus_OBJ_low/lotus_petal_bump.jpg", &width, &height, &nrChannels, 3);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+		stbi_image_free(data);
+	}
+	else
+	{
+		std::cout << "Failed to load texture" << std::endl;
+		stbi_image_free(data);
+	}
 
 	glutils.setupUniformVariables();
 
@@ -412,15 +436,20 @@ void display()
 		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
 		glutils.updateUniformVariablesReflectance(globalCGObjectTransform);
 		sceneObjects[i].globalTransform = globalCGObjectTransform; // keep current state		
-				
+			
+		//glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textures[0]); //textureIDcubemap);
+		//glUniform1i(glutils.cubeLocation3, textures[0]); //textureIDcubemap);
+
 		//glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, textures[1]); //textureIDcubemap);
 		//glUniform1i(glutils.texture3, textures[1]); 
-		glUniform3f(glutils.objectColorLoc3, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
-		glUniform1i(glutils.cubeLocation3, textures[0]); //textureIDcubemap);
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glutils.VBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glutils.IBO);
+		//glBindTexture(GL_TEXTURE_2D, textures[2]); //textureIDcubemap);
+		glUniform1i(glutils.normalMap3, textures[2]);
+
+		glUniform3f(glutils.objectColorLoc3, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
+		
 		sceneObjects[i].Draw(glutils, glutils.ReflectionID);
 	}
 

@@ -72,6 +72,7 @@ namespace Lab3
 		GLint viewPosLoc3;
 		GLint cubeLocation3;
 		GLint texture3;
+		GLint normalMap3;
 
 		// Refraction
 		GLint model_mat_location4;
@@ -82,10 +83,6 @@ namespace Lab3
 		GLint lightPosLoc4;
 		GLint viewPosLoc4;
 		GLint cubeLocation4;
-
-		// Load the texture
-		GLuint DiffuseTextureLotus;
-		GLuint NormalTextureLotus;
 
 		static GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path) {
 
@@ -269,6 +266,7 @@ namespace Lab3
 
 			cubeLocation3 = glGetUniformLocation(ReflectionID, "skybox");
 			texture3 = glGetUniformLocation(ReflectionID, "ourTexture");
+			normalMap3 = glGetUniformLocation(ReflectionID, "normalMap");
 
 			model_mat_location4 = glGetUniformLocation(RefractionID, "model");
 			view_mat_location4 = glGetUniformLocation(RefractionID, "view");
