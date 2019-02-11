@@ -1,6 +1,9 @@
 #version 330 core
-layout (location = 0) in vec3 position;
-layout (location = 1) in vec3 normal;
+in vec3 position;
+in vec3 normal;
+in vec2 texture;
+
+out vec2 TexCoord;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -19,6 +22,8 @@ void main()
     vec4 worldPosition = model * vec4(position, 1.0f);
 	clipSpace = projection * view *  worldPosition;	
 	gl_Position = clipSpace;
+	
+    TexCoord = texture;
 	
 	FragPos = vec3(model * vec4(position, 1.0f));
     Normal = mat3(transpose(inverse(model))) * normal;

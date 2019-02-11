@@ -5,6 +5,9 @@ in vec3 reflectedVector;
 in vec3 refractedVector; 
 in vec3 Normal;  
 in vec3 FragPos;  
+in vec2 TexCoord;
+
+uniform sampler2D ourTexture;
 
 uniform samplerCube skybox;
 uniform vec3 lightPos;
@@ -35,7 +38,7 @@ void main()
         
     vec3 result = (ambient + diffuse + specular) * objectColor; 
 
-    FragColor = vec4(result, 1.0);
+    //FragColor = vec4(result, 1.0);
 
     vec4 reflectedColour = texture(skybox, reflectedVector);
     vec4 refractedColour = texture(skybox, refractedVector);  
@@ -54,6 +57,9 @@ void main()
     refractiveFactor = clamp (refractiveFactor, 0, 1);
     vec4 environmentColour = mix( reflectedColour, refractedColour, refractiveFactor); 
         
-    FragColor = mix(FragColor, environmentColour, 0.7f);  
+    //FragColor = mix(FragColor, environmentColour, 0.7f);  
     //FragColor = vec4(refractiveFactor, 0.0, 0.0, 0.0);
+
+    FragColor = texture(ourTexture, TexCoord);
+    //FragColor = vec3(TexCoord, 0.0);
 }
