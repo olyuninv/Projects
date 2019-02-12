@@ -215,7 +215,8 @@ void createObjects()
 
 	//const char* suzanneFileName = "../Lab3/meshes/home-lizard/lizard_sm2.obj"; ///"// apple/apple obj/one_apple.obj";Lotus_OBJ_low/Lotus_OBJ_low.objcube/cube.objOrange_obj/Orange_bl.obj
 	//const char* suzanneFileName = "../Lab3/meshes/Lotus_OBJ_low/Lotus_OBJ_low.obj";
-	const char* suzanneFileName = "../Lab3/meshes/pear_export_obj/pear_export.obj";
+	//const char* suzanneFileName = "../Lab3/meshes/pear_export_obj/pear_export.obj";
+	const char* suzanneFileName = "../Lab3/meshes/apple/apple obj/one_apple.obj";
 	vector<objl::Mesh> meshesSuzanne = loadMeshes(suzanneFileName);
 
 	std::vector<objl::Mesh> new_meshesSuzanne;
@@ -344,7 +345,8 @@ void init()
 	int width, height, nrChannels;
 	//unsigned char *data = stbi_load("../Lab3/meshes/fabric_01_texture/fabric_01_diffuse.png", &width, &height, &nrChannels, 3);  //lotus_OBJ_low/lotus_petal_diffuse.jpgfabric_01_texture/fabric_01_diffuse.pngOrange_obj/Color.jpg
 	//unsigned char *data = stbi_load("../Lab3/meshes/lotus_OBJ_low/lotus_petal_diffuse.jpg", &width, &height, &nrChannels, 3);  
-	unsigned char *data = stbi_load("../Lab3/meshes/pear_export_obj/pear_diffuse.jpg", &width, &height, &nrChannels, 3);
+	//unsigned char *data = stbi_load("../Lab3/meshes/pear_export_obj/pear_diffuse.jpg", &width, &height, &nrChannels, 3);
+	unsigned char *data = stbi_load("../Lab3/meshes/iguana_skin/iguana skin.jpg", &width, &height, &nrChannels, 3);
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -358,7 +360,7 @@ void init()
 	}	
 	//glUniform1i(glutils.texture3, textures[1]);   // lotus diffuse map
 
-	// Setup lotus texture  - bump
+	// Setup lotus texture - bump
 	//glActiveTexture(GL_TEXTURE2);
 	//glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, textures[2]); 
@@ -372,7 +374,7 @@ void init()
 	int width1, height1, nrChannels1;
 	//unsigned char *data1 = stbi_load("../Lab3/meshes/fabric_01_texture/fabric_01_normal.png", &width1, &height1, &nrChannels1, 3);  // fabric_01_texture/fabric_01_bump.pngOrange_obj/Normal.jpg
 	//unsigned char *data1 = stbi_load("../Lab3/meshes/lotus_OBJ_low/lotus_petal_bump.jpg", &width1, &height1, &nrChannels1, 3);  
-	unsigned char *data1 = stbi_load("../Lab3/meshes/pear_export_obj/pear_normal_map.jpg", &width1, &height1, &nrChannels1, 3);
+	unsigned char *data1 = stbi_load("../Lab3/meshes/iguana_skin/iguana skin bump.jpg", &width1, &height1, &nrChannels1, 3);
 	
 	if (data1)
 	{
@@ -533,7 +535,7 @@ int main(void) {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Open a window and create its OpenGL context
-	window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Bump and Normal Mapping", NULL, NULL);
+	window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Surface Mapping", NULL, NULL);
 	if (window == NULL) {
 		fprintf(stderr, "Failed to open GLFW window.\n");
 		getchar();

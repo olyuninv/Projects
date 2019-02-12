@@ -46,7 +46,7 @@ void main()
         
     //vec3 result = (ambient + diffuse + specular) * texture(diffuseTexture, TexCoord).rgb; 
         
-	vec3 MaterialSpecularColor = texture( specularTexture, TexCoord).rgb * 0.3;
+	//vec3 MaterialSpecularColor = texture( specularTexture, TexCoord).rgb * 0.3;
 
     //FragColor = vec4 (result, 1.0);
 
@@ -95,6 +95,6 @@ void main()
 	//  - Looking elsewhere -> < 1
 	float cosAlpha = clamp( dot( E,R ), 0,1 );
 
-    FragColor = vec4 ( ambient + texture(diffuseTexture, TexCoord).rgb * cosTheta / (distance*distance) //, 1.0);
-    + MaterialSpecularColor * 0.5 * pow(cosAlpha, 5)/ (distance*distance), 1.0);
+    FragColor = vec4 ( ambient + texture(diffuseTexture, TexCoord).rgb * cosTheta / (distance*distance), 1.0);
+    //+ MaterialSpecularColor * 0.5 * pow(cosAlpha, 5)/ (distance*distance), 1.0);
 }
