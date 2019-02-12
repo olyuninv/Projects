@@ -93,7 +93,9 @@ namespace Lab3
 				{
 					float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
 					tangent = (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y)*r;
+					tangent = glm::normalize(tangent);
 					bitangent = (deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x)*r;
+					bitangent = glm::normalize(bitangent);
 				}
 				else
 				{
