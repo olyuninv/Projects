@@ -49,7 +49,7 @@ void main()
 
       vec3 result = ambient + diffuse * MaterialDiffuseColor* texture(normalTexture, vec2(TexCoord.x,  -TexCoord.y)).rgb + specular ; //texture(normalTexture, TexCoord).rgb  *
 
-	  //vec3 MaterialSpecularColor = texture(specularTexture, vec2(TexCoord.x, -TexCoord.y)).rgb * 0.3;
+	  vec3 MaterialSpecularColor = texture(specularTexture, vec2(TexCoord.x, -TexCoord.y)).rgb * 0.3;
 
       //FragColor = vec4 (result, 1.0);
 
@@ -75,13 +75,14 @@ void main()
     //FragColor = vec4(TextureNormal_tangentspace, 1.0);
     
     // Distance to the light
-	float distance = length( viewPos - FragPos );
+	float distance = length( lightPos - FragPos );    
 
     // Normal of the computed fragment, in camera space
 	vec3 n = normalize(TextureNormal_tangentspace);   
 
     // Direction of the light (from the fragment to the light)
 	vec3 l = normalize(LightDirection_tangentspace);
+
     //l = clamp (l , 0, 1);
     //FragColor = vec4 (MaterialDiffuseColor, 1.0);
 	// Cosine of the angle between the normal and the light direction, 
@@ -101,6 +102,6 @@ void main()
 	//  - Looking elsewhere -> < 1
 	float cosAlpha = clamp( dot( E,R ), 0,1 );
 
-    FragColor = vec4 ( ambient + MaterialDiffuseColor * cosTheta / (distance*distance), 1.0);
-    //+ 0.5 * MaterialSpecularColor * pow(cosAlpha, 5)/ (distance*distance), 1.0);
+    FragColor = vec4 ( ambient + MaterialDiffuseColor * cosTheta / (distance*distance)   //, 1.0);
+    + 0.5 * MaterialSpecularColor * pow(cosAlpha, 5)/ (distance*distance), 1.0);
 }
