@@ -15,6 +15,7 @@ in vec3 EyeDirection_tangentspace;
 
 uniform sampler2D diffuseTexture;
 uniform sampler2D normalTexture;
+uniform sampler2D specularTexture;
 
 uniform samplerCube skybox;
 uniform vec3 lightPos;
@@ -43,7 +44,9 @@ void main()
     float spec = pow(max(dot(norm, halfwayDir), 0.0), 128);
     vec3 specular = 0.5 * spec *  vec3(1.0f, 1.0f, 1.0f);  // TODO: light color
         
-    vec3 result = (ambient + diffuse + specular) * texture(diffuseTexture, TexCoord).rgb; 
+    //vec3 result = (ambient + diffuse + specular) * texture(diffuseTexture, TexCoord).rgb; 
+        
+	vec3 MaterialSpecularColor = texture( specularTexture, TexCoord).rgb * 0.3;
 
     //FragColor = vec4 (result, 1.0);
 
@@ -65,7 +68,7 @@ void main()
 
     // Local normal, in tangent space. V tex coordinate is inverted because normal map is in TGA (not in DDS) for better quality
 	vec3 TextureNormal_tangentspace = normalize(texture(normalTexture, vec2(TexCoord.x,-TexCoord.y) ).rgb*2.0 - 1.0);
-    FragColor = vec4(TextureNormal_tangentspace, 1.0);
+    //FragColor = vec4(TextureNormal_tangentspace, 1.0);
     
     // Distance to the light
 	float distance = length( viewPos - FragPos );
@@ -92,7 +95,6 @@ void main()
 	//  - Looking elsewhere -> < 1
 	float cosAlpha = clamp( dot( E,R ), 0,1 );
 
-    //FragColor = vec4 ( ambient + 
-    //texture(diffuseTexture, TexCoord).rgb * cosTheta / (distance*distance) + 
-    //0.5 * pow(cosAlpha, 5)/ (distance*distance), 1.0);
+    FragColor = vec4 ( ambient + texture(diffuseTexture, TexCoord).rgb * cosTheta / (distance*distance) //, 1.0);
+    + MaterialSpecularColor * 0.5 * pow(cosAlpha, 5)/ (distance*distance), 1.0);
 }

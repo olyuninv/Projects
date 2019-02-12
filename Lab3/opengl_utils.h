@@ -78,6 +78,7 @@ namespace Lab3
 		GLint cubeLocation3;
 		GLint texture3;
 		GLint normalMap3;
+		GLint specularMap3;
 
 		// Refraction
 		GLint model_mat_location4;
@@ -274,6 +275,7 @@ namespace Lab3
 			cubeLocation3 = glGetUniformLocation(ReflectionID, "skybox");
 			texture3 = glGetUniformLocation(ReflectionID, "diffuseTexture");
 			normalMap3 = glGetUniformLocation(ReflectionID, "normalTexture");
+			specularMap3 = glGetUniformLocation(ReflectionID, "specularTexture");
 
 			model_mat_location4 = glGetUniformLocation(RefractionID, "model");
 			view_mat_location4 = glGetUniformLocation(RefractionID, "view");

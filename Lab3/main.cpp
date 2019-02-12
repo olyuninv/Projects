@@ -62,7 +62,7 @@ float lastY = SCR_HEIGHT / 2.0; //600.0 / 2.0;
 float fov = 45.0f;
 
 // camera
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.5f, 3.0f);
+glm::vec3 cameraPos = glm::vec3(0.0f, 1.5f, 5.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -71,7 +71,7 @@ bool pause = true;
 GLuint VAOs[MAX_OBJECTS];
 int numVAOs = 0;
 
-GLuint textures[3];
+GLuint textures[4];
 
 unsigned int textureIDcubemap;
 unsigned int textureIDlotus;
@@ -213,7 +213,9 @@ void createObjects()
 	sceneObjects[numObjects] = torusObject;
 	numObjects++;*/
 
-	const char* suzanneFileName = "../Lab3/meshes/home-lizard/lizard_sm3.obj"; ///"// apple/apple obj/one_apple.obj";Lotus_OBJ_low/Lotus_OBJ_low.objcube/cube.obj
+	//const char* suzanneFileName = "../Lab3/meshes/home-lizard/lizard_sm2.obj"; ///"// apple/apple obj/one_apple.obj";Lotus_OBJ_low/Lotus_OBJ_low.objcube/cube.objOrange_obj/Orange_bl.obj
+	//const char* suzanneFileName = "../Lab3/meshes/Lotus_OBJ_low/Lotus_OBJ_low.obj";
+	const char* suzanneFileName = "../Lab3/meshes/pear_export_obj/pear_export.obj";
 	vector<objl::Mesh> meshesSuzanne = loadMeshes(suzanneFileName);
 
 	std::vector<objl::Mesh> new_meshesSuzanne;
@@ -222,7 +224,7 @@ void createObjects()
 	//recalculate meshes
 	CGObject::recalculateVerticesAndIndexes(meshesSuzanne, new_meshesSuzanne, new_tangentMeshesSuzanne);
 
-	CGObject suzanneObject = loadObjObject(new_meshesSuzanne, new_tangentMeshesSuzanne, true, true, vec3(-3.0f, 0.0f, 0.0f), vec3(0.6f, 0.6f, 0.6f), vec3(1.0f, 1.0f, 0.0f), 0.65f, NULL);
+	CGObject suzanneObject = loadObjObject(new_meshesSuzanne, new_tangentMeshesSuzanne, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), vec3(1.0f, 1.0f, 0.0f), 0.65f, NULL);
 	//suzanneObject.computeTangentBasis();
 	//suzanneObject.recalculateVerticesAndIndexes(n_vbovertices, n_ibovertices, n_tangents, n_bitangents);
 	sceneObjects[numObjects] = suzanneObject;
@@ -272,6 +274,13 @@ void loadCube()
 	faces.push_back("../Lab3/meshes/mp_bleak/bleak-outlook_dn.tga");
 	faces.push_back("../Lab3/meshes/mp_bleak/bleak-outlook_ft.tga");
 	faces.push_back("../Lab3/meshes/mp_bleak/bleak-outlook_bk.tga");
+	
+	//faces.push_back("../Lab3/meshes/mp_awup/awup_lf.tga"); 
+	//faces.push_back("../Lab3/meshes/mp_awup/awup_rt.tga");
+	//faces.push_back("../Lab3/meshes/mp_awup/awup_up.tga");
+	//faces.push_back("../Lab3/meshes/mp_awup/awup_dn.tga");
+	//faces.push_back("../Lab3/meshes/mp_awup/awup_ft.tga");
+	//faces.push_back("../Lab3/meshes/mp_awup/awup_bk.tga");
 
 	int width, height, nrChannels;
 	for (unsigned int i = 0; i < faces.size(); i++)
@@ -333,7 +342,9 @@ void init()
 	
 	// load and generate the texture
 	int width, height, nrChannels;
-	unsigned char *data = stbi_load("../Lab3/meshes/fabric_01_texture/fabric_01_diffuse.png", &width, &height, &nrChannels, 3);  //lotus_OBJ_low/lotus_petal_diffuse.jpg
+	//unsigned char *data = stbi_load("../Lab3/meshes/fabric_01_texture/fabric_01_diffuse.png", &width, &height, &nrChannels, 3);  //lotus_OBJ_low/lotus_petal_diffuse.jpgfabric_01_texture/fabric_01_diffuse.pngOrange_obj/Color.jpg
+	//unsigned char *data = stbi_load("../Lab3/meshes/lotus_OBJ_low/lotus_petal_diffuse.jpg", &width, &height, &nrChannels, 3);  
+	unsigned char *data = stbi_load("../Lab3/meshes/pear_export_obj/pear_diffuse.jpg", &width, &height, &nrChannels, 3);
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -359,7 +370,10 @@ void init()
 
 	// load and generate the texture
 	int width1, height1, nrChannels1;
-	unsigned char *data1 = stbi_load("../Lab3/meshes/fabric_01_texture/fabric_01_normal.png", &width1, &height1, &nrChannels1, 3);
+	//unsigned char *data1 = stbi_load("../Lab3/meshes/fabric_01_texture/fabric_01_normal.png", &width1, &height1, &nrChannels1, 3);  // fabric_01_texture/fabric_01_bump.pngOrange_obj/Normal.jpg
+	//unsigned char *data1 = stbi_load("../Lab3/meshes/lotus_OBJ_low/lotus_petal_bump.jpg", &width1, &height1, &nrChannels1, 3);  
+	unsigned char *data1 = stbi_load("../Lab3/meshes/pear_export_obj/pear_normal_map.jpg", &width1, &height1, &nrChannels1, 3);
+	
 	if (data1)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width1, height1, 0, GL_RGB, GL_UNSIGNED_BYTE, data1);
@@ -370,6 +384,30 @@ void init()
 	{
 		std::cout << "Failed to load texture" << std::endl;
 		stbi_image_free(data1);
+	}
+	//glUniform1i(glutils.normalMap3, textures[2]);   // lotus diffuse map
+
+	glBindTexture(GL_TEXTURE_2D, textures[3]);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// load and generate the texture
+	int width2, height2, nrChannels2;	
+	unsigned char *data2 = stbi_load("../Lab3/meshes/pear_export_obj/pear_normal_map.jpg", &width2, &height2, &nrChannels2, 3);
+
+	if (data2)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width2, height2, 0, GL_RGB, GL_UNSIGNED_BYTE, data2);
+		glGenerateMipmap(GL_TEXTURE_2D);
+		stbi_image_free(data2);
+	}
+	else
+	{
+		std::cout << "Failed to load texture" << std::endl;
+		stbi_image_free(data2);
 	}
 	//glUniform1i(glutils.normalMap3, textures[2]);   // lotus diffuse map
 
@@ -432,9 +470,7 @@ void display()
 	glm::mat4 global1 = local1;
 
 	glutils.updateUniformVariablesReflectance(global1, view, projection);
-
-	//glUniform3f(glutils.lightColorLoc, 1.0f, 1.0f, 1.0f);
-	//glUniform3f(glutils.lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
+		
 	glUniform3f(glutils.viewPosLoc3, cameraPos.x, cameraPos.y, cameraPos.z);
 	glUniform3f(glutils.lightPosLoc3, lightPos.x, lightPos.y, lightPos.z);
 
