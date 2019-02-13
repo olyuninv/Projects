@@ -19,7 +19,7 @@ namespace Lab3
 			{
 				glutils.linkCurrentBuffertoShader(this->VAOs[i], VBOindex, IBOindex);
 			}
-			else if (programID == glutils.ReflectionID)
+			else if (programID == glutils.ShaderWithTextureID)
 			{
 				glutils.linkCurrentBuffertoShaderReflectance(this->VAOs[i], VBOindex, IBOindex);
 			}

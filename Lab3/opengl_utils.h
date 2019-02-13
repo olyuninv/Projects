@@ -43,7 +43,7 @@ namespace Lab3
 		// Shaders
 		GLuint PhongProgramID;
 		GLuint CubeMapID;
-		GLuint ReflectionID;
+		GLuint ShaderWithTextureID;
 		GLuint RefractionID;
 
 		// Buffers
@@ -72,6 +72,8 @@ namespace Lab3
 		GLint proj_mat_location3;
 		GLint model_view_matrix3_3;
 		GLint objectColorLoc3;
+		GLint useNormalMapUniform3;
+		GLint useSpecularMapUniform3;
 		GLint camera_position3;
 		GLint lightPosLoc3;
 		GLint viewPosLoc3;
@@ -184,10 +186,10 @@ namespace Lab3
 		void createShaders()
 		{
 			// Create and compile our shaders
-			PhongProgramID = LoadShaders("../Lab3/shaders/phong.vs", "../Lab3/shaders/phong.fs");
+			//PhongProgramID = LoadShaders("../Lab3/shaders/phong.vs", "../Lab3/shaders/phong.fs");
 			CubeMapID = LoadShaders("../Lab3/shaders/cubeMap.vs", "../Lab3/shaders/cubeMap.fs");
-			ReflectionID = LoadShaders("../Lab3/shaders/fresnel.vs", "../Lab3/shaders/fresnel.fs"); //Reflection, fresnel, chromaticDispersion
-			RefractionID = LoadShaders("../Lab3/shaders/Refraction.vs", "../Lab3/shaders/Refraction.fs");
+			ShaderWithTextureID = LoadShaders("../Lab3/shaders/FresnelWithTexture.vs", "../Lab3/shaders/FresnelWithTexture.fs"); //Reflection, fresnel, chromaticDispersion
+			//RefractionID = LoadShaders("../Lab3/shaders/Refraction.vs", "../Lab3/shaders/Refraction.fs");
 		}
 
 		void createVBO(int numVertices)
@@ -263,19 +265,21 @@ namespace Lab3
 			proj_mat_location2 = glGetUniformLocation(CubeMapID, "projection");
 			cubeLocation2 = glGetUniformLocation(CubeMapID, "skybox");
 
-			model_mat_location3 = glGetUniformLocation(ReflectionID, "model");
-			view_mat_location3 = glGetUniformLocation(ReflectionID, "view");
-			proj_mat_location3 = glGetUniformLocation(ReflectionID, "projection");
-			model_view_matrix3_3 = glGetUniformLocation(ReflectionID, "modelView3x3");
-			objectColorLoc3 = glGetUniformLocation(ReflectionID, "objectColor");
-			camera_position3 = glGetUniformLocation(ReflectionID, "cameraPos");
-			lightPosLoc3 = glGetUniformLocation(ReflectionID, "lightPos");
-			viewPosLoc3 = glGetUniformLocation(ReflectionID, "viewPos");
+			model_mat_location3 = glGetUniformLocation(ShaderWithTextureID, "model");
+			view_mat_location3 = glGetUniformLocation(ShaderWithTextureID, "view");
+			proj_mat_location3 = glGetUniformLocation(ShaderWithTextureID, "projection");
+			model_view_matrix3_3 = glGetUniformLocation(ShaderWithTextureID, "modelView3x3");
+			objectColorLoc3 = glGetUniformLocation(ShaderWithTextureID, "objectColor");
+			useNormalMapUniform3 = glGetUniformLocation(ShaderWithTextureID, "useNormalMap");
+			useSpecularMapUniform3 = glGetUniformLocation(ShaderWithTextureID, "useSpecularMap");
+			camera_position3 = glGetUniformLocation(ShaderWithTextureID, "cameraPos");
+			lightPosLoc3 = glGetUniformLocation(ShaderWithTextureID, "lightPos");
+			viewPosLoc3 = glGetUniformLocation(ShaderWithTextureID, "viewPos");
 
-			cubeLocation3 = glGetUniformLocation(ReflectionID, "skybox");
-			texture3 = glGetUniformLocation(ReflectionID, "diffuseTexture");
-			normalMap3 = glGetUniformLocation(ReflectionID, "normalTexture");
-			specularMap3 = glGetUniformLocation(ReflectionID, "specularTexture");
+			cubeLocation3 = glGetUniformLocation(ShaderWithTextureID, "skybox");
+			texture3 = glGetUniformLocation(ShaderWithTextureID, "diffuseTexture");
+			normalMap3 = glGetUniformLocation(ShaderWithTextureID, "normalTexture");
+			specularMap3 = glGetUniformLocation(ShaderWithTextureID, "specularTexture");
 
 			model_mat_location4 = glGetUniformLocation(RefractionID, "model");
 			view_mat_location4 = glGetUniformLocation(RefractionID, "view");
@@ -296,11 +300,11 @@ namespace Lab3
 
 			loc4 = glGetAttribLocation(CubeMapID, "aPos");
 
-			loc5 = glGetAttribLocation(ReflectionID, "position");
-			loc6 = glGetAttribLocation(ReflectionID, "normal");
-			loc7 = glGetAttribLocation(ReflectionID, "texture");
-			loc11 = glGetAttribLocation(ReflectionID, "tangent");
-			loc12 = glGetAttribLocation(ReflectionID, "bitangent");
+			loc5 = glGetAttribLocation(ShaderWithTextureID, "position");
+			loc6 = glGetAttribLocation(ShaderWithTextureID, "normal");
+			loc7 = glGetAttribLocation(ShaderWithTextureID, "texture");
+			loc11 = glGetAttribLocation(ShaderWithTextureID, "tangent");
+			loc12 = glGetAttribLocation(ShaderWithTextureID, "bitangent");
 
 			loc8 = glGetAttribLocation(RefractionID, "position");
 			loc9 = glGetAttribLocation(RefractionID, "normal");
@@ -420,7 +424,7 @@ namespace Lab3
 		{
 			glDeleteProgram(PhongProgramID);
 			glDeleteProgram(CubeMapID);
-			glDeleteProgram(ReflectionID);
+			glDeleteProgram(ShaderWithTextureID);
 			glDeleteProgram(RefractionID);
 		}
 

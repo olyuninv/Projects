@@ -134,18 +134,10 @@
     <ClCompile Include="vboindexer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\chromaticDispersion.fs" />
-    <None Include="shaders\chromaticDispersion.vs" />
     <None Include="shaders\cubeMap.fs" />
     <None Include="shaders\cubeMap.vs" />
-    <None Include="shaders\Fresnel.fs" />
-    <None Include="shaders\Fresnel.vs" />
-    <None Include="shaders\phong.fs" />
-    <None Include="shaders\phong.vs" />
-    <None Include="shaders\Reflection.fs" />
-    <None Include="shaders\Reflection.vs" />
-    <None Include="shaders\Refraction.fs" />
-    <None Include="shaders\Refraction.vs" />
+    <None Include="shaders\FresnelWithTexture.fs" />
+    <None Include="shaders\FresnelWithTexture.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Dependencies\OBJ_Loader.h" />

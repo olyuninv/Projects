@@ -46,7 +46,7 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1100;
 
-opengl_utils glutils; 
+opengl_utils glutils;
 
 // timing
 float deltaTime = 0.0f;	// time between current frame and last frame
@@ -67,6 +67,8 @@ glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 bool pause = true;
+bool useNormalMap = true;
+bool useSpecularMap = false;
 
 GLuint VAOs[MAX_OBJECTS];
 int numVAOs = 0;
@@ -86,7 +88,7 @@ CGObject sceneObjects[MAX_OBJECTS];
 int numObjects = 0;
 
 //lighting position
-glm::vec3 lightPos(2.0f, 2.0f, 2.0f);
+glm::vec3 lightPos(2.0f, 3.0f, 3.0f);
 
 
 void addToObjectBuffer(CGObject *cg_object)
@@ -138,7 +140,7 @@ void addToIndexBuffer(CGObject *cg_object)
 {
 	int IBOindex = cg_object->startIBO;
 	for (auto const& mesh : cg_object->Meshes) {
-		glutils.addIBOBufferSubData(IBOindex, mesh.Indices.size(), &mesh.Indices[0]);		
+		glutils.addIBOBufferSubData(IBOindex, mesh.Indices.size(), &mesh.Indices[0]);
 		IBOindex += mesh.Indices.size();
 	}
 }
@@ -161,7 +163,7 @@ std::vector<objl::Mesh> loadMeshes(const char* objFileLocation)
 CGObject loadObjObject(vector<objl::Mesh> meshes, vector<TangentMesh> tangentMeshes, bool addToBuffers, bool subjectToGravity, vec3 initTransformVector, vec3 initScaleVector, vec3 color, float coef, CGObject* parent)
 {
 	CGObject object = CGObject();
-	object.Meshes = meshes;	
+	object.Meshes = meshes;
 	object.tangentMeshes = tangentMeshes;
 	object.subjectToGravity = subjectToGravity;
 	object.initialTranslateVector = initTransformVector;
@@ -176,7 +178,7 @@ CGObject loadObjObject(vector<objl::Mesh> meshes, vector<TangentMesh> tangentMes
 
 	if (addToBuffers)
 	{
-		for (auto const& mesh :meshes) {					
+		for (auto const& mesh : meshes) {
 			glutils.generateVertexArray(&(VAOs[numVAOs]));
 			GLuint tmpVAO = VAOs[numVAOs];
 			object.VAOs.push_back(tmpVAO);
@@ -185,7 +187,7 @@ CGObject loadObjObject(vector<objl::Mesh> meshes, vector<TangentMesh> tangentMes
 			numVAOs++;
 		}
 	}
-	
+
 	return object;
 }
 
@@ -193,7 +195,7 @@ void createObjects()
 {
 	// Shader Attribute locations
 	glutils.getAttributeLocations();
-	
+
 	const char* cubeFileName = "../Lab3/meshes/Cube/Cube.obj";
 	vector<objl::Mesh> cubeMesh = loadMeshes(cubeFileName);
 
@@ -207,15 +209,15 @@ void createObjects()
 
 	/*const char* torusFileName = "../Lab3/meshes/apple/apple obj/one_apple.obj";
 	vector<objl::Mesh> meshesTorus = loadMeshes(torusFileName);
-	CGObject torusObject = loadObjObject(meshesTorus, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(0.6f, 0.6f, 0.6f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);	
+	CGObject torusObject = loadObjObject(meshesTorus, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(0.6f, 0.6f, 0.6f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);
 	torusObject.computeTangentBasis();
 	torusObject.recalculateVerticesAndIndexes();
 	sceneObjects[numObjects] = torusObject;
 	numObjects++;*/
 
 	//const char* suzanneFileName = "../Lab3/meshes/home-lizard/lizard_sm2.obj"; //Orange_obj/Orange_bl.obj
-	//const char* suzanneFileName = "../Lab3/meshes/Lotus_OBJ_low/Lotus_OBJ_low.obj";
-	const char* suzanneFileName = "../Lab3/meshes/pear_export_obj/pear_bl.obj";
+	const char* suzanneFileName = "../Lab3/meshes/Lotus_OBJ_low/Lotus_OBJ_low.obj";
+	//const char* suzanneFileName = "../Lab3/meshes/pear_export_obj/pear_bl.obj";
 	//const char* suzanneFileName = "../Lab3/meshes/apple/apple obj/one_apple_sm.obj";
 	vector<objl::Mesh> meshesSuzanne = loadMeshes(suzanneFileName);
 
@@ -225,7 +227,7 @@ void createObjects()
 	//recalculate meshes
 	CGObject::recalculateVerticesAndIndexes(meshesSuzanne, new_meshesSuzanne, new_tangentMeshesSuzanne);
 
-	CGObject suzanneObject = loadObjObject(new_meshesSuzanne, new_tangentMeshesSuzanne, true, true, vec3(3.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), vec3(1.0f, 1.0f, 0.0f), 0.65f, NULL);
+	CGObject suzanneObject = loadObjObject(new_meshesSuzanne, new_tangentMeshesSuzanne, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), vec3(173/255.0, 255/255.0, 47/255.0), 0.65f, NULL);  // vec3(160/ 255.0, 82/255.0, 45/255.0) - brown
 	//suzanneObject.computeTangentBasis();
 	//suzanneObject.recalculateVerticesAndIndexes(n_vbovertices, n_ibovertices, n_tangents, n_bitangents);
 	sceneObjects[numObjects] = suzanneObject;
@@ -242,11 +244,11 @@ void createObjects()
 	CGObject teapotObject = loadObjObject(meshesTeapot, true, true, vec3(3.0f, -0.5f, 0.0f), vec3(5.0f, 5.0f, 5.0f), vec3(0.0f, 1.0f, 0.0f), 0.65f, NULL);
 	sceneObjects[numObjects] = teapotObject;
 	numObjects++;*/
-	
+
 	glutils.createVBO(n_vbovertices);
 
 	glutils.createIBO(n_ibovertices);
-	
+
 	addToObjectBuffer(&cubeObject);
 	//addToObjectBuffer(&torusObject);
 	addToObjectBuffer(&suzanneObject);
@@ -275,8 +277,8 @@ void loadCube()
 	faces.push_back("../Lab3/meshes/mp_bleak/bleak-outlook_dn.tga");
 	faces.push_back("../Lab3/meshes/mp_bleak/bleak-outlook_ft.tga");
 	faces.push_back("../Lab3/meshes/mp_bleak/bleak-outlook_bk.tga");
-	
-	/*faces.push_back("../Lab3/meshes/mp_awup/awup_lf.tga"); 
+
+	/*faces.push_back("../Lab3/meshes/mp_awup/awup_lf.tga");
 	faces.push_back("../Lab3/meshes/mp_awup/awup_rt.tga");
 	faces.push_back("../Lab3/meshes/mp_awup/awup_up.tga");
 	faces.push_back("../Lab3/meshes/mp_awup/awup_dn.tga");
@@ -314,7 +316,7 @@ void init()
 	glutils = opengl_utils();
 
 	glutils.createShaders();
-	
+
 	// Setup cubemap texture
 	glGenTextures(4, textures);  //1, &textureIDcubemap);
 
@@ -330,21 +332,21 @@ void init()
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	glUniform1i(glutils.cubeLocation2, 0);   // cubemap
 	glUniform1i(glutils.cubeLocation3, 0);   // cubemap
-			
+
 	glActiveTexture(GL_TEXTURE1);
 	//glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, textures[1]); 
+	glBindTexture(GL_TEXTURE_2D, textures[1]);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	
+
 	// load and generate the texture
 	int width, height, nrChannels;
 	//unsigned char *data = stbi_load("../Lab3/meshes/fabric_01_texture/fabric_01_diffuse.png", &width, &height, &nrChannels, 3);  //lotus_OBJ_low/lotus_petal_diffuse.jpgfabric_01_texture/fabric_01_diffuse.pngOrange_obj/Color.jpg
-	//unsigned char *data = stbi_load("../Lab3/meshes/lotus_OBJ_low/lotus_petal_diffuse.jpg", &width, &height, &nrChannels, 3);  
-	unsigned char *data = stbi_load("../Lab3/meshes/pear_export_obj/pear_diffuse.jpg", &width, &height, &nrChannels, 3);
+	unsigned char *data = stbi_load("../Lab3/meshes/lotus_OBJ_low/lotus_petal_diffuse.jpg", &width, &height, &nrChannels, 3);  
+	//unsigned char *data = stbi_load("../Lab3/meshes/pear_export_obj/pear_diffuse.jpg", &width, &height, &nrChannels, 3);
 	//unsigned char *data = stbi_load("../Lab3/meshes/iguana_skin/iguana skin.jpg", &width, &height, &nrChannels, 3);
 	if (data)
 	{
@@ -356,13 +358,13 @@ void init()
 	{
 		std::cout << "Failed to load texture" << std::endl;
 		stbi_image_free(data);
-	}	
+	}
 	glUniform1i(glutils.texture3, 1);   // lotus diffuse map
 
 	// Setup lotus texture - bump
 	glActiveTexture(GL_TEXTURE2);
 	//glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, textures[2]); 
+	glBindTexture(GL_TEXTURE_2D, textures[2]);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -372,10 +374,10 @@ void init()
 	// load and generate the texture
 	int width1, height1, nrChannels1;
 	//unsigned char *data1 = stbi_load("../Lab3/meshes/fabric_01_texture/fabric_01_normal.png", &width1, &height1, &nrChannels1, 3);  // fabric_01_texture/fabric_01_bump.pngOrange_obj/Normal.jpg
-	//unsigned char *data1 = stbi_load("../Lab3/meshes/lotus_OBJ_low/lotus_petal_bump.jpg", &width1, &height1, &nrChannels1, 3);  
-	unsigned char *data1 = stbi_load("../Lab3/meshes/pear_export_obj/pear_normal_map.jpg", &width1, &height1, &nrChannels1, 3);
+	unsigned char *data1 = stbi_load("../Lab3/meshes/lotus_OBJ_low/lotus_petal_bump.jpg", &width1, &height1, &nrChannels1, 3);  
+	//unsigned char *data1 = stbi_load("../Lab3/meshes/pear_export_obj/pear_normal_map.jpg", &width1, &height1, &nrChannels1, 3);
 	//unsigned char *data1 = stbi_load("../Lab3/meshes/iguana_skin/iguana skin bump.jpg", &width1, &height1, &nrChannels1, 3);
-	
+
 	if (data1)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width1, height1, 0, GL_RGB, GL_UNSIGNED_BYTE, data1);
@@ -389,32 +391,33 @@ void init()
 	}
 	glUniform1i(glutils.normalMap3, 2);   // lotus diffuse map
 
-	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, textures[3]);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	// load and generate the texture
-	int width2, height2, nrChannels2;	
-	unsigned char *data2 = stbi_load("../Lab3/meshes/pear_export_obj/pear_specular.jpg", &width2, &height2, &nrChannels2, 3);
-
-	if (data2)
+	if (useSpecularMap)
 	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width2, height2, 0, GL_RGB, GL_UNSIGNED_BYTE, data2);
-		glGenerateMipmap(GL_TEXTURE_2D);
-		stbi_image_free(data2);
-	}
-	else
-	{
-		std::cout << "Failed to load texture" << std::endl;
-		stbi_image_free(data2);
-	}
-	glUniform1i(glutils.specularMap3, 3);   // lotus diffuse map
+		glActiveTexture(GL_TEXTURE3);
+		glBindTexture(GL_TEXTURE_2D, textures[3]);
 
-	////glActiveTexture(GL_TEXTURE1);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		// load and generate the texture
+		int width2, height2, nrChannels2;
+		unsigned char *data2 = stbi_load("../Lab3/meshes/pear_export_obj/pear_specular.jpg", &width2, &height2, &nrChannels2, 3);
+
+		if (data2)
+		{
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width2, height2, 0, GL_RGB, GL_UNSIGNED_BYTE, data2);
+			glGenerateMipmap(GL_TEXTURE_2D);
+			stbi_image_free(data2);
+		}
+		else
+		{
+			std::cout << "Failed to load texture" << std::endl;
+			stbi_image_free(data2);
+		}
+		glUniform1i(glutils.specularMap3, 3);   // lotus diffuse map
+	}
 
 	glutils.setupUniformVariables();
 
@@ -424,7 +427,7 @@ void init()
 void display()
 {
 	float currentFrame = glfwGetTime();
-	deltaTime = currentFrame - lastFrame;	
+	deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
 
 	// inpuT
@@ -437,11 +440,11 @@ void display()
 	glPushMatrix();
 
 	glLoadIdentity();
-		
+
 	// Update projection 
 	glm::mat4 projection = glm::perspective(glm::radians(fov), (float)(SCR_WIDTH) / (float)(SCR_HEIGHT), 0.1f, 100.0f);
 	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-		
+
 	// First Draw cube map - sceneObjects[0]
 	glDepthMask(GL_FALSE);
 	glUseProgram(glutils.CubeMapID);
@@ -453,9 +456,9 @@ void display()
 
 	glBindVertexArray(VAOs[0]);
 
-	glutils.bindVertexAttribute(glutils.loc4, 3, sceneObjects[0].startVBO, 0);	
+	glutils.bindVertexAttribute(glutils.loc4, 3, sceneObjects[0].startVBO, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glutils.IBO);
-	
+
 	glDrawElements(GL_TRIANGLES, sceneObjects[0].Meshes[0].Indices.size(), GL_UNSIGNED_INT, (void*)(sceneObjects[0].startIBO * sizeof(unsigned int)));
 
 	glDepthMask(GL_TRUE);
@@ -466,16 +469,18 @@ void display()
 
 	glLoadIdentity();
 
-	glUseProgram(glutils.ReflectionID);
+	glUseProgram(glutils.ShaderWithTextureID);
 
 	glm::mat4 local1(1.0f);
 	local1 = glm::translate(local1, cameraPos);
 	glm::mat4 global1 = local1;
 
 	glutils.updateUniformVariablesReflectance(global1, view, projection);
-		
+
 	glUniform3f(glutils.viewPosLoc3, cameraPos.x, -cameraPos.y, cameraPos.z);
 	glUniform3f(glutils.lightPosLoc3, lightPos.x, lightPos.y, lightPos.z);
+	glUniform1i(glutils.useNormalMapUniform3, useNormalMap);
+	glUniform1i(glutils.useSpecularMapUniform3, useSpecularMap);
 
 	// DRAW objects
 	for (int i = 1; i < numObjects; i++)     // TODO : need to fix this hardcoding
@@ -483,27 +488,29 @@ void display()
 		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
 		glutils.updateUniformVariablesReflectance(globalCGObjectTransform, view);
 		sceneObjects[i].globalTransform = globalCGObjectTransform; // keep current state		
-			
+
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, textures[0]);
 		glUniform1i(glutils.cubeLocation3, 0);
 
 		glEnable(GL_TEXTURE_2D);
-		glActiveTexture(GL_TEXTURE1);		
-		glBindTexture(GL_TEXTURE_2D, textures[1]); 
-		glUniform1i(glutils.texture3, 1); 
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, textures[1]);
+		glUniform1i(glutils.texture3, 1);
 
 		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, textures[2]); 
+		glBindTexture(GL_TEXTURE_2D, textures[2]);
 		glUniform1i(glutils.normalMap3, 2);
 
-		glActiveTexture(GL_TEXTURE3);
-		glBindTexture(GL_TEXTURE_2D, textures[3]);
-		glUniform1i(glutils.specularMap3, 3);
+		if (useSpecularMap)
+		{
+			glActiveTexture(GL_TEXTURE3);
+			glBindTexture(GL_TEXTURE_2D, textures[3]);
+			glUniform1i(glutils.specularMap3, 3);
+		}
 
 		glUniform3f(glutils.objectColorLoc3, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
-		glUniform3f(glutils.lightPosLoc3, lightPos.x, lightPos.y, lightPos.z);
-		sceneObjects[i].Draw(glutils, glutils.ReflectionID);
+		sceneObjects[i].Draw(glutils, glutils.ShaderWithTextureID);
 
 		glDisable(GL_TEXTURE_2D);
 	}
@@ -512,12 +519,12 @@ void display()
 
 	// rotate
 	if (!pause)
-	{		
+	{
 		sceneObjects[1].rotateAngles.y += 0.01;
 		sceneObjects[2].rotateAngles.y += 0.01;
 		sceneObjects[3].rotateAngles.y += 0.01;
 	}
-	
+
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
@@ -581,7 +588,7 @@ int main(void) {
 	glutils.deleteVertexArrays();
 	glutils.deletePrograms();
 	glutils.deleteBuffers();
-	
+
 	glfwTerminate();
 	return 0;
 }
@@ -601,9 +608,13 @@ void processInput(GLFWwindow *window)
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
-		rotate_angle += 1.0f;	
+		rotate_angle += 1.0f;
 	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
 		pause = !pause;
+	if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
+		useNormalMap = !useNormalMap;
+	if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
+		useSpecularMap = !useSpecularMap;
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes

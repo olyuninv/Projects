@@ -29,40 +29,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\phong.fs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\phong.vs">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="shaders\cubeMap.fs">
       <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\cubeMap.vs">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="shaders\Reflection.fs">
+    <None Include="shaders\FresnelWithTexture.fs">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="shaders\Reflection.vs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\Refraction.fs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\Refraction.vs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\Fresnel.fs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\Fresnel.vs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\chromaticDispersion.vs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\chromaticDispersion.fs">
+    <None Include="shaders\FresnelWithTexture.vs">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
