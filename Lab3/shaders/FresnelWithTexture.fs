@@ -68,7 +68,8 @@ void main()
 	      float cosAlpha = clamp( dot( E,R ), 0,1 );
 
           // diffuseComponent          
-	      diffuseComponent =  MaterialDiffuseColor * cosTheta / (distance*distance);
+          const float lightPower = 10.0f;
+	      diffuseComponent =  lightPower * (MaterialDiffuseColor * cosTheta) / (distance * distance);
                
           // specularComponent          
           if (useSpecularMap)
@@ -100,9 +101,11 @@ void main()
            float spec = pow(max(dot(norm, halfwayDir), 0.0), 32);  // Shininess
            specularComponent = specularStrength * spec *  vec3(1.0f, 1.0f, 1.0f);  // TODO: light color
            specularComponent = specularComponent * objectColor;
+
+           FragColor = vec4(1);
       }
             
-      FragColor = vec4 (ambientComponent + diffuseComponent + specularComponent, 1.0);
+      FragColor = vec4 (ambientComponent + diffuseComponent + specularComponent, 1.0);      
 
       // Reflectance/ Refraction -- comment out for now
       // compute environment color

@@ -68,7 +68,7 @@ glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 bool pause = true;
 bool useNormalMap = true;
-bool useSpecularMap = false;
+bool useSpecularMap = true;
 
 GLuint VAOs[MAX_OBJECTS];
 int numVAOs = 0;
@@ -216,8 +216,8 @@ void createObjects()
 	numObjects++;*/
 
 	//const char* suzanneFileName = "../Lab3/meshes/home-lizard/lizard_sm2.obj"; //Orange_obj/Orange_bl.obj
-	const char* suzanneFileName = "../Lab3/meshes/Lotus_OBJ_low/Lotus_OBJ_low.obj";
-	//const char* suzanneFileName = "../Lab3/meshes/pear_export_obj/pear_bl.obj";
+	//const char* suzanneFileName = "../Lab3/meshes/Lotus_OBJ_low/Lotus_OBJ_low.obj";
+	const char* suzanneFileName = "../Lab3/meshes/pear_export_obj/pear_bl.obj";
 	//const char* suzanneFileName = "../Lab3/meshes/apple/apple obj/one_apple_sm.obj";
 	vector<objl::Mesh> meshesSuzanne = loadMeshes(suzanneFileName);
 
@@ -227,7 +227,7 @@ void createObjects()
 	//recalculate meshes
 	CGObject::recalculateVerticesAndIndexes(meshesSuzanne, new_meshesSuzanne, new_tangentMeshesSuzanne);
 
-	CGObject suzanneObject = loadObjObject(new_meshesSuzanne, new_tangentMeshesSuzanne, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), vec3(173/255.0, 255/255.0, 47/255.0), 0.65f, NULL);  // vec3(160/ 255.0, 82/255.0, 45/255.0) - brown
+	CGObject suzanneObject = loadObjObject(new_meshesSuzanne, new_tangentMeshesSuzanne, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);  // vec3(160/ 255.0, 82/255.0, 45/255.0) - brown  //vec3(173/255.0, 255/255.0, 47/255.0) - green
 	//suzanneObject.computeTangentBasis();
 	//suzanneObject.recalculateVerticesAndIndexes(n_vbovertices, n_ibovertices, n_tangents, n_bitangents);
 	sceneObjects[numObjects] = suzanneObject;
@@ -345,8 +345,8 @@ void init()
 	// load and generate the texture
 	int width, height, nrChannels;
 	//unsigned char *data = stbi_load("../Lab3/meshes/fabric_01_texture/fabric_01_diffuse.png", &width, &height, &nrChannels, 3);  //lotus_OBJ_low/lotus_petal_diffuse.jpgfabric_01_texture/fabric_01_diffuse.pngOrange_obj/Color.jpg
-	unsigned char *data = stbi_load("../Lab3/meshes/lotus_OBJ_low/lotus_petal_diffuse.jpg", &width, &height, &nrChannels, 3);  
-	//unsigned char *data = stbi_load("../Lab3/meshes/pear_export_obj/pear_diffuse.jpg", &width, &height, &nrChannels, 3);
+	//unsigned char *data = stbi_load("../Lab3/meshes/lotus_OBJ_low/lotus_petal_diffuse.jpg", &width, &height, &nrChannels, 3);  
+	unsigned char *data = stbi_load("../Lab3/meshes/pear_export_obj/pear_diffuse.jpg", &width, &height, &nrChannels, 3);
 	//unsigned char *data = stbi_load("../Lab3/meshes/iguana_skin/iguana skin.jpg", &width, &height, &nrChannels, 3);
 	if (data)
 	{
@@ -374,8 +374,8 @@ void init()
 	// load and generate the texture
 	int width1, height1, nrChannels1;
 	//unsigned char *data1 = stbi_load("../Lab3/meshes/fabric_01_texture/fabric_01_normal.png", &width1, &height1, &nrChannels1, 3);  // fabric_01_texture/fabric_01_bump.pngOrange_obj/Normal.jpg
-	unsigned char *data1 = stbi_load("../Lab3/meshes/lotus_OBJ_low/lotus_petal_bump.jpg", &width1, &height1, &nrChannels1, 3);  
-	//unsigned char *data1 = stbi_load("../Lab3/meshes/pear_export_obj/pear_normal_map.jpg", &width1, &height1, &nrChannels1, 3);
+	//unsigned char *data1 = stbi_load("../Lab3/meshes/lotus_OBJ_low/lotus_petal_bump.jpg", &width1, &height1, &nrChannels1, 3);  
+	unsigned char *data1 = stbi_load("../Lab3/meshes/pear_export_obj/pear_normal_map.jpg", &width1, &height1, &nrChannels1, 3);
 	//unsigned char *data1 = stbi_load("../Lab3/meshes/iguana_skin/iguana skin bump.jpg", &width1, &height1, &nrChannels1, 3);
 
 	if (data1)
