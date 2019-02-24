@@ -13,7 +13,7 @@
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-namespace lab4
+namespace Lab4
 {
 	class opengl_utils
 	{
@@ -185,11 +185,9 @@ namespace lab4
 
 		void createShaders()
 		{
-			// Create and compile our shaders
-			//PhongProgramID = LoadShaders("../lab4/shaders/phong.vs", "../lab4/shaders/phong.fs");
-			CubeMapID = LoadShaders("../lab4/shaders/cubeMap.vs", "../lab4/shaders/cubeMap.fs");
-			ShaderWithTextureID = LoadShaders("../lab4/shaders/FresnelWithTexture.vs", "../lab4/shaders/FresnelWithTexture.fs"); //Reflection, fresnel, chromaticDispersion
-			//RefractionID = LoadShaders("../lab4/shaders/Refraction.vs", "../lab4/shaders/Refraction.fs");
+			// Create and compile our shaders			
+			CubeMapID = LoadShaders("../Lab4/shaders/cubeMap.vs", "../Lab4/shaders/cubeMap.fs");
+			ShaderWithTextureID = LoadShaders("../Lab4/shaders/BlinnPhongWithTexture.vs", "../Lab4/shaders/BlinnPhongWithTexture.fs"); 			
 		}
 
 		void createVBO(int numVertices)

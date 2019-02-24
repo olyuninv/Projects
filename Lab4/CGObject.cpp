@@ -1,5 +1,5 @@
 #include "CGObject.h"
-namespace lab4
+namespace Lab4
 {
 	CGObject::CGObject()
 	{

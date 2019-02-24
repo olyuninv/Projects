@@ -8,7 +8,7 @@
 
 #include "opengl_utils.h"
 
-namespace lab4
+namespace Lab4
 {
 	class TangentMesh
 	{
