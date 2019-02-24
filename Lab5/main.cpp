@@ -88,8 +88,20 @@ CGObject sceneObjects[MAX_OBJECTS];
 int numObjects = 0;
 
 //lighting position
-glm::vec3 lightPos(2.0f, 3.0f, 3.0f);
+glm::vec3 lightPos(0.0f, 2.0f, -3.0f);
 
+enum class textureInterpolation
+{
+	nearest = 1, 
+	linear = 2,	
+	nearest_mipmap_nearest_interpolation = 3, //GL_NEAREST_MIPMAP_NEAREST: takes the nearest mipmap to match the pixel size and uses nearest neighbor interpolation for texture sampling.
+	nearest_mipmap_linear_interpolation = 4, //GL_LINEAR_MIPMAP_NEAREST : takes the nearest mipmap level and samples using linear interpolation.
+	interpolate_mipmap_nearest_interpolation = 5, //GL_NEAREST_MIPMAP_LINEAR : linearly interpolates between the two mipmaps that most closely match the size of a pixel and samples via nearest neighbor interpolation.
+	interpolate_mipmap_linear_interpolation = 6, //GL_LINEAR_MIPMAP_LINEAR : linearly interpolates between the two closest mipmaps and samples the texture via linear interpolation.* /	
+	
+};
+
+textureInterpolation texInterpolationType = textureInterpolation::nearest;
 
 void addToObjectBuffer(CGObject *cg_object)
 {
@@ -325,17 +337,51 @@ void init()
 	glActiveTexture(GL_TEXTURE1);
 	//glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, textures[1]);
-	   
+
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	/*When switching between mipmaps levels during rendering OpenGL might show some artifacts like sharp edges visible between the two mipmap layers. Just like normal texture filtering, it is also possible to filter between mipmap levels using NEAREST and LINEAR filtering for switching between mipmap levels. To specify the filtering method between mipmap levels we can replace the original filtering methods with one of the following four options:
+
+GL_NEAREST_MIPMAP_NEAREST: takes the nearest mipmap to match the pixel size and uses nearest neighbor interpolation for texture sampling.
+GL_LINEAR_MIPMAP_NEAREST: takes the nearest mipmap level and samples using linear interpolation.
+GL_NEAREST_MIPMAP_LINEAR: linearly interpolates between the two mipmaps that most closely match the size of a pixel and samples via nearest neighbor interpolation.
+GL_LINEAR_MIPMAP_LINEAR: linearly interpolates between the two closest mipmaps and samples the texture via linear interpolation.*/
+	   
+
+	switch (texInterpolationType)
+	{
+	case textureInterpolation::nearest:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		break;
+	case textureInterpolation::linear:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		break;
+	case textureInterpolation::nearest_mipmap_nearest_interpolation:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+		break;
+	case textureInterpolation::nearest_mipmap_linear_interpolation:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+		break;
+	case textureInterpolation::interpolate_mipmap_nearest_interpolation:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+		break;
+	case textureInterpolation::interpolate_mipmap_linear_interpolation:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		break;	
+	default:
+		break;
+	}
+
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	// load and generate the texture
 	int width, height, nrChannels;
-	unsigned char *data = stbi_load("../Lab5/meshes/Chess_Board/Chess_Board.jpg", &width, &height, &nrChannels, NULL);
+	//unsigned char *data = stbi_load("../Lab5/meshes/Chess_Board/Chess_Board.jpg", &width, &height, &nrChannels, NULL);
+	//unsigned char *data = stbi_load("../Lab5/meshes/Chess_Board/BrickWall.jpg", &width, &height, &nrChannels, NULL);
+	//unsigned char *data = stbi_load("../Lab5/meshes/Chess_Board/pokemons.jpg", &width, &height, &nrChannels, NULL);
+	unsigned char *data = stbi_load("../Lab5/meshes/Chess_Board/pokemon2_sm.jpg", &width, &height, &nrChannels, NULL);
+	
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -460,12 +506,12 @@ void displayScene(glm::mat4 projection, glm::mat4 view)
 			glUniform1i(glutils.specularMap3, 3);
 		}
 
-		glUniform3f(glutils.objectColorLoc3, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
-		sceneObjects[i].Draw(glutils, glutils.ShaderWithTextureID);
+		/*glUniform3f(glutils.objectColorLoc3, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
+		sceneObjects[i].Draw(glutils, glutils.ShaderWithTextureID);*/
 
-		for (int j = 1; j < 6; j++)
+		for (int j = 1; j < 10; j++)
 		{
-			for (int k = -4; k < 4; j++)
+			for (int k = -10; k < 10; k++)
 			{
 				glm::mat4 localTransform = glm::mat4(1.0);
 				localTransform = glm::translate(localTransform, vec3(k * (-2.0), 0.0, j * (-2.0)));
@@ -526,6 +572,30 @@ void display()
 	// Update projection 
 	glm::mat4 projection = glm::perspective(glm::radians(fov), (float)(SCR_WIDTH) / (float)(SCR_HEIGHT), 0.1f, 100.0f);
 	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+
+	switch (texInterpolationType)
+	{
+	case textureInterpolation::nearest:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		break;
+	case textureInterpolation::linear:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		break;
+	case textureInterpolation::nearest_mipmap_nearest_interpolation:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+		break;
+	case textureInterpolation::nearest_mipmap_linear_interpolation:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+		break;
+	case textureInterpolation::interpolate_mipmap_nearest_interpolation:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+		break;
+	case textureInterpolation::interpolate_mipmap_linear_interpolation:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		break;
+	default:
+		break;
+	}
 
 	// DRAW CUBEMAP
 	displayCubeMap(projection, view);
@@ -631,6 +701,19 @@ void processInput(GLFWwindow *window)
 		useNormalMap = !useNormalMap;
 	if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
 		useSpecularMap = !useSpecularMap;
+	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+		texInterpolationType = textureInterpolation::nearest;
+	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+		texInterpolationType = textureInterpolation::linear;
+	if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+		texInterpolationType = textureInterpolation::nearest_mipmap_nearest_interpolation;
+	if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
+		texInterpolationType = textureInterpolation::nearest_mipmap_linear_interpolation;
+	if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)
+		texInterpolationType = textureInterpolation::interpolate_mipmap_nearest_interpolation;
+	if (glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS)
+		texInterpolationType = textureInterpolation::interpolate_mipmap_linear_interpolation;
+
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
