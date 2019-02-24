@@ -1,0 +1,21 @@
+# Blender v2.79 (sub 0) OBJ File: ''
+# www.blender.org
+mtllib simplePlane.mtl
+o Plane
+v -1.000000 0.000000 1.000000
+v 1.000000 0.000000 1.000000
+v -1.000000 0.000000 -1.000000
+v 1.000000 0.000000 -1.000000
+
+vn 0.0000 1.0000 0.0000
+
+# No. texture coordinates 4:
+vt 0.999108 0.00690
+vt 0.99909 0.98897
+vt 0.00506 0.98898
+vt 0.00507 0.00692
+
+usemtl SimplePlane
+
+s off
+f 1/4/1 2/3/1 4/2/1 3/1/1
