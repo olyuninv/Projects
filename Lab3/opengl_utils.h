@@ -188,7 +188,7 @@ namespace Lab3
 			// Create and compile our shaders
 			//PhongProgramID = LoadShaders("../Lab3/shaders/phong.vs", "../Lab3/shaders/phong.fs");
 			CubeMapID = LoadShaders("../Lab3/shaders/cubeMap.vs", "../Lab3/shaders/cubeMap.fs");
-			ShaderWithTextureID = LoadShaders("../Lab3/shaders/FresnelWithTexture.vs", "../Lab3/shaders/FresnelWithTexture.fs"); //Reflection, fresnel, chromaticDispersion
+			ShaderWithTextureID = LoadShaders("../Lab3/shaders/BlinnPhongWithTexture.vs", "../Lab3/shaders/BlinnPhongWithTexture.fs"); //Reflection, fresnel, chromaticDispersion
 			//RefractionID = LoadShaders("../Lab3/shaders/Refraction.vs", "../Lab3/shaders/Refraction.fs");
 		}
 
