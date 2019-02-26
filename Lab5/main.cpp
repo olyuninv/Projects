@@ -88,7 +88,7 @@ CGObject sceneObjects[MAX_OBJECTS];
 int numObjects = 0;
 
 //lighting position
-glm::vec3 lightPos(0.0f, 2.0f, -3.0f);
+glm::vec3 lightPos(0.0f, 4.0f, 2.0f);
 
 enum class textureInterpolation
 {
@@ -396,6 +396,119 @@ GL_LINEAR_MIPMAP_LINEAR: linearly interpolates between the two closest mipmaps a
 
 	glUniform1i(glutils.texture3, 1);
 
+	// TEXTURE2
+	glActiveTexture(GL_TEXTURE2);
+	//glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, textures[2]);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	
+	switch (texInterpolationType)
+	{
+	case textureInterpolation::nearest:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		break;
+	case textureInterpolation::linear:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		break;
+	case textureInterpolation::nearest_mipmap_nearest_interpolation:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+		break;
+	case textureInterpolation::nearest_mipmap_linear_interpolation:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+		break;
+	case textureInterpolation::interpolate_mipmap_nearest_interpolation:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+		break;
+	case textureInterpolation::interpolate_mipmap_linear_interpolation:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		break;
+	default:
+		break;
+	}
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// load and generate the texture
+	int width5, height5, nrChannels5;
+	//unsigned char *data = stbi_load("../Lab5/meshes/Chess_Board/Chess_Board.jpg", &width, &height, &nrChannels, NULL);
+	unsigned char *data5 = stbi_load("../Lab5/meshes/Chess_Board/BrickWall.jpg", &width5, &height5, &nrChannels5, NULL);
+	//unsigned char *data = stbi_load("../Lab5/meshes/Chess_Board/pokemons.jpg", &width, &height, &nrChannels, NULL);
+	//unsigned char *data5 = stbi_load("../Lab5/meshes/Chess_Board/pikachu.jpg", &width5, &height5, &nrChannels5, NULL);
+	//unsigned char *data5 = stbi_load("../Lab5/meshes/Chess_Board/flowers.jpg", &width5, &height5, &nrChannels5, NULL);
+
+	if (data5)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width5, height5, 0, GL_RGB, GL_UNSIGNED_BYTE, data5);
+		glGenerateMipmap(GL_TEXTURE_2D);
+		stbi_image_free(data5);
+	}
+	else
+	{
+		std::cout << "Failed to load texture" << std::endl;
+		stbi_image_free(data5);
+	}
+
+	glUniform1i(glutils.texture3, 2);
+
+	// TEXTURE 3
+	glActiveTexture(GL_TEXTURE3);
+	//glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, textures[3]);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	switch (texInterpolationType)
+	{
+	case textureInterpolation::nearest:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		break;
+	case textureInterpolation::linear:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		break;
+	case textureInterpolation::nearest_mipmap_nearest_interpolation:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+		break;
+	case textureInterpolation::nearest_mipmap_linear_interpolation:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+		break;
+	case textureInterpolation::interpolate_mipmap_nearest_interpolation:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+		break;
+	case textureInterpolation::interpolate_mipmap_linear_interpolation:
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		break;
+	default:
+		break;
+	}
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// load and generate the texture
+	int width6, height6, nrChannels6;
+	//unsigned char *data = stbi_load("../Lab5/meshes/Chess_Board/Chess_Board.jpg", &width, &height, &nrChannels, NULL);
+	//unsigned char *data6 = stbi_load("../Lab5/meshes/Chess_Board/BrickWall.jpg", &width5, &height5, &nrChannels5, NULL);
+	unsigned char *data6 = stbi_load("../Lab5/meshes/Chess_Board/pikachu.jpg", &width6, &height6, &nrChannels6, NULL);
+	//unsigned char *data = stbi_load("../Lab5/meshes/Chess_Board/pokemons.jpg", &width, &height, &nrChannels, NULL);
+	//unsigned char *data5 = stbi_load("../Lab5/meshes/Chess_Board/pikachu.jpg", &width5, &height5, &nrChannels5, NULL);
+	//unsigned char *data6 = stbi_load("../Lab5/meshes/Chess_Board/flower.jpg", &width6, &height6, &nrChannels6, NULL);
+
+	if (data6)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width6, height6, 0, GL_RGB, GL_UNSIGNED_BYTE, data6);
+		glGenerateMipmap(GL_TEXTURE_2D);
+		stbi_image_free(data6);
+	}
+	else
+	{
+		std::cout << "Failed to load texture" << std::endl;
+		stbi_image_free(data6);
+	}
+
+	glUniform1i(glutils.texture3, 3);
+
 	if (useNormalMap)
 	{
 		// Setup lotus texture - bump
@@ -492,6 +605,30 @@ void displayScene(glm::mat4 projection, glm::mat4 view)
 		glBindTexture(GL_TEXTURE_2D, textures[1]);
 		glUniform1i(glutils.texture3, 1);
 
+		switch (texInterpolationType)
+		{
+		case textureInterpolation::nearest:
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			break;
+		case textureInterpolation::linear:
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			break;
+		case textureInterpolation::nearest_mipmap_nearest_interpolation:
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+			break;
+		case textureInterpolation::nearest_mipmap_linear_interpolation:
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+			break;
+		case textureInterpolation::interpolate_mipmap_nearest_interpolation:
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+			break;
+		case textureInterpolation::interpolate_mipmap_linear_interpolation:
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			break;
+		default:
+			break;
+		}
+
 		if (useNormalMap)
 		{
 			glActiveTexture(GL_TEXTURE2);
@@ -515,6 +652,91 @@ void displayScene(glm::mat4 projection, glm::mat4 view)
 			{
 				glm::mat4 localTransform = glm::mat4(1.0);
 				localTransform = glm::translate(localTransform, vec3(k * (-2.0), 0.0, j * (-2.0)));
+				glm::mat4 globalTransform2 = sceneObjects[i].globalTransform * localTransform;
+				glutils.updateUniformVariablesReflectance(globalTransform2, view);
+				sceneObjects[i].Draw(glutils, glutils.ShaderWithTextureID);
+			}
+		}
+
+		glEnable(GL_TEXTURE_2D);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, textures[2]);
+		glUniform1i(glutils.texture3, 2);
+
+		switch (texInterpolationType)
+		{
+		case textureInterpolation::nearest:
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			break;
+		case textureInterpolation::linear:
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			break;
+		case textureInterpolation::nearest_mipmap_nearest_interpolation:
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+			break;
+		case textureInterpolation::nearest_mipmap_linear_interpolation:
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+			break;
+		case textureInterpolation::interpolate_mipmap_nearest_interpolation:
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+			break;
+		case textureInterpolation::interpolate_mipmap_linear_interpolation:
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			break;
+		default:
+			break;
+		}
+
+		for (int j = 1; j < 10; j++)
+		{
+			for (int k = -10; k < 10; k++)
+			{
+				glm::mat4 localTransform = glm::mat4(1.0);				
+				localTransform = glm::rotate(localTransform, 1.57f, vec3(0.0, 0.0, 1.0));
+				localTransform = glm::translate(localTransform, vec3(k * (-2.0) - 25.0, -20.0, j * (-2.0)));
+				glm::mat4 globalTransform2 = sceneObjects[i].globalTransform * localTransform;
+				glutils.updateUniformVariablesReflectance(globalTransform2, view);
+				sceneObjects[i].Draw(glutils, glutils.ShaderWithTextureID);
+			}
+		}
+
+		// TEXTURE 3
+		glEnable(GL_TEXTURE_2D);
+		glActiveTexture(GL_TEXTURE3);
+		glBindTexture(GL_TEXTURE_2D, textures[3]);
+		glUniform1i(glutils.texture3, 3);
+
+		switch (texInterpolationType)
+		{
+		case textureInterpolation::nearest:
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			break;
+		case textureInterpolation::linear:
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			break;
+		case textureInterpolation::nearest_mipmap_nearest_interpolation:
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+			break;
+		case textureInterpolation::nearest_mipmap_linear_interpolation:
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+			break;
+		case textureInterpolation::interpolate_mipmap_nearest_interpolation:
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+			break;
+		case textureInterpolation::interpolate_mipmap_linear_interpolation:
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			break;
+		default:
+			break;
+		}
+
+		for (int j = 1; j < 10; j++)
+		{
+			for (int k = -10; k < 10; k++)
+			{
+				glm::mat4 localTransform = glm::mat4(1.0);
+				//localTransform = glm::rotate(localTransform, 1.57f, vec3(0.0, 0.0, 1.0));
+				localTransform = glm::translate(localTransform, vec3(k * (-2.0) - 20.0, -30.0, j * (-2.0)));
 				glm::mat4 globalTransform2 = sceneObjects[i].globalTransform * localTransform;
 				glutils.updateUniformVariablesReflectance(globalTransform2, view);
 				sceneObjects[i].Draw(glutils, glutils.ShaderWithTextureID);
@@ -573,7 +795,7 @@ void display()
 	glm::mat4 projection = glm::perspective(glm::radians(fov), (float)(SCR_WIDTH) / (float)(SCR_HEIGHT), 0.1f, 100.0f);
 	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
-	switch (texInterpolationType)
+	/*switch (texInterpolationType)
 	{
 	case textureInterpolation::nearest:
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -595,10 +817,11 @@ void display()
 		break;
 	default:
 		break;
-	}
+	}*/
 
 	// DRAW CUBEMAP
 	displayCubeMap(projection, view);
+
 
 	// DRAW SCENE
 	displayScene(projection, view);
@@ -636,7 +859,7 @@ int main(void) {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Open a window and create its OpenGL context
-	window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Surface Mapping", NULL, NULL);
+	window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Mipmapping", NULL, NULL);
 	if (window == NULL) {
 		fprintf(stderr, "Failed to open GLFW window.\n");
 		getchar();
