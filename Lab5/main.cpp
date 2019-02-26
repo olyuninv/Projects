@@ -377,10 +377,10 @@ GL_LINEAR_MIPMAP_LINEAR: linearly interpolates between the two closest mipmaps a
 
 	// load and generate the texture
 	int width, height, nrChannels;
-	//unsigned char *data = stbi_load("../Lab5/meshes/Chess_Board/Chess_Board.jpg", &width, &height, &nrChannels, NULL);
+	unsigned char *data = stbi_load("../Lab5/meshes/Chess_Board/Chess_Board.jpg", &width, &height, &nrChannels, NULL);
 	//unsigned char *data = stbi_load("../Lab5/meshes/Chess_Board/BrickWall.jpg", &width, &height, &nrChannels, NULL);
 	//unsigned char *data = stbi_load("../Lab5/meshes/Chess_Board/pokemons.jpg", &width, &height, &nrChannels, NULL);
-	unsigned char *data = stbi_load("../Lab5/meshes/Chess_Board/pokemon2_sm.jpg", &width, &height, &nrChannels, NULL);
+	//unsigned char *data = stbi_load("../Lab5/meshes/Chess_Board/pokemon2_sm.jpg", &width, &height, &nrChannels, NULL);
 	
 	if (data)
 	{
