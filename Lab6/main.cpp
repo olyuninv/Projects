@@ -424,27 +424,8 @@ void init()
 	createObjects();
 }
 
-void display()
+void displayCubeMap(glm::mat4 projection, glm::mat4 view)
 {
-	float currentFrame = glfwGetTime();
-	deltaTime = currentFrame - lastFrame;
-	lastFrame = currentFrame;
-
-	// inpuT
-	processInput(window);
-
-	// render
-	glClearColor(0.78f, 0.84f, 0.49f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glPushMatrix();
-
-	glLoadIdentity();
-
-	// Update projection 
-	glm::mat4 projection = glm::perspective(glm::radians(fov), (float)(SCR_WIDTH) / (float)(SCR_HEIGHT), 0.1f, 100.0f);
-	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-
 	// First Draw cube map - sceneObjects[0]
 	glDepthMask(GL_FALSE);
 	glUseProgram(glutils.CubeMapID);
@@ -463,12 +444,10 @@ void display()
 
 	glDepthMask(GL_TRUE);
 
-	glPopMatrix();
+}
 
-	glPushMatrix();
-
-	glLoadIdentity();
-
+void displayScene(glm::mat4 projection, glm::mat4 view)
+{
 	glUseProgram(glutils.ShaderWithTextureID);
 
 	glm::mat4 local1(1.0f);
@@ -514,9 +493,30 @@ void display()
 
 		glDisable(GL_TEXTURE_2D);
 	}
+}
 
-	glPopMatrix();
+void display()
+{
+	float currentFrame = glfwGetTime();
+	deltaTime = currentFrame - lastFrame;
+	lastFrame = currentFrame;
 
+	// inpuT
+	processInput(window);
+
+	// render
+	glClearColor(0.78f, 0.84f, 0.49f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	// Update projection 
+	glm::mat4 projection = glm::perspective(glm::radians(fov), (float)(SCR_WIDTH) / (float)(SCR_HEIGHT), 0.1f, 100.0f);
+	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+	
+	// DRAW CUBEMAP
+	displayCubeMap(projection, view);
+
+	displayScene(projection, view);
+	
 	// rotate
 	if (!pause)
 	{

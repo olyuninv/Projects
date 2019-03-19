@@ -123,5 +123,5 @@ void main()
         
       refractiveFactor = clamp (refractiveFactor, 0, 1);
       vec4 environmentColour = mix( reflectedColour, refractedColour, refractiveFactor);
-      FragColor = mix(FragColor, environmentColour, 0.3f);  
+      FragColor = mix(FragColor, environmentColour, 0.1f);  
 }
