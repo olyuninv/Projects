@@ -72,10 +72,12 @@ namespace Lab3
 		GLint proj_mat_location3;
 		GLint model_view_matrix3_3;
 		GLint objectColorLoc3;
+		GLint useSolidColorUniform3;
 		GLint useNormalMapUniform3;
 		GLint useSpecularMapUniform3;
 		GLint camera_position3;
 		GLint lightPosLoc3;
+		GLint lightColorLoc3;
 		GLint viewPosLoc3;
 		GLint cubeLocation3;
 		GLint texture3;
@@ -187,8 +189,8 @@ namespace Lab3
 		{
 			// Create and compile our shaders
 			//PhongProgramID = LoadShaders("../Lab3/shaders/phong.vs", "../Lab3/shaders/phong.fs");
-			CubeMapID = LoadShaders("../Lab3/shaders/cubeMap.vs", "../Lab3/shaders/cubeMap.fs");
-			ShaderWithTextureID = LoadShaders("../Lab3/shaders/BlinnPhongWithTexture.vs", "../Lab3/shaders/BlinnPhongWithTexture.fs"); //Reflection, fresnel, chromaticDispersion
+			CubeMapID = LoadShaders("../Lab6/shaders/cubeMap.vs", "../Lab6/shaders/cubeMap.fs");
+			ShaderWithTextureID = LoadShaders("../Lab6/shaders/BlinnPhongWithTexture.vs", "../Lab6/shaders/BlinnPhongWithTexture.fs"); //Reflection, fresnel, chromaticDispersion
 			//RefractionID = LoadShaders("../Lab3/shaders/Refraction.vs", "../Lab3/shaders/Refraction.fs");
 		}
 
@@ -270,10 +272,13 @@ namespace Lab3
 			proj_mat_location3 = glGetUniformLocation(ShaderWithTextureID, "projection");
 			model_view_matrix3_3 = glGetUniformLocation(ShaderWithTextureID, "modelView3x3");
 			objectColorLoc3 = glGetUniformLocation(ShaderWithTextureID, "objectColor");
+			useSolidColorUniform3 = glGetUniformLocation(ShaderWithTextureID, "useSolidColor");
 			useNormalMapUniform3 = glGetUniformLocation(ShaderWithTextureID, "useNormalMap");
 			useSpecularMapUniform3 = glGetUniformLocation(ShaderWithTextureID, "useSpecularMap");
 			camera_position3 = glGetUniformLocation(ShaderWithTextureID, "cameraPos");
+
 			lightPosLoc3 = glGetUniformLocation(ShaderWithTextureID, "lightPos");
+			lightColorLoc3 = glGetUniformLocation(ShaderWithTextureID, "lightColor");
 			viewPosLoc3 = glGetUniformLocation(ShaderWithTextureID, "viewPos");
 
 			cubeLocation3 = glGetUniformLocation(ShaderWithTextureID, "skybox");

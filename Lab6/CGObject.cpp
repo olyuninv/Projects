@@ -121,7 +121,7 @@ namespace Lab3
 
 	/// This function is copied from: http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-9-vbo-indexing/
 	bool CGObject::is_near(float v1, float v2) {
-		return fabs(v1 - v2) < 0.01f;
+		return fabs(v1 - v2) < 0.001f;
 	}
 
 	/// This function is based on code from: http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-9-vbo-indexing/

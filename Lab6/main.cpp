@@ -67,6 +67,8 @@ glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 bool pause = true;
+
+bool useSolidColor = true;
 bool useNormalMap = true;
 bool useSpecularMap = true;
 
@@ -196,94 +198,97 @@ void createObjects()
 	// Shader Attribute locations
 	glutils.getAttributeLocations();
 
-	const char* cubeFileName = "../Lab3/meshes/Cube/Cube.obj";
+	// LOAD CUBE
+	const char* cubeFileName = "../Lab6/meshes/Cube/Cube.obj";
 	vector<objl::Mesh> cubeMesh = loadMeshes(cubeFileName);
 
 	std::vector<objl::Mesh> dummy_cubeMeshes = std::vector<objl::Mesh>();
 	std::vector<TangentMesh> dummy_cubeTangents = std::vector<TangentMesh>();
 	CGObject::recalculateVerticesAndIndexes(cubeMesh, dummy_cubeMeshes, dummy_cubeTangents);
 
-	CGObject cubeObject = loadObjObject(dummy_cubeMeshes, dummy_cubeTangents, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);
+	CGObject cubeObject = loadObjObject(dummy_cubeMeshes, dummy_cubeTangents, true, true, vec3(-1.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);
 	sceneObjects[numObjects] = cubeObject;
 	numObjects++;
 
-	/*const char* torusFileName = "../Lab3/meshes/apple/apple obj/one_apple.obj";
-	vector<objl::Mesh> meshesTorus = loadMeshes(torusFileName);
-	CGObject torusObject = loadObjObject(meshesTorus, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(0.6f, 0.6f, 0.6f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);
-	torusObject.computeTangentBasis();
-	torusObject.recalculateVerticesAndIndexes();
-	sceneObjects[numObjects] = torusObject;
-	numObjects++;*/
+	// LOAD CYLINDER
+	const char* cylinderFileName = "../Lab6/meshes/Cylinder/cylinder_sm.obj";
+	vector<objl::Mesh> meshesCylinder = loadMeshes(cylinderFileName);
 
-	//const char* suzanneFileName = "../Lab3/meshes/home-lizard/lizard_sm2.obj"; //Orange_obj/Orange_bl.obj
-	//const char* suzanneFileName = "../Lab3/meshes/Lotus_OBJ_low/Lotus_OBJ_low.obj";
-	const char* suzanneFileName = "../Lab3/meshes/pear_export_obj/pear_bl.obj";
-	//const char* suzanneFileName = "../Lab3/meshes/apple/apple obj/one_apple_sm.obj";
-	vector<objl::Mesh> meshesSuzanne = loadMeshes(suzanneFileName);
-
-	std::vector<objl::Mesh> new_meshesSuzanne;
-	std::vector<TangentMesh> new_tangentMeshesSuzanne;
+	std::vector<objl::Mesh> new_meshesCylinder;
+	std::vector<TangentMesh> new_tangentMeshesCylinder;
 
 	//recalculate meshes
-	CGObject::recalculateVerticesAndIndexes(meshesSuzanne, new_meshesSuzanne, new_tangentMeshesSuzanne);
+	CGObject::recalculateVerticesAndIndexes(meshesCylinder, new_meshesCylinder, new_tangentMeshesCylinder);
 
-	CGObject suzanneObject = loadObjObject(new_meshesSuzanne, new_tangentMeshesSuzanne, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);  // vec3(160/ 255.0, 82/255.0, 45/255.0) - brown  //vec3(173/255.0, 255/255.0, 47/255.0) - green
-	//suzanneObject.computeTangentBasis();
-	//suzanneObject.recalculateVerticesAndIndexes(n_vbovertices, n_ibovertices, n_tangents, n_bitangents);
-	sceneObjects[numObjects] = suzanneObject;
+	CGObject cylinderObject = loadObjObject(new_meshesCylinder, new_tangentMeshesCylinder, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);  // vec3(160/ 255.0, 82/255.0, 45/255.0) - brown  //vec3(173/255.0, 255/255.0, 47/255.0) - green
+	sceneObjects[numObjects] = cylinderObject;
 	numObjects++;
 
-	/*const char* suzanneFileName = "../Lab3/meshes/suzanne/suzanne.obj";
-	vector<objl::Mesh> meshesSuzanne = loadMeshes(suzanneFileName);
-	CGObject suzanneObject = loadObjObject(meshesSuzanne, true, true, vec3(-3.0f, 0.0f, 0.0f), vec3(0.6f, 0.6f, 0.6f), vec3(1.0f, 1.0f, 0.0f), 0.65f, NULL);
-	sceneObjects[numObjects] = suzanneObject;
+	// LOAD PLANE
+	const char* planeFileName = "../Lab6/meshes/simplePlane/simplePlane.obj";
+	vector<objl::Mesh> meshesPlane = loadMeshes(planeFileName);
+
+	std::vector<objl::Mesh> new_meshesPlane;
+	std::vector<TangentMesh> new_tangentMeshesPlane;
+
+	//recalculate meshes
+	CGObject::recalculateVerticesAndIndexes(meshesPlane, new_meshesPlane, new_tangentMeshesPlane);
+
+	CGObject planeObject = loadObjObject(new_meshesPlane, new_tangentMeshesPlane, true, true, vec3(1.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);  // vec3(160/ 255.0, 82/255.0, 45/255.0) - brown  //vec3(173/255.0, 255/255.0, 47/255.0) - green
+	sceneObjects[numObjects] = planeObject;
 	numObjects++;
 
-	const char* teapotFileName = "../Lab3/meshes/teapot/teapot.obj";
-	vector<objl::Mesh> meshesTeapot = loadMeshes(teapotFileName);
-	CGObject teapotObject = loadObjObject(meshesTeapot, true, true, vec3(3.0f, -0.5f, 0.0f), vec3(5.0f, 5.0f, 5.0f), vec3(0.0f, 1.0f, 0.0f), 0.65f, NULL);
-	sceneObjects[numObjects] = teapotObject;
-	numObjects++;*/
+	// LOAD SPHERE
+	const char* sphereFileName = "../Lab6/meshes/Sphere/sphere.obj";
+	vector<objl::Mesh> meshesSphere = loadMeshes(sphereFileName);
+
+	std::vector<objl::Mesh> new_meshesSphere;
+	std::vector<TangentMesh> new_tangentMeshesSphere;
+
+	//recalculate meshes
+	CGObject::recalculateVerticesAndIndexes(meshesSphere, new_meshesSphere, new_tangentMeshesSphere);
+
+	CGObject sphereObject = loadObjObject(new_meshesSphere, new_tangentMeshesSphere, true, true, vec3(1.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);  // vec3(160/ 255.0, 82/255.0, 45/255.0) - brown  //vec3(173/255.0, 255/255.0, 47/255.0) - green
+	sceneObjects[numObjects] = sphereObject;
+	numObjects++;
 
 	glutils.createVBO(n_vbovertices);
 
 	glutils.createIBO(n_ibovertices);
 
 	addToObjectBuffer(&cubeObject);
-	//addToObjectBuffer(&torusObject);
-	addToObjectBuffer(&suzanneObject);
-	//addToObjectBuffer(&teapotObject);
+	addToObjectBuffer(&cylinderObject);
+	addToObjectBuffer(&planeObject);
+	addToObjectBuffer(&sphereObject);
+
 	addToIndexBuffer(&cubeObject);
-	//addToIndexBuffer(&torusObject);
-	addToIndexBuffer(&suzanneObject);
-	//addToIndexBuffer(&teapotObject);
+	addToIndexBuffer(&cylinderObject);
+	addToIndexBuffer(&planeObject);
+	addToIndexBuffer(&sphereObject);
 
 	glutils.createTBO(n_vbovertices);
 	addToTangentBuffer(&cubeObject);
-	addToTangentBuffer(&suzanneObject);
+	addToTangentBuffer(&cylinderObject);
+	addToTangentBuffer(&planeObject);
+	addToTangentBuffer(&sphereObject);
 
 	glutils.createBTBO(n_vbovertices);
 	addToBitangentBuffer(&cubeObject);
-	addToBitangentBuffer(&suzanneObject);
+	addToBitangentBuffer(&cylinderObject);
+	addToBitangentBuffer(&planeObject);
+	addToBitangentBuffer(&sphereObject);
 
 }
 
 void loadCube()
 {
 	vector<std::string> faces = vector<std::string>();
-	faces.push_back("../Lab3/meshes/mp_bleak/bleak-outlook_lf.tga");
-	faces.push_back("../Lab3/meshes/mp_bleak/bleak-outlook_rt.tga");
-	faces.push_back("../Lab3/meshes/mp_bleak/bleak-outlook_up.tga");
-	faces.push_back("../Lab3/meshes/mp_bleak/bleak-outlook_dn.tga");
-	faces.push_back("../Lab3/meshes/mp_bleak/bleak-outlook_ft.tga");
-	faces.push_back("../Lab3/meshes/mp_bleak/bleak-outlook_bk.tga");
-
-	/*faces.push_back("../Lab3/meshes/mp_awup/awup_lf.tga");
-	faces.push_back("../Lab3/meshes/mp_awup/awup_rt.tga");
-	faces.push_back("../Lab3/meshes/mp_awup/awup_up.tga");
-	faces.push_back("../Lab3/meshes/mp_awup/awup_dn.tga");
-	faces.push_back("../Lab3/meshes/mp_awup/awup_ft.tga");
-	faces.push_back("../Lab3/meshes/mp_awup/awup_bk.tga");*/
+	faces.push_back("../Lab6/meshes/mp_bleak/bleak-outlook_lf.tga");
+	faces.push_back("../Lab6/meshes/mp_bleak/bleak-outlook_rt.tga");
+	faces.push_back("../Lab6/meshes/mp_bleak/bleak-outlook_up.tga");
+	faces.push_back("../Lab6/meshes/mp_bleak/bleak-outlook_dn.tga");
+	faces.push_back("../Lab6/meshes/mp_bleak/bleak-outlook_ft.tga");
+	faces.push_back("../Lab6/meshes/mp_bleak/bleak-outlook_bk.tga");
 
 	int width, height, nrChannels;
 	for (unsigned int i = 0; i < faces.size(); i++)
@@ -304,19 +309,8 @@ void loadCube()
 	}
 }
 
-void init()
+void generateTextures()
 {
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);// you enable blending function
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-
-	glutils = opengl_utils();
-
-	glutils.createShaders();
-
 	// Setup cubemap texture
 	glGenTextures(4, textures);  //1, &textureIDcubemap);
 
@@ -344,10 +338,7 @@ void init()
 
 	// load and generate the texture
 	int width, height, nrChannels;
-	//unsigned char *data = stbi_load("../Lab3/meshes/fabric_01_texture/fabric_01_diffuse.png", &width, &height, &nrChannels, 3);  //lotus_OBJ_low/lotus_petal_diffuse.jpgfabric_01_texture/fabric_01_diffuse.pngOrange_obj/Color.jpg
-	//unsigned char *data = stbi_load("../Lab3/meshes/lotus_OBJ_low/lotus_petal_diffuse.jpg", &width, &height, &nrChannels, 3);  
-	unsigned char *data = stbi_load("../Lab3/meshes/pear_export_obj/pear_diffuse.jpg", &width, &height, &nrChannels, 3);
-	//unsigned char *data = stbi_load("../Lab3/meshes/iguana_skin/iguana skin.jpg", &width, &height, &nrChannels, 3);
+	unsigned char *data = stbi_load("../Lab6/meshes/pear_export_obj/pear_diffuse.jpg", &width, &height, &nrChannels, 3);
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -363,7 +354,6 @@ void init()
 
 	// Setup lotus texture - bump
 	glActiveTexture(GL_TEXTURE2);
-	//glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, textures[2]);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -373,11 +363,8 @@ void init()
 
 	// load and generate the texture
 	int width1, height1, nrChannels1;
-	//unsigned char *data1 = stbi_load("../Lab3/meshes/fabric_01_texture/fabric_01_normal.png", &width1, &height1, &nrChannels1, 3);  // fabric_01_texture/fabric_01_bump.pngOrange_obj/Normal.jpg
-	//unsigned char *data1 = stbi_load("../Lab3/meshes/lotus_OBJ_low/lotus_petal_bump.jpg", &width1, &height1, &nrChannels1, 3);  
-	unsigned char *data1 = stbi_load("../Lab3/meshes/pear_export_obj/pear_normal_map.jpg", &width1, &height1, &nrChannels1, 3);
-	//unsigned char *data1 = stbi_load("../Lab3/meshes/iguana_skin/iguana skin bump.jpg", &width1, &height1, &nrChannels1, 3);
-
+	unsigned char *data1 = stbi_load("../Lab6/meshes/pear_export_obj/pear_normal_map.jpg", &width1, &height1, &nrChannels1, 3);
+	
 	if (data1)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width1, height1, 0, GL_RGB, GL_UNSIGNED_BYTE, data1);
@@ -403,7 +390,7 @@ void init()
 
 		// load and generate the texture
 		int width2, height2, nrChannels2;
-		unsigned char *data2 = stbi_load("../Lab3/meshes/pear_export_obj/pear_specular.jpg", &width2, &height2, &nrChannels2, 3);
+		unsigned char *data2 = stbi_load("../Lab6/meshes/pear_export_obj/pear_specular.jpg", &width2, &height2, &nrChannels2, 3);
 
 		if (data2)
 		{
@@ -418,6 +405,22 @@ void init()
 		}
 		glUniform1i(glutils.specularMap3, 3);   // lotus diffuse map
 	}
+}
+
+void init()
+{
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);// you enable blending function
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+
+	glutils = opengl_utils();
+
+	glutils.createShaders();
+
+	generateTextures();
 
 	glutils.setupUniformVariables();
 
@@ -458,11 +461,13 @@ void displayScene(glm::mat4 projection, glm::mat4 view)
 
 	glUniform3f(glutils.viewPosLoc3, cameraPos.x, -cameraPos.y, cameraPos.z);
 	glUniform3f(glutils.lightPosLoc3, lightPos.x, lightPos.y, lightPos.z);
+	glUniform3f(glutils.lightColorLoc3, 1.0, 1.0, 1.0);
+	glUniform1i(glutils.useSolidColorUniform3, useSolidColor);
 	glUniform1i(glutils.useNormalMapUniform3, useNormalMap);
 	glUniform1i(glutils.useSpecularMapUniform3, useSpecularMap);
 
 	// DRAW objects
-	for (int i = 1; i < numObjects; i++)     // TODO : need to fix this hardcoding
+	for (int i = 0; i < numObjects; i++)     // TODO : need to fix this hardcoding
 	{
 		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
 		glutils.updateUniformVariablesReflectance(globalCGObjectTransform, view);
@@ -489,6 +494,16 @@ void displayScene(glm::mat4 projection, glm::mat4 view)
 		}
 
 		glUniform3f(glutils.objectColorLoc3, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
+		
+		if (i == 2)
+		{
+			glUniform1i(glutils.useSolidColorUniform3, false);
+		}
+		else
+		{
+			glUniform1i(glutils.useSolidColorUniform3, true);
+		}
+
 		sceneObjects[i].Draw(glutils, glutils.ShaderWithTextureID);
 
 		glDisable(GL_TEXTURE_2D);
@@ -513,7 +528,7 @@ void display()
 	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 	
 	// DRAW CUBEMAP
-	displayCubeMap(projection, view);
+	//displayCubeMap(projection, view);
 
 	displayScene(projection, view);
 	
@@ -550,7 +565,7 @@ int main(void) {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Open a window and create its OpenGL context
-	window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Surface Mapping", NULL, NULL);
+	window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Precomputed Light Fields", NULL, NULL);
 	if (window == NULL) {
 		fprintf(stderr, "Failed to open GLFW window.\n");
 		getchar();
