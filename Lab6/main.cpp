@@ -62,7 +62,7 @@ float lastY = SCR_HEIGHT / 2.0; //600.0 / 2.0;
 float fov = 45.0f;
 
 // camera
-glm::vec3 cameraPos = glm::vec3(0.0f, 3.0f, 5.0f);
+glm::vec3 cameraPos = glm::vec3(0.0f, 3.0f, 2.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -90,7 +90,7 @@ CGObject sceneObjects[MAX_OBJECTS];
 int numObjects = 0;
 
 //lighting position
-glm::vec3 lightPos(2.0f, 3.0f, 3.0f);
+glm::vec3 lightPos(2.0f, 3.0f, 2.0f);
 
 
 void addToObjectBuffer(CGObject *cg_object)
@@ -206,7 +206,7 @@ void createObjects()
 	std::vector<TangentMesh> dummy_cubeTangents = std::vector<TangentMesh>();
 	CGObject::recalculateVerticesAndIndexes(cubeMesh, dummy_cubeMeshes, dummy_cubeTangents);
 
-	CGObject cubeObject = loadObjObject(dummy_cubeMeshes, dummy_cubeTangents, true, true, vec3(-1.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);
+	CGObject cubeObject = loadObjObject(dummy_cubeMeshes, dummy_cubeTangents, true, true, vec3(0.0f, 2.5f, 0.0f), vec3(5.0f, 5.0f, 5.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);
 	sceneObjects[numObjects] = cubeObject;
 	numObjects++;
 
@@ -234,12 +234,12 @@ void createObjects()
 	//recalculate meshes
 	CGObject::recalculateVerticesAndIndexes(meshesPlane, new_meshesPlane, new_tangentMeshesPlane);
 
-	CGObject planeObject = loadObjObject(new_meshesPlane, new_tangentMeshesPlane, true, true, vec3(1.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);  // vec3(160/ 255.0, 82/255.0, 45/255.0) - brown  //vec3(173/255.0, 255/255.0, 47/255.0) - green
+	CGObject planeObject = loadObjObject(new_meshesPlane, new_tangentMeshesPlane, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(5.0f, 5.0f, 5.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);  // vec3(160/ 255.0, 82/255.0, 45/255.0) - brown  //vec3(173/255.0, 255/255.0, 47/255.0) - green
 	sceneObjects[numObjects] = planeObject;
 	numObjects++;
 
 	// LOAD SPHERE
-	const char* sphereFileName = "../Lab6/meshes/Sphere/sphere.obj";
+	const char* sphereFileName = "../Lab6/meshes/AbstractBench/bench.obj";
 	vector<objl::Mesh> meshesSphere = loadMeshes(sphereFileName);
 
 	std::vector<objl::Mesh> new_meshesSphere;
@@ -248,7 +248,8 @@ void createObjects()
 	//recalculate meshes
 	CGObject::recalculateVerticesAndIndexes(meshesSphere, new_meshesSphere, new_tangentMeshesSphere);
 
-	CGObject sphereObject = loadObjObject(new_meshesSphere, new_tangentMeshesSphere, true, true, vec3(1.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);  // vec3(160/ 255.0, 82/255.0, 45/255.0) - brown  //vec3(173/255.0, 255/255.0, 47/255.0) - green
+	CGObject sphereObject = loadObjObject(new_meshesSphere, new_tangentMeshesSphere, true, true, vec3(2.0f, 0.0f, 0.0f), vec3(0.3f, 0.3f, 0.3f), vec3(0.0f, 0.0f, 1.0f), 0.65f, NULL);  // vec3(160/ 255.0, 82/255.0, 45/255.0) - brown  //vec3(173/255.0, 255/255.0, 47/255.0) - green
+	sphereObject.initialRotateAngle = vec3(3.14, 0.0 ,0.0);
 	sceneObjects[numObjects] = sphereObject;
 	numObjects++;
 
