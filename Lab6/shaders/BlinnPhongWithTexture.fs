@@ -2,6 +2,21 @@
 
 #extension GL_NV_shadow_samplers_cube : enable
 
+#define NR_POINT_LIGHTS 2  
+
+struct PointLight {
+vec3 position;
+
+float constant;
+float linear;
+float quadratic;
+
+vec3 ambient;
+vec3 diffuse;
+vec3 specular;
+};
+
+
 in vec3 FragPos;  
 in vec2 TexCoord;
 
@@ -31,6 +46,8 @@ uniform bool useNormalMap;
 uniform bool useSpecularMap;
 
 out vec4 FragColor;   // Final color
+
+uniform PointLight pointLights[NR_POINT_LIGHTS];
 
 void main()
 {    

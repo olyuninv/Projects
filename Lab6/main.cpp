@@ -24,6 +24,7 @@
 
 #include "opengl_utils.h"
 #include "CGobject.h"
+#include "lighting.h"
 
 #include "..\Dependencies\OBJ_Loader.h"
 

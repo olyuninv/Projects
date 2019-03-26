@@ -144,6 +144,7 @@
   <ItemGroup>
     <ClInclude Include="..\Dependencies\OBJ_Loader.h" />
     <ClInclude Include="CGObject.h" />
+    <ClInclude Include="lighting.h" />
     <ClInclude Include="opengl_utils.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="vboindexer.hpp" />
