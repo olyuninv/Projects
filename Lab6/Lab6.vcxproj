@@ -138,6 +138,8 @@
     <None Include="shaders\cubeMap.vs" />
     <None Include="shaders\BlinnPhongWithTexture.fs" />
     <None Include="shaders\BlinnPhongWithTexture.vs" />
+    <None Include="shaders\lighting.fs" />
+    <None Include="shaders\lighting.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Dependencies\OBJ_Loader.h" />

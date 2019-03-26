@@ -1,5 +1,5 @@
 #include "CGObject.h"
-namespace Lab3
+namespace Lab6
 {
 	CGObject::CGObject()
 	{
@@ -15,17 +15,13 @@ namespace Lab3
 		int IBOindex = this->startIBO;
 		for (int i = 0; i < this->Meshes.size(); i++) {
 
-			if (programID == glutils.PhongProgramID)
+			if (programID == glutils.ShaderWithTextureID)
 			{
-				glutils.linkCurrentBuffertoShader(this->VAOs[i], VBOindex, IBOindex);
+				glutils.linkCurrentBuffertoShaderWithTexture(this->VAOs[i], VBOindex, IBOindex);
 			}
-			else if (programID == glutils.ShaderWithTextureID)
+			else if (programID == glutils.lightingID)
 			{
-				glutils.linkCurrentBuffertoShaderReflectance(this->VAOs[i], VBOindex, IBOindex);
-			}
-			else if (programID == glutils.RefractionID)
-			{
-				glutils.linkCurrentBuffertoShaderRefraction(this->VAOs[i], VBOindex, IBOindex);
+				glutils.linkCurrentBuffertoShaderLighting(this->VAOs[i], VBOindex, IBOindex);
 			}
 
 			glDrawElements(GL_TRIANGLES, this->Meshes[i].Indices.size(), GL_UNSIGNED_INT, (void*)(IBOindex * sizeof(unsigned int)));

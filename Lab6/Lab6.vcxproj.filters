@@ -41,6 +41,12 @@
     <None Include="shaders\BlinnPhongWithTexture.vs">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="shaders\lighting.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\lighting.vs">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">

@@ -33,7 +33,7 @@
 
 using namespace glm;
 using namespace std;
-using namespace Lab3;
+using namespace Lab6;
 
 // GLFW 
 GLFWwindow* window;
@@ -62,7 +62,7 @@ float lastY = SCR_HEIGHT / 2.0; //600.0 / 2.0;
 float fov = 45.0f;
 
 // camera
-glm::vec3 cameraPos = glm::vec3(0.0f, 3.0f, 2.0f);
+glm::vec3 cameraPos = glm::vec3(2.0f, 4.0f, 2.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -88,9 +88,10 @@ unsigned int n_ibovertices = 0;
 
 CGObject sceneObjects[MAX_OBJECTS];
 int numObjects = 0;
+unsigned int sphereIndex = 0;
 
 //lighting position
-glm::vec3 lightPos(2.0f, 3.0f, 2.0f);
+glm::vec3 lightPos(2.2f, 1.5f, 2.4f);
 
 
 void addToObjectBuffer(CGObject *cg_object)
@@ -206,7 +207,7 @@ void createObjects()
 	std::vector<TangentMesh> dummy_cubeTangents = std::vector<TangentMesh>();
 	CGObject::recalculateVerticesAndIndexes(cubeMesh, dummy_cubeMeshes, dummy_cubeTangents);
 
-	CGObject cubeObject = loadObjObject(dummy_cubeMeshes, dummy_cubeTangents, true, true, vec3(0.0f, 2.5f, 0.0f), vec3(5.0f, 5.0f, 5.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);
+	CGObject cubeObject = loadObjObject(dummy_cubeMeshes, dummy_cubeTangents, true, true, vec3(0.0f, 4.0f, 0.0f), vec3(5.0f, 5.0f, 5.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);
 	sceneObjects[numObjects] = cubeObject;
 	numObjects++;
 
@@ -220,8 +221,44 @@ void createObjects()
 	//recalculate meshes
 	CGObject::recalculateVerticesAndIndexes(meshesCylinder, new_meshesCylinder, new_tangentMeshesCylinder);
 
-	CGObject cylinderObject = loadObjObject(new_meshesCylinder, new_tangentMeshesCylinder, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);  // vec3(160/ 255.0, 82/255.0, 45/255.0) - brown  //vec3(173/255.0, 255/255.0, 47/255.0) - green
+	CGObject cylinderObject = loadObjObject(new_meshesCylinder, new_tangentMeshesCylinder, true, true, vec3(-3.0f + 0.1f, 0.0f, -1.8f + 2 * 0.29f), vec3(1.0f, 1.0f, 1.0f), vec3(1.0f, 1.0f, 0.6f), 0.65f, NULL);  // vec3(160/ 255.0, 82/255.0, 45/255.0) - brown  //vec3(173/255.0, 255/255.0, 47/255.0) - green
 	sceneObjects[numObjects] = cylinderObject;
+	numObjects++;
+
+	CGObject cylinderObject2 = loadObjObject(new_meshesCylinder, new_tangentMeshesCylinder, false, true, vec3(1.0f - 0.1f, 0.0f, -1.8f - 2 * 0.29f), vec3(1.0f, 1.0f, 1.0f), vec3(1.0f, 1.0f, 0.6f), 0.65f, NULL);  // vec3(160/ 255.0, 82/255.0, 45/255.0) - brown  //vec3(173/255.0, 255/255.0, 47/255.0) - green
+	cylinderObject2.VAOs.push_back(cylinderObject.VAOs[0]);
+	cylinderObject2.startVBO = cylinderObject.startVBO;
+	cylinderObject2.startIBO = cylinderObject.startIBO;
+	sceneObjects[numObjects] = cylinderObject2;
+	numObjects++;
+
+	CGObject cylinderObject3 = loadObjObject(new_meshesCylinder, new_tangentMeshesCylinder, false, true, vec3(3.0f - 0.1f, 0.0f, 1.8f - 2 * 0.29f), vec3(1.0f, 1.0f, 1.0f), vec3(1.0f, 1.0f, 0.6f), 0.65f, NULL);  // vec3(160/ 255.0, 82/255.0, 45/255.0) - brown  //vec3(173/255.0, 255/255.0, 47/255.0) - green
+	cylinderObject3.VAOs.push_back(cylinderObject.VAOs[0]);
+	cylinderObject3.startVBO = cylinderObject.startVBO;
+	cylinderObject3.startIBO = cylinderObject.startIBO;
+	sceneObjects[numObjects] = cylinderObject3;
+	numObjects++;
+
+	CGObject cylinderObject4 = loadObjObject(new_meshesCylinder, new_tangentMeshesCylinder, false, true, vec3(-1.0f + 0.1f, 0.0f, 1.8f + 2 * 0.29f), vec3(1.0f, 1.0f, 1.0f), vec3(1.0f, 1.0f, 0.6f), 0.65f, NULL);  // vec3(160/ 255.0, 82/255.0, 45/255.0) - brown  //vec3(173/255.0, 255/255.0, 47/255.0) - green
+	cylinderObject4.VAOs.push_back(cylinderObject.VAOs[0]);
+	cylinderObject4.startVBO = cylinderObject.startVBO;
+	cylinderObject4.startIBO = cylinderObject.startIBO;
+	sceneObjects[numObjects] = cylinderObject4;
+	numObjects++;
+
+	// LOAD CARPET
+	const char* sphereFileName = "../Lab6/meshes/Sphere/sphere.obj";
+	vector<objl::Mesh> sphereMesh = loadMeshes(sphereFileName);
+
+	std::vector<objl::Mesh> sphere_new_meshes;
+	std::vector<TangentMesh> sphere_new_tangentMeshes;
+
+	//recalculate meshes
+	CGObject::recalculateVerticesAndIndexes(sphereMesh, sphere_new_meshes, sphere_new_tangentMeshes);
+
+	CGObject sphereObject = loadObjObject(sphere_new_meshes, sphere_new_tangentMeshes, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(0.5f, 0.5f, 0.5f), vec3(1.0f, 1.0f, 0.6f), 0.65f, NULL);  // vec3(160/ 255.0, 82/255.0, 45/255.0) - brown  //vec3(173/255.0, 255/255.0, 47/255.0) - green
+	sceneObjects[numObjects] = sphereObject;
+	sphereIndex = numObjects;
 	numObjects++;
 
 	// LOAD PLANE
@@ -234,23 +271,39 @@ void createObjects()
 	//recalculate meshes
 	CGObject::recalculateVerticesAndIndexes(meshesPlane, new_meshesPlane, new_tangentMeshesPlane);
 
-	CGObject planeObject = loadObjObject(new_meshesPlane, new_tangentMeshesPlane, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(5.0f, 5.0f, 5.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);  // vec3(160/ 255.0, 82/255.0, 45/255.0) - brown  //vec3(173/255.0, 255/255.0, 47/255.0) - green
+	CGObject planeObject = loadObjObject(new_meshesPlane, new_tangentMeshesPlane, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(5.0f, 5.0f, 5.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);  
 	sceneObjects[numObjects] = planeObject;
 	numObjects++;
 
-	// LOAD SPHERE
-	const char* sphereFileName = "../Lab6/meshes/AbstractBench/bench.obj";
-	vector<objl::Mesh> meshesSphere = loadMeshes(sphereFileName);
+	CGObject planeObject2 = loadObjObject(new_meshesPlane, new_tangentMeshesPlane, false, true, vec3(-1.0f, 1.0f, -1.8f), vec3(2.0f, 1.0f, 1.0f), vec3(1.0f, 1.0f, 0.6f), 0.65f, NULL);  
+	planeObject2.VAOs.push_back(planeObject.VAOs[0]);
+	planeObject2.startVBO = planeObject.startVBO;
+	planeObject2.startIBO = planeObject.startIBO;
+	planeObject2.initialRotateAngle = vec3(1.57, 0.0, -0.3);
+	sceneObjects[numObjects] = planeObject2;
+	numObjects++;
 
-	std::vector<objl::Mesh> new_meshesSphere;
-	std::vector<TangentMesh> new_tangentMeshesSphere;
+	CGObject planeObject3 = loadObjObject(new_meshesPlane, new_tangentMeshesPlane, false, true, vec3(1.0f, 1.0f, 1.8f), vec3(2.0f, 1.0f, 1.0f), vec3(1.0f, 1.0f, 0.6f), 0.65f, NULL);  
+	planeObject3.VAOs.push_back(planeObject.VAOs[0]);
+	planeObject3.startVBO = planeObject.startVBO;
+	planeObject3.startIBO = planeObject.startIBO;
+	planeObject3.initialRotateAngle = vec3(1.57, 0.0, -0.3);
+	sceneObjects[numObjects] = planeObject3;
+	numObjects++;
+
+	// LOAD SPHERE
+	const char* benchFileName = "../Lab6/meshes/AbstractBench/bench.obj";
+	vector<objl::Mesh> meshesBench = loadMeshes(benchFileName);
+
+	std::vector<objl::Mesh> new_meshesBench;
+	std::vector<TangentMesh> new_tangentMeshesBench;
 
 	//recalculate meshes
-	CGObject::recalculateVerticesAndIndexes(meshesSphere, new_meshesSphere, new_tangentMeshesSphere);
+	CGObject::recalculateVerticesAndIndexes(meshesBench, new_meshesBench, new_tangentMeshesBench);
 
-	CGObject sphereObject = loadObjObject(new_meshesSphere, new_tangentMeshesSphere, true, true, vec3(2.0f, 0.0f, 0.0f), vec3(0.3f, 0.3f, 0.3f), vec3(0.0f, 0.0f, 1.0f), 0.65f, NULL);  // vec3(160/ 255.0, 82/255.0, 45/255.0) - brown  //vec3(173/255.0, 255/255.0, 47/255.0) - green
-	sphereObject.initialRotateAngle = vec3(3.14, 0.0 ,0.0);
-	sceneObjects[numObjects] = sphereObject;
+	CGObject benchObject = loadObjObject(new_meshesBench, new_tangentMeshesBench, true, true, vec3(-2.0f, 0.0f, -0.8f), vec3(0.3f, 0.3f, 0.3f), vec3(0.0f, 0.0f, 1.0f), 0.65f, NULL);  
+	benchObject.initialRotateAngle = vec3(3.14, -0.3 , 0.0);
+	sceneObjects[numObjects] = benchObject;
 	numObjects++;
 
 	glutils.createVBO(n_vbovertices);
@@ -259,25 +312,29 @@ void createObjects()
 
 	addToObjectBuffer(&cubeObject);
 	addToObjectBuffer(&cylinderObject);
-	addToObjectBuffer(&planeObject);
 	addToObjectBuffer(&sphereObject);
+	addToObjectBuffer(&planeObject);
+	addToObjectBuffer(&benchObject);
 
 	addToIndexBuffer(&cubeObject);
 	addToIndexBuffer(&cylinderObject);
-	addToIndexBuffer(&planeObject);
 	addToIndexBuffer(&sphereObject);
+	addToIndexBuffer(&planeObject);
+	addToIndexBuffer(&benchObject);
 
 	glutils.createTBO(n_vbovertices);
 	addToTangentBuffer(&cubeObject);
 	addToTangentBuffer(&cylinderObject);
-	addToTangentBuffer(&planeObject);
 	addToTangentBuffer(&sphereObject);
+	addToTangentBuffer(&planeObject);
+	addToTangentBuffer(&benchObject);
 
 	glutils.createBTBO(n_vbovertices);
 	addToBitangentBuffer(&cubeObject);
 	addToBitangentBuffer(&cylinderObject);
-	addToBitangentBuffer(&planeObject);
 	addToBitangentBuffer(&sphereObject);
+	addToBitangentBuffer(&planeObject);
+	addToBitangentBuffer(&benchObject);
 
 }
 
@@ -339,7 +396,9 @@ void generateTextures()
 
 	// load and generate the texture
 	int width, height, nrChannels;
-	unsigned char *data = stbi_load("../Lab6/meshes/pear_export_obj/pear_diffuse.jpg", &width, &height, &nrChannels, 3);
+	//unsigned char *data = stbi_load("../Lab6/meshes/pear_export_obj/pear_diffuse.jpg", &width, &height, &nrChannels, 3);
+	//unsigned char *data = stbi_load("../Lab6/meshes/Carpet/fabric.jpg", &width, &height, &nrChannels, 3);
+	unsigned char *data = stbi_load("../Lab6/meshes/grass_park.jpg", &width, &height, &nrChannels, NULL);
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -365,7 +424,8 @@ void generateTextures()
 	// load and generate the texture
 	int width1, height1, nrChannels1;
 	unsigned char *data1 = stbi_load("../Lab6/meshes/pear_export_obj/pear_normal_map.jpg", &width1, &height1, &nrChannels1, 3);
-	
+	//unsigned char *data1 = stbi_load("../Lab6/meshes/Carpet/fabric_bump.jpg", &width1, &height1, &nrChannels1, 3);
+
 	if (data1)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width1, height1, 0, GL_RGB, GL_UNSIGNED_BYTE, data1);
@@ -420,12 +480,15 @@ void init()
 	glutils = opengl_utils();
 
 	glutils.createShaders();
-
+	
 	generateTextures();
 
 	glutils.setupUniformVariables();
 
 	createObjects();
+
+	//glutils.setupLightBox();
+
 }
 
 void displayCubeMap(glm::mat4 projection, glm::mat4 view)
@@ -469,7 +532,10 @@ void displayScene(glm::mat4 projection, glm::mat4 view)
 
 	// DRAW objects
 	for (int i = 0; i < numObjects; i++)     // TODO : need to fix this hardcoding
-	{
+	{	
+		if (i == sphereIndex)
+			continue;
+
 		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
 		glutils.updateUniformVariablesReflectance(globalCGObjectTransform, view);
 		sceneObjects[i].globalTransform = globalCGObjectTransform; // keep current state		
@@ -496,7 +562,7 @@ void displayScene(glm::mat4 projection, glm::mat4 view)
 
 		glUniform3f(glutils.objectColorLoc3, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
 		
-		if (i == 2)
+		if (i == 6)
 		{
 			glUniform1i(glutils.useSolidColorUniform3, false);
 		}
@@ -509,6 +575,20 @@ void displayScene(glm::mat4 projection, glm::mat4 view)
 
 		glDisable(GL_TEXTURE_2D);
 	}
+}
+
+void displayLightBox(glm::mat4 projection, glm::mat4 view)
+{
+	glUseProgram(glutils.lightingID);
+
+	glm::mat4 local1(1.0f);
+	local1 = glm::translate(local1, lightPos);
+	local1 = glm::scale(local1, vec3(0.3, 0.3, 0.3));
+	glm::mat4 global1 = local1;
+
+	glutils.updateUniformVariablesLighting(global1, view, projection);
+
+	sceneObjects[sphereIndex].Draw(glutils, glutils.lightingID);
 }
 
 void display()
@@ -530,6 +610,8 @@ void display()
 	
 	// DRAW CUBEMAP
 	//displayCubeMap(projection, view);
+
+	displayLightBox(projection, view);
 
 	displayScene(projection, view);
 	
