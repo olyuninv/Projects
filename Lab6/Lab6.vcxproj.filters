@@ -30,6 +30,9 @@
     <ClInclude Include="lighting.h">
       <Filter>Headers</Filter>
     </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\cubeMap.fs">
@@ -48,6 +51,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\lighting.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\BlinnPhongMultipleLights.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\BlinnPhongMultipleLights.vs">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

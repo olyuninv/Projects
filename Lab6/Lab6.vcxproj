@@ -134,6 +134,8 @@
     <ClCompile Include="vboindexer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\BlinnPhongMultipleLights.fs" />
+    <None Include="shaders\BlinnPhongMultipleLights.vs" />
     <None Include="shaders\cubeMap.fs" />
     <None Include="shaders\cubeMap.vs" />
     <None Include="shaders\BlinnPhongWithTexture.fs" />
@@ -146,6 +148,7 @@
     <ClInclude Include="CGObject.h" />
     <ClInclude Include="lighting.h" />
     <ClInclude Include="opengl_utils.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="vboindexer.hpp" />
   </ItemGroup>

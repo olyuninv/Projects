@@ -469,6 +469,30 @@ void generateTextures()
 	}
 }
 
+void setupLighting()
+{
+	glm::vec3 pointLightPositions[] = {
+		glm::vec3(2.2f, 1.5f, 2.4f),
+		glm::vec3(-2.2f, -1.5f, -2.4f)
+	};
+
+	glm::vec3 pointLightColors[] = {
+		glm::vec3(1.0, 0.0, 0.0),
+		glm::vec3(0.0, 1.0, 0.0)
+	};
+
+	// point light 1
+	lightPosLoc4 = glGetUniformLocation(RefractionID,
+	glutils.ShaderWithTextureID.setVec3("pointLights[0].position", pointLightPositions[0]);
+	lightingShader.setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
+	lightingShader.setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
+	lightingShader.setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
+	lightingShader.setFloat("pointLights[0].constant", 1.0f);
+	lightingShader.setFloat("pointLights[0].linear", 0.09);
+	lightingShader.setFloat("pointLights[0].quadratic", 0.032);
+
+}
+
 void init()
 {
 	glEnable(GL_DEPTH_TEST);
@@ -481,7 +505,8 @@ void init()
 	glutils = opengl_utils();
 
 	glutils.createShaders();
-	
+
+	setupLighting();
 	generateTextures();
 
 	glutils.setupUniformVariables();

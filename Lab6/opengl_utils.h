@@ -11,6 +11,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Shader.h"
+
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
 namespace Lab6
@@ -43,12 +45,10 @@ namespace Lab6
 		GLuint loc13;
 
 		// Shaders
-		GLuint PhongProgramID;
-		GLuint CubeMapID;
-		GLuint ShaderWithTextureID;
-		GLuint lightingID;
-		GLuint RefractionID;
-
+		Shader CubeMapID;
+		Shader ShaderWithTextureID;
+		Shader lightingID;
+		
 		// Buffers
 		GLuint VBO;
 		GLuint IBO;
@@ -197,9 +197,9 @@ namespace Lab6
 
 		void createShaders()
 		{
-			CubeMapID = LoadShaders("../Lab6/shaders/cubeMap.vs", "../Lab6/shaders/cubeMap.fs");
-			ShaderWithTextureID = LoadShaders("../Lab6/shaders/BlinnPhongWithTexture.vs", "../Lab6/shaders/BlinnPhongWithTexture.fs"); //Reflection, fresnel, chromaticDispersion
-			lightingID = LoadShaders("../Lab6/shaders/lighting.vs", "../Lab6/shaders/lighting.fs");			
+			CubeMapID = Shader("../Lab6/shaders/cubeMap.vs", "../Lab6/shaders/cubeMap.fs");
+			ShaderWithTextureID = Shader("../Lab6/shaders/BlinnPhongMultipleLights.vs", "../Lab6/shaders/BlinnPhongMultipleLights.fs"); 
+			lightingID = Shader("../Lab6/shaders/lighting.vs", "../Lab6/shaders/lighting.fs");			
 		}
 
 		void setupLightBox()
@@ -271,17 +271,7 @@ namespace Lab6
 		}
 
 		void setupUniformVariables()
-		{
-			//Declare your uniform variables that will be used in your shader
-			model_mat_location = glGetUniformLocation(PhongProgramID, "model");
-			view_mat_location = glGetUniformLocation(PhongProgramID, "view");
-			proj_mat_location = glGetUniformLocation(PhongProgramID, "projection");
-
-			objectColorLoc = glGetUniformLocation(PhongProgramID, "objectColor");
-			lightColorLoc = glGetUniformLocation(PhongProgramID, "lightColor");
-			lightPosLoc = glGetUniformLocation(PhongProgramID, "lightPos");
-			viewPosLoc = glGetUniformLocation(PhongProgramID, "viewPos");
-
+		{	
 			view_mat_location2 = glGetUniformLocation(CubeMapID, "view");
 			proj_mat_location2 = glGetUniformLocation(CubeMapID, "projection");
 			cubeLocation2 = glGetUniformLocation(CubeMapID, "skybox");
@@ -304,16 +294,6 @@ namespace Lab6
 			texture3 = glGetUniformLocation(ShaderWithTextureID, "diffuseTexture");
 			normalMap3 = glGetUniformLocation(ShaderWithTextureID, "normalTexture");
 			specularMap3 = glGetUniformLocation(ShaderWithTextureID, "specularTexture");
-
-			model_mat_location4 = glGetUniformLocation(RefractionID, "model");
-			view_mat_location4 = glGetUniformLocation(RefractionID, "view");
-			proj_mat_location4 = glGetUniformLocation(RefractionID, "projection");
-			objectColorLoc4 = glGetUniformLocation(RefractionID, "objectColor");
-			camera_position4 = glGetUniformLocation(RefractionID, "cameraPos");
-			lightPosLoc4 = glGetUniformLocation(RefractionID, "lightPos");
-			viewPosLoc4 = glGetUniformLocation(RefractionID, "viewPos");
-
-			cubeLocation4 = glGetUniformLocation(RefractionID, "skybox");
 			
 			model_mat_location5 = glGetUniformLocation(lightingID, "model");
 			view_mat_location5 = glGetUniformLocation(lightingID, "view");
@@ -321,11 +301,7 @@ namespace Lab6
 		}
 
 		void getAttributeLocations()
-		{
-			loc1 = glGetAttribLocation(PhongProgramID, "position");
-			loc2 = glGetAttribLocation(PhongProgramID, "normal");
-			loc3 = glGetAttribLocation(PhongProgramID, "texture");
-
+		{			
 			loc4 = glGetAttribLocation(CubeMapID, "aPos");
 
 			loc5 = glGetAttribLocation(ShaderWithTextureID, "position");
@@ -333,10 +309,6 @@ namespace Lab6
 			loc7 = glGetAttribLocation(ShaderWithTextureID, "texture");
 			loc11 = glGetAttribLocation(ShaderWithTextureID, "tangent");
 			loc12 = glGetAttribLocation(ShaderWithTextureID, "bitangent");
-
-			loc8 = glGetAttribLocation(RefractionID, "position");
-			loc9 = glGetAttribLocation(RefractionID, "normal");
-			loc10 = glGetAttribLocation(RefractionID, "texture");
 
 			loc13 = glGetAttribLocation(lightingID, "aPos");
 		}
