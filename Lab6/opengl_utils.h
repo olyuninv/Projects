@@ -22,9 +22,11 @@ namespace Lab6
 
 	public:
 		// Shaders
-		Shader CubeMapID;
-		Shader ShaderWithTextureID;
-		Shader lightingID;
+		Shader CubeMapShader;
+		Shader ColorShader;
+		Shader LightingShader;
+		Shader DepthShader;
+		Shader DebugDepthShader;
 
 		opengl_utils()
 		{
@@ -34,7 +36,6 @@ namespace Lab6
 		~opengl_utils()
 		{}
 
-		// Shader attribute locations
 		GLuint loc1;
 		GLuint loc2;
 		GLuint loc3;
@@ -46,49 +47,17 @@ namespace Lab6
 		GLuint loc9;
 		GLuint loc10;
 
-		GLuint loc11;
-		GLuint loc12;
-
-		GLuint loc13;
-
-		
-		
 		// Buffers
 		GLuint VBO;
 		GLuint IBO;
 		GLuint TBO;
 		GLuint BTBO;
 
-		// Uniform - cubemap
-		//GLint view_mat_location2;
-		//GLint proj_mat_location2;
-		//GLuint cubeLocation2;
-
-		// Reflection
-		//GLint model_mat_location3;
-		//GLint view_mat_location3;
-		//GLint proj_mat_location3;
-		//GLint model_view_matrix3_3;
-		//GLint objectColorLoc3;
-		//GLint useSolidColorUniform3;
-		//GLint useNormalMapUniform3;
-		//GLint useSpecularMapUniform3;
-		//GLint lightPosLoc3;
-		//GLint lightColorLoc3;
-		GLint viewPosLoc3;
-
-		/*
-		GLint cubeLocation3;
-		GLint texture3;
-		GLint normalMap3;
-		GLint specularMap3;*/
-
-		// Uniform - light box
-		//GLint view_mat_location5;
-		//GLint proj_mat_location5;
-		//GLint model_mat_location5;
+		GLuint depthMapFBO;
+		GLuint quadVBO;
 
 		unsigned int lightVAO;
+		unsigned int quadVAO;
 
 		static GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path) {
 
@@ -184,9 +153,11 @@ namespace Lab6
 		void createShaders()
 		{
 			// Shaders
-			CubeMapID = Shader("../Lab6/shaders/cubeMap.vs", "../Lab6/shaders/cubeMap.fs");
-			ShaderWithTextureID = Shader("../Lab6/shaders/BlinnPhongMultipleLights.vs", "../Lab6/shaders/BlinnPhongMultipleLights.fs");
-			lightingID = Shader("../Lab6/shaders/lighting.vs", "../Lab6/shaders/lighting.fs");
+			CubeMapShader = Shader("../Lab6/shaders/cubeMap.vs", "../Lab6/shaders/cubeMap.fs");
+			ColorShader = Shader("../Lab6/shaders/BlinnPhongMultipleLights.vs", "../Lab6/shaders/BlinnPhongMultipleLights.fs");
+			LightingShader = Shader("../Lab6/shaders/lighting.vs", "../Lab6/shaders/lighting.fs");
+			DepthShader = Shader("../Lab6/shaders/simpleDepthShader.vs", "../Lab6/shaders/simpleDepthShader.fs");
+			DebugDepthShader = Shader("../Lab6/shaders/debugDepthQuad.vs", "../Lab6/shaders/debugDepthQuad.fs");
 
 		}
 
@@ -257,48 +228,23 @@ namespace Lab6
 		{
 			glGenVertexArrays(1, array);
 		}
-
-		void setupUniformVariables()
-		{	
-			//view_mat_location2 = glGetUniformLocation(CubeMapID, "view");
-			//proj_mat_location2 = glGetUniformLocation(CubeMapID, "projection");
-			//cubeLocation2 = glGetUniformLocation(CubeMapID, "skybox");
-
-			//model_mat_location3 = glGetUniformLocation(ShaderWithTextureID, "model");
-			//view_mat_location3 = glGetUniformLocation(ShaderWithTextureID, "view");
-			//proj_mat_location3 = glGetUniformLocation(ShaderWithTextureID, "projection");
-			//model_view_matrix3_3 = glGetUniformLocation(ShaderWithTextureID, "modelView3x3");
-			//objectColorLoc3 = glGetUniformLocation(ShaderWithTextureID, "objectColor");
-			//useSolidColorUniform3 = glGetUniformLocation(ShaderWithTextureID, "useSolidColor");
-			//useNormalMapUniform3 = glGetUniformLocation(ShaderWithTextureID, "useNormalMap");
-			//useSpecularMapUniform3 = glGetUniformLocation(ShaderWithTextureID, "useSpecularMap");			
-			//lightPosLoc3 = glGetUniformLocation(ShaderWithTextureID, "lightPos");
-			//lightColorLoc3 = glGetUniformLocation(ShaderWithTextureID, "lightColor");
-			//viewPosLoc3 = glGetUniformLocation(ShaderWithTextureID, "viewPos");
-
-			/*
-			cubeLocation3 = glGetUniformLocation(ShaderWithTextureID, "skybox");
-			texture3 = glGetUniformLocation(ShaderWithTextureID, "diffuseTexture");
-			normalMap3 = glGetUniformLocation(ShaderWithTextureID, "normalTexture");
-			specularMap3 = glGetUniformLocation(ShaderWithTextureID, "specularTexture");
-			*/
-
-			//model_mat_location5 = glGetUniformLocation(lightingID, "model");
-			//view_mat_location5 = glGetUniformLocation(lightingID, "view");
-			//proj_mat_location5 = glGetUniformLocation(lightingID, "projection");
-		}
-
+		
 		void getAttributeLocations()
 		{			
-			loc4 = glGetAttribLocation(CubeMapID.ID, "aPos");
+			loc1 = glGetAttribLocation(CubeMapShader.ID, "aPos");
 
-			loc5 = glGetAttribLocation(ShaderWithTextureID.ID, "position");
-			loc6 = glGetAttribLocation(ShaderWithTextureID.ID, "normal");
-			loc7 = glGetAttribLocation(ShaderWithTextureID.ID, "texture");
-			loc11 = glGetAttribLocation(ShaderWithTextureID.ID, "tangent");
-			loc12 = glGetAttribLocation(ShaderWithTextureID.ID, "bitangent");
+			loc2 = glGetAttribLocation(ColorShader.ID, "position");
+			loc3 = glGetAttribLocation(ColorShader.ID, "normal");
+			loc4 = glGetAttribLocation(ColorShader.ID, "texture");
+			loc5 = glGetAttribLocation(ColorShader.ID, "tangent");
+			loc6 = glGetAttribLocation(ColorShader.ID, "bitangent");
 
-			loc13 = glGetAttribLocation(lightingID.ID, "aPos");
+			loc7 = glGetAttribLocation(LightingShader.ID, "aPos");
+
+			loc8 = glGetAttribLocation(DepthShader.ID, "aPos");
+
+			loc9= glGetAttribLocation(DebugDepthShader.ID, "aPos");
+			loc10 = glGetAttribLocation(DebugDepthShader.ID, "aTexCoords");
 		}
 
 		void bindVertexAttribute(int location, int locationSize, int startVBO, int offsetVBO)
@@ -308,20 +254,27 @@ namespace Lab6
 			glVertexAttribPointer(location, locationSize, GL_FLOAT, GL_TRUE, 8 * sizeof(float), (void*)(startVBO * 8 * sizeof(float) + BUFFER_OFFSET(offsetVBO * sizeof(GLfloat))));
 		}
 
+		void bindVertexAttributeDebugDepth(int location, int locationSize, int startVBO, int offsetVBO)
+		{
+			glEnableVertexAttribArray(location);
+			glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+			glVertexAttribPointer(location, locationSize, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(startVBO * 5 * sizeof(float) + BUFFER_OFFSET(offsetVBO * sizeof(GLfloat))));
+		}
+
 		void linkCurrentBuffertoShaderWithTexture(GLuint VAOindex, int startVBO, int startIBO)
 		{
 			glBindVertexArray(VAOindex);
 
 			glBindBuffer(GL_ARRAY_BUFFER, VBO);
-			bindVertexAttribute(loc5, 3, startVBO, 0);
-			bindVertexAttribute(loc6, 3, startVBO, 3);
-			bindVertexAttribute(loc7, 2, startVBO, 6);
+			bindVertexAttribute(loc2, 3, startVBO, 0);
+			bindVertexAttribute(loc3, 3, startVBO, 3);
+			bindVertexAttribute(loc4, 2, startVBO, 6);
 
 			glBindBuffer(GL_ARRAY_BUFFER, TBO);
-			bindVertexAttribute(loc11, 3, startVBO, 0);
+			bindVertexAttribute(loc5, 3, startVBO, 0);
 			
 			glBindBuffer(GL_ARRAY_BUFFER, BTBO);
-			bindVertexAttribute(loc12, 3, startVBO, 0);
+			bindVertexAttribute(loc6, 3, startVBO, 0);
 
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 		}
@@ -331,54 +284,83 @@ namespace Lab6
 			glBindVertexArray(VAOindex);
 
 			glBindBuffer(GL_ARRAY_BUFFER, VBO);
-			bindVertexAttribute(loc13, 3, startVBO, 0);
+			bindVertexAttribute(loc7, 3, startVBO, 0);
 
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 		}
 
+		void linkCurrentBuffertoShaderDepth(GLuint VAOindex, int startVBO, int startIBO)
+		{
+			glBindVertexArray(VAOindex);
+
+			glBindBuffer(GL_ARRAY_BUFFER, VBO);
+			bindVertexAttribute(loc8, 3, startVBO, 0);
+			
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+		}
+
+		void linkCurrentBuffertoShaderDebugDepth()
+		{
+			glBindVertexArray(quadVAO);
+
+			glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+
+			bindVertexAttributeDebugDepth(loc9, 3, 0, 0);
+			bindVertexAttributeDebugDepth(loc10, 2, 0, 3);
+		}
+		
 		void updateUniformVariablesCubeMap(glm::mat4 view, glm::mat4 persp_proj)
 		{
 			//glUniformMatrix4fv(proj_mat_location2, 1, GL_FALSE, &persp_proj[0][0]);
 			//glUniformMatrix4fv(view_mat_location2, 1, GL_FALSE, &view[0][0]);
 
-			CubeMapID.setMat4("projection", persp_proj);
-			CubeMapID.setMat4("view", view);
+			CubeMapShader.setMat4("projection", persp_proj);
+			CubeMapShader.setMat4("view", view);
 		}
 
 		void updateUniformVariablesLighting(glm::mat4 model)
 		{
 			//glUniformMatrix4fv(model_mat_location5, 1, GL_FALSE, &model[0][0]);
-			lightingID.setMat4("model", model);
+			LightingShader.setMat4("model", model);
 		}
 
 		void updateUniformVariablesLighting(glm::mat4 model, glm::mat4 view, glm::mat4 persp_proj)
 		{
 			//glUniformMatrix4fv(proj_mat_location5, 1, GL_FALSE, &persp_proj[0][0]);
 			//glUniformMatrix4fv(view_mat_location5, 1, GL_FALSE, &view[0][0]);
-			lightingID.setMat4("projection", persp_proj);
-			lightingID.setMat4("view", view);
+			LightingShader.setMat4("projection", persp_proj);
+			LightingShader.setMat4("view", view);
 
 			updateUniformVariablesLighting(model);
 		}
 
 		void updateUniformVariablesReflectance(glm::mat4 model, glm::mat4 view)
 		{
-			//glUniformMatrix4fv(model_mat_location3, 1, GL_FALSE, &model[0][0]);
-			ShaderWithTextureID.setMat4("model", model);
+			ColorShader.setMat4("model", model);
 
 			glm::mat3 viewModel = glm::mat3 (view * model);
-			//glUniformMatrix3fv(model_view_matrix3_3, 1, GL_FALSE, &viewModel[0][0]);
-			ShaderWithTextureID.setMat4("modelView3x3", viewModel);
+			ColorShader.setMat4("modelView3x3", viewModel);
 		}
 
 		void updateUniformVariablesReflectance(glm::mat4 model, glm::mat4 view, glm::mat4 persp_proj)
 		{
-			//glUniformMatrix4fv(proj_mat_location3, 1, GL_FALSE, &persp_proj[0][0]);			
-			//glUniformMatrix4fv(view_mat_location3, 1, GL_FALSE, &view[0][0]);
-			ShaderWithTextureID.setMat4("projection", persp_proj);
-			ShaderWithTextureID.setMat4("view", view);
+			ColorShader.setMat4("projection", persp_proj);
+			ColorShader.setMat4("view", view);
 			
 			updateUniformVariablesReflectance(model, view);
+		}
+
+		void updateUniformVariablesShadows(glm::mat4 model)
+		{
+			DepthShader.setMat4("model", model);
+		}
+
+		void updateUniformVariablesShadows(glm::mat4 model, glm::mat4 view, glm::mat4 persp_proj)
+		{
+			DepthShader.setMat4("projection", persp_proj);
+			DepthShader.setMat4("view", view);
+
+			updateUniformVariablesShadows(model);
 		}
 
 		void deleteVertexArrays()
@@ -391,13 +373,17 @@ namespace Lab6
 		{
 			glDeleteBuffers(1, &VBO);
 			glDeleteBuffers(1, &IBO);
+			glDeleteBuffers(1, &TBO);
+			glDeleteBuffers(1, &BTBO);
+			glDeleteFramebuffers(1, &depthMapFBO);
 		}
 
 		void deletePrograms()
 		{			
-			glDeleteProgram(ShaderWithTextureID.ID);
-			glDeleteProgram(CubeMapID.ID);
-			glDeleteProgram(lightingID.ID);
+			glDeleteProgram(ColorShader.ID);
+			glDeleteProgram(CubeMapShader.ID);
+			glDeleteProgram(LightingShader.ID);
+			glDeleteProgram(DepthShader.ID);
 		}
 
 	};

@@ -11,11 +11,13 @@ uniform mat4 view;
 uniform mat4 projection;  
 uniform mat3 modelView3x3;  // View * Model to bring everything to cameraspace
 
+uniform mat4 lightSpaceMatrix;
+
 uniform vec3 viewPos;	// Position of the camera in world space
-//uniform vec3 lightPos;  // Position of the light in world space
 
 out vec2 TexCoord;   // UV
 out vec3 FragPos; //  Position_worldspace;
+out vec4 FragPosLightSpace; //  Position_worldspace;
 
 // Need to refraction/ reflection
 out vec3 Normal;  
@@ -35,6 +37,7 @@ void main()
 	
 	TexCoord = texture;
 	FragPos = worldPosition.xyz;
+	FragPosLightSpace = lightSpaceMatrix * vec4(FragPos, 1.0);
    
 	Normal = mat3(transpose(inverse(model))) * normal;
     	

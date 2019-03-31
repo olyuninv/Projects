@@ -15,13 +15,17 @@ namespace Lab6
 		int IBOindex = this->startIBO;
 		for (int i = 0; i < this->Meshes.size(); i++) {
 
-			if (programID == glutils.ShaderWithTextureID.ID)
+			if (programID == glutils.ColorShader.ID)
 			{
 				glutils.linkCurrentBuffertoShaderWithTexture(this->VAOs[i], VBOindex, IBOindex);
 			}
-			else if (programID == glutils.lightingID.ID)
+			else if (programID == glutils.LightingShader.ID)
 			{
 				glutils.linkCurrentBuffertoShaderLighting(this->VAOs[i], VBOindex, IBOindex);
+			}
+			else if (programID == glutils.DepthShader.ID)
+			{
+				glutils.linkCurrentBuffertoShaderDepth(this->VAOs[i], VBOindex, IBOindex);
 			}
 
 			glDrawElements(GL_TRIANGLES, this->Meshes[i].Indices.size(), GL_UNSIGNED_INT, (void*)(IBOindex * sizeof(unsigned int)));

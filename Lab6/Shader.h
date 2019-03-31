@@ -11,7 +11,7 @@
 class Shader
 {
 public:
-	unsigned int ID;
+	GLuint ID;
 	// constructor generates the shader on the fly
 	// ------------------------------------------------------------------------
 

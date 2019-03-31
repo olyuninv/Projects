@@ -46,6 +46,8 @@ void processInput(GLFWwindow *window);
 // settings
 const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1100;
+const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
+
 
 opengl_utils glutils;
 
@@ -67,6 +69,10 @@ glm::vec3 cameraPos = glm::vec3(2.0f, 4.0f, 2.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
+// Lights
+DirectionalLight dirLight = DirectionalLight();
+PointLight pointLights[2];
+
 bool pause = true;
 
 bool useSolidColor = true;
@@ -76,7 +82,7 @@ bool useSpecularMap = true;
 GLuint VAOs[MAX_OBJECTS];
 int numVAOs = 0;
 
-GLuint textures[4];
+GLuint textures[5];
 
 unsigned int textureIDcubemap;
 unsigned int textureIDlotus;
@@ -247,7 +253,7 @@ void createObjects()
 	sceneObjects[numObjects] = cylinderObject4;
 	numObjects++;
 
-	// LOAD CARPET
+	// LOAD 
 	const char* sphereFileName = "../Lab6/meshes/Sphere/sphere.obj";
 	vector<objl::Mesh> sphereMesh = loadMeshes(sphereFileName);
 
@@ -272,11 +278,11 @@ void createObjects()
 	//recalculate meshes
 	CGObject::recalculateVerticesAndIndexes(meshesPlane, new_meshesPlane, new_tangentMeshesPlane);
 
-	CGObject planeObject = loadObjObject(new_meshesPlane, new_tangentMeshesPlane, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(5.0f, 5.0f, 5.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);  
+	CGObject planeObject = loadObjObject(new_meshesPlane, new_tangentMeshesPlane, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(5.0f, 5.0f, 5.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);
 	sceneObjects[numObjects] = planeObject;
 	numObjects++;
 
-	CGObject planeObject2 = loadObjObject(new_meshesPlane, new_tangentMeshesPlane, false, true, vec3(-1.0f, 1.0f, -1.8f), vec3(2.0f, 1.0f, 1.0f), vec3(1.0f, 1.0f, 0.6f), 0.65f, NULL);  
+	CGObject planeObject2 = loadObjObject(new_meshesPlane, new_tangentMeshesPlane, false, true, vec3(-1.0f, 1.0f, -1.8f), vec3(2.0f, 1.0f, 1.0f), vec3(1.0f, 1.0f, 0.6f), 0.65f, NULL);
 	planeObject2.VAOs.push_back(planeObject.VAOs[0]);
 	planeObject2.startVBO = planeObject.startVBO;
 	planeObject2.startIBO = planeObject.startIBO;
@@ -284,7 +290,7 @@ void createObjects()
 	sceneObjects[numObjects] = planeObject2;
 	numObjects++;
 
-	CGObject planeObject3 = loadObjObject(new_meshesPlane, new_tangentMeshesPlane, false, true, vec3(1.0f, 1.0f, 1.8f), vec3(2.0f, 1.0f, 1.0f), vec3(1.0f, 1.0f, 0.6f), 0.65f, NULL);  
+	CGObject planeObject3 = loadObjObject(new_meshesPlane, new_tangentMeshesPlane, false, true, vec3(1.0f, 1.0f, 1.8f), vec3(2.0f, 1.0f, 1.0f), vec3(1.0f, 1.0f, 0.6f), 0.65f, NULL);
 	planeObject3.VAOs.push_back(planeObject.VAOs[0]);
 	planeObject3.startVBO = planeObject.startVBO;
 	planeObject3.startIBO = planeObject.startIBO;
@@ -292,7 +298,7 @@ void createObjects()
 	sceneObjects[numObjects] = planeObject3;
 	numObjects++;
 
-	// LOAD SPHERE
+	// LOAD BENCH
 	const char* benchFileName = "../Lab6/meshes/AbstractBench/bench.obj";
 	vector<objl::Mesh> meshesBench = loadMeshes(benchFileName);
 
@@ -302,8 +308,8 @@ void createObjects()
 	//recalculate meshes
 	CGObject::recalculateVerticesAndIndexes(meshesBench, new_meshesBench, new_tangentMeshesBench);
 
-	CGObject benchObject = loadObjObject(new_meshesBench, new_tangentMeshesBench, true, true, vec3(-2.0f, 0.0f, -0.8f), vec3(0.3f, 0.3f, 0.3f), vec3(0.0f, 0.0f, 1.0f), 0.65f, NULL);  
-	benchObject.initialRotateAngle = vec3(3.14, -0.3 , 0.0);
+	CGObject benchObject = loadObjObject(new_meshesBench, new_tangentMeshesBench, true, true, vec3(-2.0f, 0.0f, -0.8f), vec3(0.3f, 0.3f, 0.3f), vec3(0.0f, 0.0f, 1.0f), 0.65f, NULL);
+	benchObject.initialRotateAngle = vec3(3.14, -0.3, 0.0);
 	sceneObjects[numObjects] = benchObject;
 	numObjects++;
 
@@ -337,6 +343,24 @@ void createObjects()
 	addToBitangentBuffer(&planeObject);
 	addToBitangentBuffer(&benchObject);
 
+	// Create Quad in a separate buffer
+	float quadVertices[] = {
+		// positions        // texture Coords
+		-1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+		-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+		 1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+		 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+	};
+	// setup plane VAO
+	glGenVertexArrays(1, &glutils.quadVAO);
+	glGenBuffers(1, &glutils.quadVBO);
+	glBindVertexArray(glutils.quadVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, glutils.quadVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 }
 
 void loadCube()
@@ -370,9 +394,6 @@ void loadCube()
 
 void generateTextures()
 {
-	// Setup cubemap texture
-	glGenTextures(4, textures);  //1, &textureIDcubemap);
-
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, textures[0]); //textureIDcubemap);
 
@@ -384,10 +405,10 @@ void generateTextures()
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	//glUniform1i(glutils.cubeLocation2, 0);   // cubemap
-	glutils.CubeMapID.setInt("skybox", 0);
-	
+	glutils.CubeMapShader.setInt("skybox", 0);
+
 	//glUniform1i(glutils.cubeLocation3, 0);   // cubemap
-	glutils.ShaderWithTextureID.setInt("skybox", 0);
+	glutils.ColorShader.setInt("skybox", 0);
 
 	glActiveTexture(GL_TEXTURE1);
 	//glEnable(GL_TEXTURE_2D);
@@ -414,7 +435,7 @@ void generateTextures()
 		std::cout << "Failed to load texture" << std::endl;
 		stbi_image_free(data);
 	}
-	glutils.ShaderWithTextureID.setInt("diffuseTexture", 1);   // lotus diffuse map
+	glutils.ColorShader.setInt("diffuseTexture", 1);   // lotus diffuse map
 
 	// Setup lotus texture - bump
 	glActiveTexture(GL_TEXTURE2);
@@ -441,7 +462,7 @@ void generateTextures()
 		std::cout << "Failed to load texture" << std::endl;
 		stbi_image_free(data1);
 	}
-	glutils.ShaderWithTextureID.setInt("normalTexture", 2);   // lotus diffuse map
+	glutils.ColorShader.setInt("normalTexture", 2);   // lotus diffuse map
 
 	if (useSpecularMap)
 	{
@@ -468,51 +489,86 @@ void generateTextures()
 			std::cout << "Failed to load texture" << std::endl;
 			stbi_image_free(data2);
 		}
-		glutils.ShaderWithTextureID.setInt("specularTexture", 3);   // lotus diffuse map
+		glutils.ColorShader.setInt("specularTexture", 3);   // lotus diffuse map
 	}
 }
 
 void setupLighting()
 {
-	glm::vec3 pointLightPositions[] = {
-		glm::vec3(2.2f, 1.5f, 2.4f),
-		glm::vec3(-2.2f, -1.5f, -2.4f)
-	};
+	// directional light	
+	dirLight.color = glm::vec3(1.0f, 1.0f, 1.0f);
+	dirLight.direction = glm::vec3(-0.2f, -1.0f, -0.3f);
+	dirLight.ambient = glm::vec3(0.05f, 0.05f, 0.05f);
+	dirLight.diffuse = glm::vec3(0.4f, 0.4f, 0.4f);
+	dirLight.specular = glm::vec3(0.5f, 0.5f, 0.5f);
 
-	glm::vec3 pointLightColors[] = {
-		glm::vec3(1.0, 0.0, 0.0),
-		glm::vec3(0.0, 1.0, 0.0)
-	};
+	pointLights[0].position = glm::vec3(2.2f, 1.5f, 2.4f);
+	pointLights[0].color = glm::vec3(1.0, 0.0, 0.0);
+	pointLights[0].ambient = glm::vec3(0.05f, 0.05f, 0.05f);
+	pointLights[0].diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
+	pointLights[0].specular = glm::vec3(1.0f, 1.0f, 1.0f);
+	pointLights[0].attenuation.constant = 1.0f;
+	pointLights[0].attenuation.linear = 0.09f;
+	pointLights[0].attenuation.exp = 0.032f;
 
-	// point light 1
-	/*string name1 ="pointLights[0].position";
-	uint val = glGetUniformLocation(glutils.ShaderWithTextureID.ID, name1.c_str());
-	glUniform3fv(val, 1, &pointLightPositions[0].x);*/
+	pointLights[1].position = glm::vec3(-2.2f, -1.5f, -2.4f);
+	pointLights[1].color = glm::vec3(0.0, 1.0, 0.0);
+	pointLights[1].ambient = glm::vec3(0.05f, 0.05f, 0.05f);
+	pointLights[1].diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
+	pointLights[1].specular = glm::vec3(1.0f, 1.0f, 1.0f);
+	pointLights[1].attenuation.constant = 1.0f;
+	pointLights[1].attenuation.linear = 0.09f;
+	pointLights[1].attenuation.exp = 0.032f;
 
-	//GLuint blockId = glGetUniformBlockIndex(glutils.ShaderWithTextureID.ID, "pointLights");
+	glutils.ColorShader.use();
 
-	glutils.ShaderWithTextureID.use();
-	glutils.ShaderWithTextureID.setVec3("pointLights[0].position", pointLightPositions[0]);
-	glutils.ShaderWithTextureID.setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
-	glutils.ShaderWithTextureID.setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
-	glutils.ShaderWithTextureID.setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
-	glutils.ShaderWithTextureID.setFloat("pointLights[0].constant", 1.0f);
-	glutils.ShaderWithTextureID.setFloat("pointLights[0].linear", 0.09);
-	glutils.ShaderWithTextureID.setFloat("pointLights[0].quadratic", 0.032);
+	glutils.ColorShader.setVec3("dirLight.direction", dirLight.color);
+	glutils.ColorShader.setVec3("dirLight.direction", dirLight.direction);
+	glutils.ColorShader.setVec3("dirLight.ambient", dirLight.ambient);
+	glutils.ColorShader.setVec3("dirLight.diffuse", dirLight.diffuse);
+	glutils.ColorShader.setVec3("dirLight.specular", dirLight.specular);
+
+	// point lights
+	glutils.ColorShader.setVec3("pointLights[0].position", pointLights[0].position);
+	glutils.ColorShader.setVec3("pointLights[0].ambient", pointLights[0].ambient);
+	glutils.ColorShader.setVec3("pointLights[0].diffuse", pointLights[0].diffuse);
+	glutils.ColorShader.setVec3("pointLights[0].specular", pointLights[0].specular);
+	glutils.ColorShader.setFloat("pointLights[0].constant", pointLights[0].attenuation.constant);
+	glutils.ColorShader.setFloat("pointLights[0].linear", pointLights[0].attenuation.linear);
+	glutils.ColorShader.setFloat("pointLights[0].quadratic", pointLights[0].attenuation.exp);
 
 	// point light 2
-	glutils.ShaderWithTextureID.setVec3("pointLights[1].position", pointLightPositions[1]);
-	glutils.ShaderWithTextureID.setVec3("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
-	glutils.ShaderWithTextureID.setVec3("pointLights[1].diffuse", 0.8f, 0.8f, 0.8f);
-	glutils.ShaderWithTextureID.setVec3("pointLights[1].specular", 1.0f, 1.0f, 1.0f);
-	glutils.ShaderWithTextureID.setFloat("pointLights[1].constant", 1.0f);
-	glutils.ShaderWithTextureID.setFloat("pointLights[1].linear", 0.09);
-	glutils.ShaderWithTextureID.setFloat("pointLights[1].quadratic", 0.032);
+	glutils.ColorShader.setVec3("pointLights[1].position", pointLights[1].position);
+	glutils.ColorShader.setVec3("pointLights[1].ambient", pointLights[1].ambient);
+	glutils.ColorShader.setVec3("pointLights[1].diffuse", pointLights[1].diffuse);
+	glutils.ColorShader.setVec3("pointLights[1].specular", pointLights[1].specular);
+	glutils.ColorShader.setFloat("pointLights[1].constant", pointLights[1].attenuation.constant);
+	glutils.ColorShader.setFloat("pointLights[1].linear", pointLights[1].attenuation.linear);
+	glutils.ColorShader.setFloat("pointLights[1].quadratic", pointLights[1].attenuation.exp);
+}
+
+void createShadowMap()
+{
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, textures[4]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
+		SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	/*glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);*/
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 }
 
 void init()
 {
 	glEnable(GL_DEPTH_TEST);
+	// glDepthFunc(GL_ALWAYS); no depth test
 	glEnable(GL_BLEND);// you enable blending function
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_TEXTURE_2D);
@@ -524,21 +580,36 @@ void init()
 	glutils.createShaders();
 
 	setupLighting();
-	generateTextures();
 
-	glutils.setupUniformVariables();
+	glGenTextures(5, textures);  //1, &textureIDcubemap);
+	generateTextures();
 
 	createObjects();
 
 	//glutils.setupLightBox();
 
+	// Shadow
+	glGenFramebuffers(1, &glutils.depthMapFBO);
+	createShadowMap();
+	glBindFramebuffer(GL_FRAMEBUFFER, glutils.depthMapFBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, textures[4], 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	auto result = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
+		throw "could not attach shadow frame buffer";
+	}
+
+	cout << "Finished loading" << endl;
 }
 
 void displayCubeMap(glm::mat4 projection, glm::mat4 view)
 {
 	// First Draw cube map - sceneObjects[0]
 	glDepthMask(GL_FALSE);
-	glutils.CubeMapID.use();
+	glutils.CubeMapShader.use();
 
 	glm::mat4 viewCube = glm::mat4(glm::mat3(view));
 	glutils.updateUniformVariablesCubeMap(viewCube, projection);
@@ -547,7 +618,7 @@ void displayCubeMap(glm::mat4 projection, glm::mat4 view)
 
 	glBindVertexArray(VAOs[0]);
 
-	glutils.bindVertexAttribute(glutils.loc4, 3, sceneObjects[0].startVBO, 0);
+	glutils.bindVertexAttribute(glutils.loc1, 3, sceneObjects[0].startVBO, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glutils.IBO);
 
 	glDrawElements(GL_TRIANGLES, sceneObjects[0].Meshes[0].Indices.size(), GL_UNSIGNED_INT, (void*)(sceneObjects[0].startIBO * sizeof(unsigned int)));
@@ -556,58 +627,56 @@ void displayCubeMap(glm::mat4 projection, glm::mat4 view)
 
 }
 
-void displayScene(glm::mat4 projection, glm::mat4 view)
+void displayScene(GLuint shaderId, mat4 view)
 {
-	glutils.ShaderWithTextureID.use();
-
-	glm::mat4 local1(1.0f);
-	local1 = glm::translate(local1, cameraPos);
-	glm::mat4 global1 = local1;
-
-	glutils.updateUniformVariablesReflectance(global1, view, projection);
-
-	//glUniform3f(glutils.viewPosLoc3, cameraPos.x, -cameraPos.y, cameraPos.z);
-	glutils.ShaderWithTextureID.setVec3("viewPos", cameraPos.x, -cameraPos.y, cameraPos.z);
-	
-
-	//glUniform3f(glutils.lightPosLoc3, lightPos.x, lightPos.y, lightPos.z);
-	//glUniform3f(glutils.lightColorLoc3, 1.0, 1.0, 1.0);
 	//glUniform1i(glutils.useSolidColorUniform3, useSolidColor);
 	//glUniform1i(glutils.useNormalMapUniform3, useNormalMap);
 	//glUniform1i(glutils.useSpecularMapUniform3, useSpecularMap);
 
 	// DRAW objects
-	for (int i = 0; i < numObjects; i++)     // TODO : need to fix this hardcoding
-	{	
+	for (int i = 0; i < numObjects; i++)
+	{
 		if (i == sphereIndex)
 			continue;
 
 		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
-		glutils.updateUniformVariablesReflectance(globalCGObjectTransform, view);
+
+		if (shaderId == glutils.DepthShader.ID)
+		{
+			glutils.updateUniformVariablesShadows(globalCGObjectTransform);
+		}
+		else
+		{
+			glutils.updateUniformVariablesReflectance(globalCGObjectTransform, view);
+		}
+
 		sceneObjects[i].globalTransform = globalCGObjectTransform; // keep current state		
 
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, textures[0]);
-		glutils.ShaderWithTextureID.setInt("skybox", 0);
-
-		glEnable(GL_TEXTURE_2D);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, textures[1]);
-		glutils.ShaderWithTextureID.setInt("diffuseTexture", 1);
-
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, textures[2]);
-		glutils.ShaderWithTextureID.setInt("normalTexture", 2);
-
-		if (useSpecularMap)
+		if (glutils.ColorShader.ID == shaderId)
 		{
-			glActiveTexture(GL_TEXTURE3);
-			glBindTexture(GL_TEXTURE_2D, textures[3]);
-			glutils.ShaderWithTextureID.setInt("specularTexture", 3);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, textures[0]);
+			glutils.ColorShader.setInt("skybox", 0);
+
+			//glEnable(GL_TEXTURE_2D);
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, textures[1]);
+			glutils.ColorShader.setInt("diffuseTexture", 1);
+
+			glActiveTexture(GL_TEXTURE2);
+			glBindTexture(GL_TEXTURE_2D, textures[2]);
+			glutils.ColorShader.setInt("normalTexture", 2);
+
+			if (useSpecularMap)
+			{
+				glActiveTexture(GL_TEXTURE3);
+				glBindTexture(GL_TEXTURE_2D, textures[3]);
+				glutils.ColorShader.setInt("specularTexture", 3);
+			}
 		}
 
 		//glUniform3f(glutils.objectColorLoc3, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
-		
+
 		/*if (i == 6)
 		{
 			glUniform1i(glutils.useSolidColorUniform3, false);
@@ -617,15 +686,15 @@ void displayScene(glm::mat4 projection, glm::mat4 view)
 			glUniform1i(glutils.useSolidColorUniform3, true);
 		}*/
 
-		sceneObjects[i].Draw(glutils, glutils.ShaderWithTextureID.ID);
+		sceneObjects[i].Draw(glutils, shaderId);
 
-		glDisable(GL_TEXTURE_2D);
+		//glDisable(GL_TEXTURE_2D);
 	}
 }
 
 void displayLightBox(glm::mat4 projection, glm::mat4 view)
 {
-	glutils.lightingID.use();
+	glutils.LightingShader.use();
 
 	glm::mat4 local1(1.0f);
 	local1 = glm::translate(local1, lightPos);
@@ -634,7 +703,69 @@ void displayLightBox(glm::mat4 projection, glm::mat4 view)
 
 	glutils.updateUniformVariablesLighting(global1, view, projection);
 
-	sceneObjects[sphereIndex].Draw(glutils, glutils.lightingID.ID);
+	sceneObjects[sphereIndex].Draw(glutils, glutils.LightingShader.ID);
+}
+
+mat4 renderShadows(float fov, float near, float far)
+{
+	// 1. render depth of scene to texture (from light's perspective)
+		// --------------------------------------------------------------
+	glm::mat4 lightProjection, lightView;
+	glm::mat4 lightSpaceMatrix;
+
+	lightProjection = glm::perspective(fov, (GLfloat)SHADOW_WIDTH / (GLfloat)SHADOW_HEIGHT, near, far); // note that if you use a perspective projection matrix you'll have to change the light position as the current light position isn't enough to reflect the whole scene
+	//lightProjection = glm::ortho(-2.5f, -2.5f, -2.5f, 2.5f, -2.5f, 2.5f); //near, far); // Directional light
+
+	lightView = glm::lookAt(pointLights[0].position /*-1.0f * dirLight.direction*/ /*vec3(0.0f, 3.0f, 0.0f) */, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+	lightSpaceMatrix = lightProjection * lightView;
+
+	// render scene from light's point of view
+	glutils.DepthShader.use();
+	glutils.DepthShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
+
+	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+	glBindFramebuffer(GL_FRAMEBUFFER, glutils.depthMapFBO);
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	//glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, textures[1]);
+
+	displayScene(glutils.DepthShader.ID, lightView);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	return lightSpaceMatrix;
+}
+
+void drawDebugShadowTexture()
+{
+	// TRY DRAW SHADOW TEXTURE
+	glutils.DebugDepthShader.use();
+
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, textures[4]);
+
+	glutils.DebugDepthShader.setInt("depthMap", 4);
+
+	glutils.DebugDepthShader.setFloat("near", 0.1f);
+	glutils.DebugDepthShader.setFloat("far", 100.0f);
+
+	glutils.linkCurrentBuffertoShaderDebugDepth();
+
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+}
+
+void normalDraw(mat4 lightSpaceMatrix, mat4 view, mat4 projection)
+{
+	// NORMAL SCENE DRAW
+	glutils.ColorShader.use();
+	glutils.updateUniformVariablesReflectance(glm::mat4(1.0), view, projection);
+	glutils.ColorShader.setVec3("viewPos", cameraPos.x, -cameraPos.y, cameraPos.z);
+	glutils.ColorShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
+	glutils.ColorShader.setInt("shadowMap", 4);
+	displayScene(glutils.ColorShader.ID, view);
+
 }
 
 void display()
@@ -646,35 +777,31 @@ void display()
 	// inpuT
 	processInput(window);
 
-	// render
-	glClearColor(0.78f, 0.84f, 0.49f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-	// Update projection 
-	glm::mat4 projection = glm::perspective(glm::radians(fov), (float)(SCR_WIDTH) / (float)(SCR_HEIGHT), 0.1f, 100.0f);
-	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-	
 	// DRAW CUBEMAP
 	//displayCubeMap(projection, view);
 
+	mat4 lightSpaceMatrix = renderShadows(glm::radians(fov), 0.1f, 100.0f);
+
+	//render 
+	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+		
+	glClearColor(0.78f, 0.84f, 0.49f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// Update projection 
+	glm::mat4 projection = glm::perspective(glm::radians(fov), (float)(SCR_WIDTH) / (float)(SCR_HEIGHT), 0.1f, 100.0f);
+	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+
 	displayLightBox(projection, view);
-
-	displayScene(projection, view);
+	normalDraw(lightSpaceMatrix, view, projection);
 	
-	// rotate
-	if (!pause)
-	{
-		sceneObjects[1].rotateAngles.y += 0.01;
-		sceneObjects[2].rotateAngles.y += 0.01;
-		sceneObjects[3].rotateAngles.y += 0.01;
-	}
+	//drawDebugShadowTexture();
 
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(2);
-	glDisableVertexAttribArray(3);
+	//glDisableVertexAttribArray(0);
+	//glDisableVertexAttribArray(1);
+	//glDisableVertexAttribArray(2);
+	//glDisableVertexAttribArray(3);
 
-	// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 	glfwSwapBuffers(window);
 	glfwPollEvents();
 }

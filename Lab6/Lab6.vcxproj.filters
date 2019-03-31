@@ -59,6 +59,18 @@
     <None Include="shaders\BlinnPhongMultipleLights.vs">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="shaders\simpleDepthShader.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\simpleDepthShader.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\debugDepthQuad.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\debugDepthQuad.vs">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">
