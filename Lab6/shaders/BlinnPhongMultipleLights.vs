@@ -1,4 +1,5 @@
 #version 330 core
+
 in vec3 position;	// Model space
 in vec3 normal;		// Model space
 in vec2 texture;	// Model space
@@ -9,8 +10,9 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;  
 uniform mat3 modelView3x3;  // View * Model to bring everything to cameraspace
+
 uniform vec3 viewPos;	// Position of the camera in world space
-uniform vec3 lightPos;  // Position of the light in world space
+//uniform vec3 lightPos;  // Position of the light in world space
 
 out vec2 TexCoord;   // UV
 out vec3 FragPos; //  Position_worldspace;
@@ -20,11 +22,11 @@ out vec3 Normal;
 out vec3 reflectedVector; 
 out vec3 refractedVector; 
 
-out vec3 EyeDirection_cameraspace;
-out vec3 LightDirection_cameraspace;
+//out vec3 EyeDirection_cameraspace;
+//out vec3 LightDirection_cameraspace;
 
-out vec3 LightDirection_tangentspace;
-out vec3 EyeDirection_tangentspace;
+//out vec3 LightDirection_tangentspace;
+//out vec3 EyeDirection_tangentspace; 
 
 void main()
 {
@@ -42,8 +44,8 @@ void main()
             
     reflectedVector = reflect (viewDirection, unitNormal);
 	refractedVector = refract (viewDirection, unitNormal, 1.0/ 1.52);  // TODO: eta?
-
 	
+	/*
 	// Textures:
 	// Vector that goes from the vertex to the camera, in camera space.
 	// In camera space, the camera is at the origin (0,0,0).
@@ -73,5 +75,5 @@ void main()
 
 	LightDirection_tangentspace = TBN * LightDirection_cameraspace;
 	EyeDirection_tangentspace =  TBN * EyeDirection_cameraspace;
-
+	*/
 }

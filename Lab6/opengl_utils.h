@@ -21,8 +21,15 @@ namespace Lab6
 	{
 
 	public:
+		// Shaders
+		Shader CubeMapID;
+		Shader ShaderWithTextureID;
+		Shader lightingID;
+
 		opengl_utils()
-		{}
+		{
+			
+		}
 
 		~opengl_utils()
 		{}
@@ -44,10 +51,7 @@ namespace Lab6
 
 		GLuint loc13;
 
-		// Shaders
-		Shader CubeMapID;
-		Shader ShaderWithTextureID;
-		Shader lightingID;
+		
 		
 		// Buffers
 		GLuint VBO;
@@ -55,52 +59,34 @@ namespace Lab6
 		GLuint TBO;
 		GLuint BTBO;
 
-		// Uniform locations
-		GLint model_mat_location;
-		GLint view_mat_location;
-		GLint proj_mat_location;
-		GLint objectColorLoc;
-		GLint lightColorLoc;
-		GLint lightPosLoc;
-		GLint viewPosLoc;
-
 		// Uniform - cubemap
-		GLint view_mat_location2;
-		GLint proj_mat_location2;
-		GLuint cubeLocation2;
+		//GLint view_mat_location2;
+		//GLint proj_mat_location2;
+		//GLuint cubeLocation2;
 
 		// Reflection
-		GLint model_mat_location3;
-		GLint view_mat_location3;
-		GLint proj_mat_location3;
-		GLint model_view_matrix3_3;
-		GLint objectColorLoc3;
-		GLint useSolidColorUniform3;
-		GLint useNormalMapUniform3;
-		GLint useSpecularMapUniform3;
-		GLint camera_position3;
-		GLint lightPosLoc3;
-		GLint lightColorLoc3;
+		//GLint model_mat_location3;
+		//GLint view_mat_location3;
+		//GLint proj_mat_location3;
+		//GLint model_view_matrix3_3;
+		//GLint objectColorLoc3;
+		//GLint useSolidColorUniform3;
+		//GLint useNormalMapUniform3;
+		//GLint useSpecularMapUniform3;
+		//GLint lightPosLoc3;
+		//GLint lightColorLoc3;
 		GLint viewPosLoc3;
+
+		/*
 		GLint cubeLocation3;
 		GLint texture3;
 		GLint normalMap3;
-		GLint specularMap3;
-
-		// Refraction
-		GLint model_mat_location4;
-		GLint view_mat_location4;
-		GLint proj_mat_location4;
-		GLint objectColorLoc4;
-		GLint camera_position4;
-		GLint lightPosLoc4;
-		GLint viewPosLoc4;
-		GLint cubeLocation4;
+		GLint specularMap3;*/
 
 		// Uniform - light box
-		GLint view_mat_location5;
-		GLint proj_mat_location5;
-		GLint model_mat_location5;
+		//GLint view_mat_location5;
+		//GLint proj_mat_location5;
+		//GLint model_mat_location5;
 
 		unsigned int lightVAO;
 
@@ -197,9 +183,11 @@ namespace Lab6
 
 		void createShaders()
 		{
+			// Shaders
 			CubeMapID = Shader("../Lab6/shaders/cubeMap.vs", "../Lab6/shaders/cubeMap.fs");
-			ShaderWithTextureID = Shader("../Lab6/shaders/BlinnPhongMultipleLights.vs", "../Lab6/shaders/BlinnPhongMultipleLights.fs"); 
-			lightingID = Shader("../Lab6/shaders/lighting.vs", "../Lab6/shaders/lighting.fs");			
+			ShaderWithTextureID = Shader("../Lab6/shaders/BlinnPhongMultipleLights.vs", "../Lab6/shaders/BlinnPhongMultipleLights.fs");
+			lightingID = Shader("../Lab6/shaders/lighting.vs", "../Lab6/shaders/lighting.fs");
+
 		}
 
 		void setupLightBox()
@@ -272,45 +260,45 @@ namespace Lab6
 
 		void setupUniformVariables()
 		{	
-			view_mat_location2 = glGetUniformLocation(CubeMapID, "view");
-			proj_mat_location2 = glGetUniformLocation(CubeMapID, "projection");
-			cubeLocation2 = glGetUniformLocation(CubeMapID, "skybox");
+			//view_mat_location2 = glGetUniformLocation(CubeMapID, "view");
+			//proj_mat_location2 = glGetUniformLocation(CubeMapID, "projection");
+			//cubeLocation2 = glGetUniformLocation(CubeMapID, "skybox");
 
-			model_mat_location3 = glGetUniformLocation(ShaderWithTextureID, "model");
-			view_mat_location3 = glGetUniformLocation(ShaderWithTextureID, "view");
-			proj_mat_location3 = glGetUniformLocation(ShaderWithTextureID, "projection");
-			model_view_matrix3_3 = glGetUniformLocation(ShaderWithTextureID, "modelView3x3");
-			objectColorLoc3 = glGetUniformLocation(ShaderWithTextureID, "objectColor");
-			useSolidColorUniform3 = glGetUniformLocation(ShaderWithTextureID, "useSolidColor");
-			useNormalMapUniform3 = glGetUniformLocation(ShaderWithTextureID, "useNormalMap");
-			useSpecularMapUniform3 = glGetUniformLocation(ShaderWithTextureID, "useSpecularMap");
-			camera_position3 = glGetUniformLocation(ShaderWithTextureID, "cameraPos");
+			//model_mat_location3 = glGetUniformLocation(ShaderWithTextureID, "model");
+			//view_mat_location3 = glGetUniformLocation(ShaderWithTextureID, "view");
+			//proj_mat_location3 = glGetUniformLocation(ShaderWithTextureID, "projection");
+			//model_view_matrix3_3 = glGetUniformLocation(ShaderWithTextureID, "modelView3x3");
+			//objectColorLoc3 = glGetUniformLocation(ShaderWithTextureID, "objectColor");
+			//useSolidColorUniform3 = glGetUniformLocation(ShaderWithTextureID, "useSolidColor");
+			//useNormalMapUniform3 = glGetUniformLocation(ShaderWithTextureID, "useNormalMap");
+			//useSpecularMapUniform3 = glGetUniformLocation(ShaderWithTextureID, "useSpecularMap");			
+			//lightPosLoc3 = glGetUniformLocation(ShaderWithTextureID, "lightPos");
+			//lightColorLoc3 = glGetUniformLocation(ShaderWithTextureID, "lightColor");
+			//viewPosLoc3 = glGetUniformLocation(ShaderWithTextureID, "viewPos");
 
-			lightPosLoc3 = glGetUniformLocation(ShaderWithTextureID, "lightPos");
-			lightColorLoc3 = glGetUniformLocation(ShaderWithTextureID, "lightColor");
-			viewPosLoc3 = glGetUniformLocation(ShaderWithTextureID, "viewPos");
-
+			/*
 			cubeLocation3 = glGetUniformLocation(ShaderWithTextureID, "skybox");
 			texture3 = glGetUniformLocation(ShaderWithTextureID, "diffuseTexture");
 			normalMap3 = glGetUniformLocation(ShaderWithTextureID, "normalTexture");
 			specularMap3 = glGetUniformLocation(ShaderWithTextureID, "specularTexture");
-			
-			model_mat_location5 = glGetUniformLocation(lightingID, "model");
-			view_mat_location5 = glGetUniformLocation(lightingID, "view");
-			proj_mat_location5 = glGetUniformLocation(lightingID, "projection");
+			*/
+
+			//model_mat_location5 = glGetUniformLocation(lightingID, "model");
+			//view_mat_location5 = glGetUniformLocation(lightingID, "view");
+			//proj_mat_location5 = glGetUniformLocation(lightingID, "projection");
 		}
 
 		void getAttributeLocations()
 		{			
-			loc4 = glGetAttribLocation(CubeMapID, "aPos");
+			loc4 = glGetAttribLocation(CubeMapID.ID, "aPos");
 
-			loc5 = glGetAttribLocation(ShaderWithTextureID, "position");
-			loc6 = glGetAttribLocation(ShaderWithTextureID, "normal");
-			loc7 = glGetAttribLocation(ShaderWithTextureID, "texture");
-			loc11 = glGetAttribLocation(ShaderWithTextureID, "tangent");
-			loc12 = glGetAttribLocation(ShaderWithTextureID, "bitangent");
+			loc5 = glGetAttribLocation(ShaderWithTextureID.ID, "position");
+			loc6 = glGetAttribLocation(ShaderWithTextureID.ID, "normal");
+			loc7 = glGetAttribLocation(ShaderWithTextureID.ID, "texture");
+			loc11 = glGetAttribLocation(ShaderWithTextureID.ID, "tangent");
+			loc12 = glGetAttribLocation(ShaderWithTextureID.ID, "bitangent");
 
-			loc13 = glGetAttribLocation(lightingID, "aPos");
+			loc13 = glGetAttribLocation(lightingID.ID, "aPos");
 		}
 
 		void bindVertexAttribute(int location, int locationSize, int startVBO, int offsetVBO)
@@ -350,33 +338,45 @@ namespace Lab6
 
 		void updateUniformVariablesCubeMap(glm::mat4 view, glm::mat4 persp_proj)
 		{
-			glUniformMatrix4fv(proj_mat_location2, 1, GL_FALSE, &persp_proj[0][0]);
-			glUniformMatrix4fv(view_mat_location2, 1, GL_FALSE, &view[0][0]);
+			//glUniformMatrix4fv(proj_mat_location2, 1, GL_FALSE, &persp_proj[0][0]);
+			//glUniformMatrix4fv(view_mat_location2, 1, GL_FALSE, &view[0][0]);
+
+			CubeMapID.setMat4("projection", persp_proj);
+			CubeMapID.setMat4("view", view);
 		}
 
 		void updateUniformVariablesLighting(glm::mat4 model)
 		{
-			glUniformMatrix4fv(model_mat_location5, 1, GL_FALSE, &model[0][0]);
+			//glUniformMatrix4fv(model_mat_location5, 1, GL_FALSE, &model[0][0]);
+			lightingID.setMat4("model", model);
 		}
 
 		void updateUniformVariablesLighting(glm::mat4 model, glm::mat4 view, glm::mat4 persp_proj)
 		{
-			glUniformMatrix4fv(proj_mat_location5, 1, GL_FALSE, &persp_proj[0][0]);
-			glUniformMatrix4fv(view_mat_location5, 1, GL_FALSE, &view[0][0]);
+			//glUniformMatrix4fv(proj_mat_location5, 1, GL_FALSE, &persp_proj[0][0]);
+			//glUniformMatrix4fv(view_mat_location5, 1, GL_FALSE, &view[0][0]);
+			lightingID.setMat4("projection", persp_proj);
+			lightingID.setMat4("view", view);
+
 			updateUniformVariablesLighting(model);
 		}
 
 		void updateUniformVariablesReflectance(glm::mat4 model, glm::mat4 view)
 		{
-			glUniformMatrix4fv(model_mat_location3, 1, GL_FALSE, &model[0][0]);
+			//glUniformMatrix4fv(model_mat_location3, 1, GL_FALSE, &model[0][0]);
+			ShaderWithTextureID.setMat4("model", model);
+
 			glm::mat3 viewModel = glm::mat3 (view * model);
-			glUniformMatrix3fv(model_view_matrix3_3, 1, GL_FALSE, &viewModel[0][0]);
+			//glUniformMatrix3fv(model_view_matrix3_3, 1, GL_FALSE, &viewModel[0][0]);
+			ShaderWithTextureID.setMat4("modelView3x3", viewModel);
 		}
 
 		void updateUniformVariablesReflectance(glm::mat4 model, glm::mat4 view, glm::mat4 persp_proj)
 		{
-			glUniformMatrix4fv(proj_mat_location3, 1, GL_FALSE, &persp_proj[0][0]);
-			glUniformMatrix4fv(view_mat_location3, 1, GL_FALSE, &view[0][0]);
+			//glUniformMatrix4fv(proj_mat_location3, 1, GL_FALSE, &persp_proj[0][0]);			
+			//glUniformMatrix4fv(view_mat_location3, 1, GL_FALSE, &view[0][0]);
+			ShaderWithTextureID.setMat4("projection", persp_proj);
+			ShaderWithTextureID.setMat4("view", view);
 			
 			updateUniformVariablesReflectance(model, view);
 		}
@@ -394,11 +394,10 @@ namespace Lab6
 		}
 
 		void deletePrograms()
-		{
-			glDeleteProgram(PhongProgramID);
-			glDeleteProgram(CubeMapID);
-			glDeleteProgram(ShaderWithTextureID);
-			glDeleteProgram(RefractionID);
+		{			
+			glDeleteProgram(ShaderWithTextureID.ID);
+			glDeleteProgram(CubeMapID.ID);
+			glDeleteProgram(lightingID.ID);
 		}
 
 	};

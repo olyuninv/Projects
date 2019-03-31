@@ -383,8 +383,11 @@ void generateTextures()
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	glUniform1i(glutils.cubeLocation2, 0);   // cubemap
-	glUniform1i(glutils.cubeLocation3, 0);   // cubemap
+	//glUniform1i(glutils.cubeLocation2, 0);   // cubemap
+	glutils.CubeMapID.setInt("skybox", 0);
+	
+	//glUniform1i(glutils.cubeLocation3, 0);   // cubemap
+	glutils.ShaderWithTextureID.setInt("skybox", 0);
 
 	glActiveTexture(GL_TEXTURE1);
 	//glEnable(GL_TEXTURE_2D);
@@ -411,7 +414,7 @@ void generateTextures()
 		std::cout << "Failed to load texture" << std::endl;
 		stbi_image_free(data);
 	}
-	glUniform1i(glutils.texture3, 1);   // lotus diffuse map
+	glutils.ShaderWithTextureID.setInt("diffuseTexture", 1);   // lotus diffuse map
 
 	// Setup lotus texture - bump
 	glActiveTexture(GL_TEXTURE2);
@@ -438,7 +441,7 @@ void generateTextures()
 		std::cout << "Failed to load texture" << std::endl;
 		stbi_image_free(data1);
 	}
-	glUniform1i(glutils.normalMap3, 2);   // lotus diffuse map
+	glutils.ShaderWithTextureID.setInt("normalTexture", 2);   // lotus diffuse map
 
 	if (useSpecularMap)
 	{
@@ -465,7 +468,7 @@ void generateTextures()
 			std::cout << "Failed to load texture" << std::endl;
 			stbi_image_free(data2);
 		}
-		glUniform1i(glutils.specularMap3, 3);   // lotus diffuse map
+		glutils.ShaderWithTextureID.setInt("specularTexture", 3);   // lotus diffuse map
 	}
 }
 
@@ -482,15 +485,29 @@ void setupLighting()
 	};
 
 	// point light 1
-	lightPosLoc4 = glGetUniformLocation(RefractionID,
-	glutils.ShaderWithTextureID.setVec3("pointLights[0].position", pointLightPositions[0]);
-	lightingShader.setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
-	lightingShader.setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
-	lightingShader.setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
-	lightingShader.setFloat("pointLights[0].constant", 1.0f);
-	lightingShader.setFloat("pointLights[0].linear", 0.09);
-	lightingShader.setFloat("pointLights[0].quadratic", 0.032);
+	/*string name1 ="pointLights[0].position";
+	uint val = glGetUniformLocation(glutils.ShaderWithTextureID.ID, name1.c_str());
+	glUniform3fv(val, 1, &pointLightPositions[0].x);*/
 
+	//GLuint blockId = glGetUniformBlockIndex(glutils.ShaderWithTextureID.ID, "pointLights");
+
+	glutils.ShaderWithTextureID.use();
+	glutils.ShaderWithTextureID.setVec3("pointLights[0].position", pointLightPositions[0]);
+	glutils.ShaderWithTextureID.setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
+	glutils.ShaderWithTextureID.setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
+	glutils.ShaderWithTextureID.setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
+	glutils.ShaderWithTextureID.setFloat("pointLights[0].constant", 1.0f);
+	glutils.ShaderWithTextureID.setFloat("pointLights[0].linear", 0.09);
+	glutils.ShaderWithTextureID.setFloat("pointLights[0].quadratic", 0.032);
+
+	// point light 2
+	glutils.ShaderWithTextureID.setVec3("pointLights[1].position", pointLightPositions[1]);
+	glutils.ShaderWithTextureID.setVec3("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
+	glutils.ShaderWithTextureID.setVec3("pointLights[1].diffuse", 0.8f, 0.8f, 0.8f);
+	glutils.ShaderWithTextureID.setVec3("pointLights[1].specular", 1.0f, 1.0f, 1.0f);
+	glutils.ShaderWithTextureID.setFloat("pointLights[1].constant", 1.0f);
+	glutils.ShaderWithTextureID.setFloat("pointLights[1].linear", 0.09);
+	glutils.ShaderWithTextureID.setFloat("pointLights[1].quadratic", 0.032);
 }
 
 void init()
@@ -521,7 +538,7 @@ void displayCubeMap(glm::mat4 projection, glm::mat4 view)
 {
 	// First Draw cube map - sceneObjects[0]
 	glDepthMask(GL_FALSE);
-	glUseProgram(glutils.CubeMapID);
+	glutils.CubeMapID.use();
 
 	glm::mat4 viewCube = glm::mat4(glm::mat3(view));
 	glutils.updateUniformVariablesCubeMap(viewCube, projection);
@@ -541,7 +558,7 @@ void displayCubeMap(glm::mat4 projection, glm::mat4 view)
 
 void displayScene(glm::mat4 projection, glm::mat4 view)
 {
-	glUseProgram(glutils.ShaderWithTextureID);
+	glutils.ShaderWithTextureID.use();
 
 	glm::mat4 local1(1.0f);
 	local1 = glm::translate(local1, cameraPos);
@@ -549,12 +566,15 @@ void displayScene(glm::mat4 projection, glm::mat4 view)
 
 	glutils.updateUniformVariablesReflectance(global1, view, projection);
 
-	glUniform3f(glutils.viewPosLoc3, cameraPos.x, -cameraPos.y, cameraPos.z);
-	glUniform3f(glutils.lightPosLoc3, lightPos.x, lightPos.y, lightPos.z);
-	glUniform3f(glutils.lightColorLoc3, 1.0, 1.0, 1.0);
-	glUniform1i(glutils.useSolidColorUniform3, useSolidColor);
-	glUniform1i(glutils.useNormalMapUniform3, useNormalMap);
-	glUniform1i(glutils.useSpecularMapUniform3, useSpecularMap);
+	//glUniform3f(glutils.viewPosLoc3, cameraPos.x, -cameraPos.y, cameraPos.z);
+	glutils.ShaderWithTextureID.setVec3("viewPos", cameraPos.x, -cameraPos.y, cameraPos.z);
+	
+
+	//glUniform3f(glutils.lightPosLoc3, lightPos.x, lightPos.y, lightPos.z);
+	//glUniform3f(glutils.lightColorLoc3, 1.0, 1.0, 1.0);
+	//glUniform1i(glutils.useSolidColorUniform3, useSolidColor);
+	//glUniform1i(glutils.useNormalMapUniform3, useNormalMap);
+	//glUniform1i(glutils.useSpecularMapUniform3, useSpecularMap);
 
 	// DRAW objects
 	for (int i = 0; i < numObjects; i++)     // TODO : need to fix this hardcoding
@@ -568,36 +588,36 @@ void displayScene(glm::mat4 projection, glm::mat4 view)
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, textures[0]);
-		glUniform1i(glutils.cubeLocation3, 0);
+		glutils.ShaderWithTextureID.setInt("skybox", 0);
 
 		glEnable(GL_TEXTURE_2D);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, textures[1]);
-		glUniform1i(glutils.texture3, 1);
+		glutils.ShaderWithTextureID.setInt("diffuseTexture", 1);
 
 		glActiveTexture(GL_TEXTURE2);
 		glBindTexture(GL_TEXTURE_2D, textures[2]);
-		glUniform1i(glutils.normalMap3, 2);
+		glutils.ShaderWithTextureID.setInt("normalTexture", 2);
 
 		if (useSpecularMap)
 		{
 			glActiveTexture(GL_TEXTURE3);
 			glBindTexture(GL_TEXTURE_2D, textures[3]);
-			glUniform1i(glutils.specularMap3, 3);
+			glutils.ShaderWithTextureID.setInt("specularTexture", 3);
 		}
 
-		glUniform3f(glutils.objectColorLoc3, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
+		//glUniform3f(glutils.objectColorLoc3, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
 		
-		if (i == 6)
+		/*if (i == 6)
 		{
 			glUniform1i(glutils.useSolidColorUniform3, false);
 		}
 		else
 		{
 			glUniform1i(glutils.useSolidColorUniform3, true);
-		}
+		}*/
 
-		sceneObjects[i].Draw(glutils, glutils.ShaderWithTextureID);
+		sceneObjects[i].Draw(glutils, glutils.ShaderWithTextureID.ID);
 
 		glDisable(GL_TEXTURE_2D);
 	}
@@ -605,7 +625,7 @@ void displayScene(glm::mat4 projection, glm::mat4 view)
 
 void displayLightBox(glm::mat4 projection, glm::mat4 view)
 {
-	glUseProgram(glutils.lightingID);
+	glutils.lightingID.use();
 
 	glm::mat4 local1(1.0f);
 	local1 = glm::translate(local1, lightPos);
@@ -614,7 +634,7 @@ void displayLightBox(glm::mat4 projection, glm::mat4 view)
 
 	glutils.updateUniformVariablesLighting(global1, view, projection);
 
-	sceneObjects[sphereIndex].Draw(glutils, glutils.lightingID);
+	sceneObjects[sphereIndex].Draw(glutils, glutils.lightingID.ID);
 }
 
 void display()

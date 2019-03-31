@@ -15,11 +15,11 @@ namespace Lab6
 		int IBOindex = this->startIBO;
 		for (int i = 0; i < this->Meshes.size(); i++) {
 
-			if (programID == glutils.ShaderWithTextureID)
+			if (programID == glutils.ShaderWithTextureID.ID)
 			{
 				glutils.linkCurrentBuffertoShaderWithTexture(this->VAOs[i], VBOindex, IBOindex);
 			}
-			else if (programID == glutils.lightingID)
+			else if (programID == glutils.lightingID.ID)
 			{
 				glutils.linkCurrentBuffertoShaderLighting(this->VAOs[i], VBOindex, IBOindex);
 			}
