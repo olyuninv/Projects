@@ -90,8 +90,8 @@ unsigned int textureIDlotusBump;
 
 unsigned int n_vbovertices = 0;
 unsigned int n_ibovertices = 0;
-//unsigned int n_tangents = 0;
-//unsigned int n_bitangents = 0;
+unsigned int n_tangents = 0;
+unsigned int n_bitangents = 0;
 
 CGObject sceneObjects[MAX_OBJECTS];
 int numObjects = 0;
@@ -629,9 +629,7 @@ void displayCubeMap(glm::mat4 projection, glm::mat4 view)
 
 void displayScene(GLuint shaderId, mat4 view)
 {
-	//glUniform1i(glutils.useSolidColorUniform3, useSolidColor);
-	//glUniform1i(glutils.useNormalMapUniform3, useNormalMap);
-	//glUniform1i(glutils.useSpecularMapUniform3, useSpecularMap);
+	
 
 	// DRAW objects
 	for (int i = 0; i < numObjects; i++)
@@ -654,11 +652,14 @@ void displayScene(GLuint shaderId, mat4 view)
 
 		if (glutils.ColorShader.ID == shaderId)
 		{
+			glutils.ColorShader.setInt("useSolidColor", useSolidColor);
+			glutils.ColorShader.setInt("useNormalMap", useNormalMap);
+			glutils.ColorShader.setInt("useSpecularMap", useSpecularMap);
+
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, textures[0]);
 			glutils.ColorShader.setInt("skybox", 0);
 
-			//glEnable(GL_TEXTURE_2D);
 			glActiveTexture(GL_TEXTURE1);
 			glBindTexture(GL_TEXTURE_2D, textures[1]);
 			glutils.ColorShader.setInt("diffuseTexture", 1);
@@ -673,22 +674,20 @@ void displayScene(GLuint shaderId, mat4 view)
 				glBindTexture(GL_TEXTURE_2D, textures[3]);
 				glutils.ColorShader.setInt("specularTexture", 3);
 			}
+
+			glutils.ColorShader.setVec3("objectColor", sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
 		}
-
-		//glUniform3f(glutils.objectColorLoc3, sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
-
-		/*if (i == 6)
+		
+		if (i == 6)
 		{
-			glUniform1i(glutils.useSolidColorUniform3, false);
+			glutils.ColorShader.setInt("useSolidColor", false);
 		}
 		else
 		{
-			glUniform1i(glutils.useSolidColorUniform3, true);
-		}*/
+			glutils.ColorShader.setInt("useSolidColor", true);
+		}
 
 		sceneObjects[i].Draw(glutils, shaderId);
-
-		//glDisable(GL_TEXTURE_2D);
 	}
 }
 
@@ -706,7 +705,7 @@ void displayLightBox(glm::mat4 projection, glm::mat4 view)
 	sceneObjects[sphereIndex].Draw(glutils, glutils.LightingShader.ID);
 }
 
-mat4 renderShadows(float fov, float near, float far)
+mat4 renderShadowsForPointLight(PointLight light, float fov, float near, float far)
 {
 	// 1. render depth of scene to texture (from light's perspective)
 		// --------------------------------------------------------------
@@ -716,7 +715,7 @@ mat4 renderShadows(float fov, float near, float far)
 	lightProjection = glm::perspective(fov, (GLfloat)SHADOW_WIDTH / (GLfloat)SHADOW_HEIGHT, near, far); // note that if you use a perspective projection matrix you'll have to change the light position as the current light position isn't enough to reflect the whole scene
 	//lightProjection = glm::ortho(-2.5f, -2.5f, -2.5f, 2.5f, -2.5f, 2.5f); //near, far); // Directional light
 
-	lightView = glm::lookAt(pointLights[0].position /*-1.0f * dirLight.direction*/ /*vec3(0.0f, 3.0f, 0.0f) */, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+	lightView = glm::lookAt(light.position /*-1.0f * dirLight.direction*/ /*vec3(0.0f, 3.0f, 0.0f) */, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
 	lightSpaceMatrix = lightProjection * lightView;
 
 	// render scene from light's point of view
@@ -756,16 +755,17 @@ void drawDebugShadowTexture()
 
 }
 
-void normalDraw(mat4 lightSpaceMatrix, mat4 view, mat4 projection)
+void normalDraw(mat4* lightSpaceMatrix, mat4 view, mat4 projection)
 {
 	// NORMAL SCENE DRAW
 	glutils.ColorShader.use();
 	glutils.updateUniformVariablesReflectance(glm::mat4(1.0), view, projection);
 	glutils.ColorShader.setVec3("viewPos", cameraPos.x, -cameraPos.y, cameraPos.z);
-	glutils.ColorShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
-	glutils.ColorShader.setInt("shadowMap", 4);
+	glutils.ColorShader.setMat4("lightSpaceMatrix[0]", lightSpaceMatrix[0]);
+	glutils.ColorShader.setMat4("lightSpaceMatrix[1]", lightSpaceMatrix[1]);
+	glutils.ColorShader.setInt("shadowMap[0]", 4);
+	glutils.ColorShader.setInt("shadowMap[1]", 4);  // TODO
 	displayScene(glutils.ColorShader.ID, view);
-
 }
 
 void display()
@@ -780,7 +780,9 @@ void display()
 	// DRAW CUBEMAP
 	//displayCubeMap(projection, view);
 
-	mat4 lightSpaceMatrix = renderShadows(glm::radians(fov), 0.1f, 100.0f);
+	mat4 lightSpaceMatrices[2];
+	lightSpaceMatrices[0] = renderShadowsForPointLight(pointLights[0], glm::radians(fov), 0.1f, 100.0f);
+	lightSpaceMatrices[1] = renderShadowsForPointLight(pointLights[1], glm::radians(fov), 0.1f, 100.0f);
 
 	//render 
 	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
@@ -793,7 +795,7 @@ void display()
 	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
 	displayLightBox(projection, view);
-	normalDraw(lightSpaceMatrix, view, projection);
+	normalDraw(lightSpaceMatrices, view, projection);
 	
 	//drawDebugShadowTexture();
 
