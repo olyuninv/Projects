@@ -83,7 +83,7 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, float shadow)
         ambient  = light.ambient  * objectColor;
         diffuse  = light.diffuse  * diff * objectColor;
         specular = light.specular * spec * objectColor;
-     }
+    }
     else
     {
          ambient  = light.ambient  * vec3(texture(diffuseTexture, TexCoord));
@@ -123,6 +123,9 @@ vec3 CalcPointLight(PointLight light,
         ambient  = light.ambient  * objectColor;
         diffuse  = light.diffuse  * diff * objectColor;
         specular = light.specular * spec * objectColor;
+        ambient  *= attenuation;
+        diffuse  *= attenuation;
+        specular *= attenuation;
     }
     else
     {
@@ -162,13 +165,13 @@ vec3 CalcPointLight(PointLight light,
                 ambient  = light.ambient  * vec3(texture(diffuseTexture, TexCoord));
                 diffuse  = light.diffuse  * diff * vec3(texture(diffuseTexture, TexCoord));
                 specular = light.specular * spec * objectColor;
+                ambient  *= attenuation;
+                diffuse  *= attenuation;
+                specular *= attenuation;
         }
-    }
-    
-    ambient  *= attenuation;
-    diffuse  *= attenuation;
-    specular *= attenuation;
-    return (ambient + diffuse + specular);
+    }   
+   
+    return (ambient +  (diffuse + specular)); //(1.0 - shadow) * 
 } 
 
 float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadow_m)

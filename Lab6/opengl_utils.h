@@ -14,6 +14,7 @@
 #include "Shader.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
+#define NUM_POINT_LIGHTS 2
 
 namespace Lab6
 {
@@ -53,7 +54,7 @@ namespace Lab6
 		GLuint TBO;
 		GLuint BTBO;
 
-		GLuint depthMapFBO;
+		GLuint depthMapFBO[NUM_POINT_LIGHTS];
 		GLuint quadVBO;
 
 		unsigned int lightVAO;
@@ -375,7 +376,7 @@ namespace Lab6
 			glDeleteBuffers(1, &IBO);
 			glDeleteBuffers(1, &TBO);
 			glDeleteBuffers(1, &BTBO);
-			glDeleteFramebuffers(1, &depthMapFBO);
+			glDeleteFramebuffers(1, &depthMapFBO[0]);
 		}
 
 		void deletePrograms()
