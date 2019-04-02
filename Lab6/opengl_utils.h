@@ -339,7 +339,7 @@ namespace Lab6
 			ColorShader.setMat4("model", model);
 
 			glm::mat3 viewModel = glm::mat3 (view * model);
-			ColorShader.setMat4("modelView3x3", viewModel);
+			ColorShader.setMat3("modelView3x3", viewModel);
 		}
 
 		void updateUniformVariablesReflectance(glm::mat4 model, glm::mat4 view, glm::mat4 persp_proj)
