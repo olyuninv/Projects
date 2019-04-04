@@ -97,6 +97,8 @@ unsigned int n_bitangents = 0;
 CGObject sceneObjects[MAX_OBJECTS];
 int numObjects = 0;
 unsigned int sphereIndex = 0;
+unsigned int cubeIndex = 0;
+unsigned int carpetIndex = 0;
 
 //lighting position
 glm::vec3 lightPos(2.2f, 1.5f, 2.4f);
@@ -217,6 +219,7 @@ void createObjects()
 
 	CGObject cubeObject = loadObjObject(dummy_cubeMeshes, dummy_cubeTangents, true, true, vec3(0.0f, 4.0f, 0.0f), vec3(5.0f, 5.0f, 5.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);
 	sceneObjects[numObjects] = cubeObject;
+	cubeIndex = numObjects;
 	numObjects++;
 
 	// LOAD CYLINDER
@@ -281,6 +284,7 @@ void createObjects()
 
 	CGObject planeObject = loadObjObject(new_meshesPlane, new_tangentMeshesPlane, true, true, vec3(0.0f, 0.0f, 0.0f), vec3(5.0f, 5.0f, 5.0f), vec3(1.0f, 1.0f, 1.0f), 0.65f, NULL);
 	sceneObjects[numObjects] = planeObject;
+	carpetIndex = numObjects;
 	numObjects++;
 
 	CGObject planeObject2 = loadObjObject(new_meshesPlane, new_tangentMeshesPlane, false, true, vec3(-1.0f, 1.0f, -1.8f), vec3(2.0f, 1.0f, 1.0f), vec3(1.0f, 1.0f, 0.6f), 0.65f, NULL);
@@ -644,8 +648,15 @@ void displayScene(GLuint shaderId, mat4 view)
 	// DRAW objects
 	for (int i = 0; i < numObjects; i++)
 	{
+		// Do not draw sphere - this is only used for light shader
 		if (i == sphereIndex)
 			continue;
+
+		// Do not draw cube for direct shadow
+		if (shaderId == glutils.DepthShader.ID && i == cubeIndex)
+		{
+			continue;
+		}
 
 		mat4 globalCGObjectTransform = sceneObjects[i].createTransform();
 
@@ -687,7 +698,7 @@ void displayScene(GLuint shaderId, mat4 view)
 
 			glutils.ColorShader.setVec3("objectColor", sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
 			
-			if (i == 6)
+			if (i == carpetIndex)
 			{
 				glutils.ColorShader.setInt("useSolidColor", false);
 			}
@@ -727,9 +738,9 @@ mat4 renderShadowsForPointLight(PointLight light, GLuint framebuffer, float fov,
 	glm::mat4 lightSpaceMatrix;
 
 	//lightProjection = glm::perspective(fov, (GLfloat)SHADOW_WIDTH / (GLfloat)SHADOW_HEIGHT, near, far); // note that if you use a perspective projection matrix you'll have to change the light position as the current light position isn't enough to reflect the whole scene
-	lightProjection = glm::ortho(-5.0f, 5.0f, -3.0f, 7.0f, -5.0f, 5.0f); //near, far); // Directional light
+	lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 10.0f); //near, far); // Directional light
 
-	lightView = glm::lookAt(/*light.position */ /*2.0f * dirLight.direction */ vec3(1.0f, 3.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+	lightView = glm::lookAt(/*light.position */ -2.0f * dirLight.direction /* vec3(1.0f, 3.0f, 0.0f)*/, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
 	lightSpaceMatrix = lightProjection * lightView;
 	
 	// render scene from light's point of view
@@ -758,7 +769,11 @@ void drawDebugShadowTexture(GLuint depthmap)
 	glutils.DebugDepthShader.use();
 	glDisable(GL_DEPTH_TEST);
 
-	glActiveTexture(GL_TEXTURE4);
+	if (depthmap == 4)
+		glActiveTexture(GL_TEXTURE4);
+	else
+		glActiveTexture(GL_TEXTURE5);
+
 	glBindTexture(GL_TEXTURE_2D, textures[depthmap]);
 
 	glutils.DebugDepthShader.setInt("depthMap", depthmap);
@@ -797,7 +812,8 @@ void display()
 	// DRAW CUBEMAP
 	//displayCubeMap(projection, view);
 
-	mat4 lightSpaceMatrices[2];
+	mat4 lightSpaceMatrices[NUM_POINT_LIGHTS];
+
 	lightSpaceMatrices[0] = renderShadowsForPointLight(pointLights[0], glutils.depthMapFBO[0], glm::radians(fov), 0.1f, 100.0f);
 	//lightSpaceMatrices[1] = renderShadowsForPointLight(pointLights[1], glutils.depthMapFBO[1], glm::radians(fov), 0.1f, 100.0f);
 
@@ -811,10 +827,10 @@ void display()
 	glm::mat4 projection = glm::perspective(glm::radians(fov), (float)(SCR_WIDTH) / (float)(SCR_HEIGHT), 0.1f, 100.0f);
 	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
-	//displayLightBox(projection, view);
-	//normalDraw(lightSpaceMatrices, view, projection);
+	displayLightBox(projection, view);
+	normalDraw(lightSpaceMatrices, view, projection);
 
-	drawDebugShadowTexture(4);
+	//drawDebugShadowTexture(4);
 
 	glfwSwapBuffers(window);
 	glfwPollEvents();
