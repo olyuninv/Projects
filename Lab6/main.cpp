@@ -586,7 +586,7 @@ void init()
 
 	setupLighting();
 
-	glGenTextures(5, textures);  //1, &textureIDcubemap);
+	glGenTextures(6, textures);  //1, &textureIDcubemap);
 	generateTextures();
 
 	createObjects();
@@ -684,15 +684,15 @@ void displayScene(GLuint shaderId, mat4 view)
 			}
 
 			glutils.ColorShader.setVec3("objectColor", sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
-		}
-
-		if (i == 6)
-		{
-			glutils.ColorShader.setInt("useSolidColor", false);
-		}
-		else
-		{
-			glutils.ColorShader.setInt("useSolidColor", true);
+			
+			if (i == 6)
+			{
+				glutils.ColorShader.setInt("useSolidColor", false);
+			}
+			else
+			{
+				glutils.ColorShader.setInt("useSolidColor", true);
+			}
 		}
 
 		sceneObjects[i].Draw(glutils, shaderId);
@@ -724,18 +724,19 @@ mat4 renderShadowsForPointLight(PointLight light, GLuint framebuffer, float fov,
 	glm::mat4 lightProjection, lightView;
 	glm::mat4 lightSpaceMatrix;
 
-	//lightProjection = glm::perspective(fov, (GLfloat)SHADOW_WIDTH / (GLfloat)SHADOW_HEIGHT, near, far); // note that if you use a perspective projection matrix you'll have to change the light position as the current light position isn't enough to reflect the whole scene
-	lightProjection = glm::ortho(-5.0f, -5.0f, -3.0f, 7.0f, -5.0f, 5.0f); //near, far); // Directional light
+	lightProjection = glm::perspective(fov, (GLfloat)SHADOW_WIDTH / (GLfloat)SHADOW_HEIGHT, near, far); // note that if you use a perspective projection matrix you'll have to change the light position as the current light position isn't enough to reflect the whole scene
+	//lightProjection = glm::ortho(-5.0f, -5.0f, -3.0f, 7.0f, -5.0f, 5.0f); //near, far); // Directional light
 
-	lightView = glm::lookAt(/*light.position*/ -2.0f * dirLight.direction /*vec3(0.0f, 3.0f, 0.0f) */, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+	lightView = glm::lookAt(light.position /*-2.0f * dirLight.direction)*/ /*vec3(0.0f, 3.0f, 0.0f) */, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
 	lightSpaceMatrix = lightProjection * lightView;
-
+	
 	// render scene from light's point of view
 	glutils.DepthShader.use();
 	glutils.DepthShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 
 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	
 	glClear(GL_DEPTH_BUFFER_BIT);
 
 	//glActiveTexture(GL_TEXTURE0);
@@ -793,7 +794,7 @@ void display()
 
 	mat4 lightSpaceMatrices[2];
 	lightSpaceMatrices[0] = renderShadowsForPointLight(pointLights[0], glutils.depthMapFBO[0], glm::radians(fov), 0.1f, 100.0f);
-	//lightSpaceMatrices[1] = renderShadowsForPointLight(pointLights[1], glutils.depthMapFBO[1], glm::radians(fov), 0.1f, 100.0f);
+	lightSpaceMatrices[1] = renderShadowsForPointLight(pointLights[1], glutils.depthMapFBO[1], glm::radians(fov), 0.1f, 100.0f);
 
 	//render 
 	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
@@ -805,10 +806,10 @@ void display()
 	glm::mat4 projection = glm::perspective(glm::radians(fov), (float)(SCR_WIDTH) / (float)(SCR_HEIGHT), 0.1f, 100.0f);
 	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
-	//displayLightBox(projection, view);
-	//normalDraw(lightSpaceMatrices, view, projection);
+	displayLightBox(projection, view);
+	normalDraw(lightSpaceMatrices, view, projection);
 
-	drawDebugShadowTexture(5);
+	//drawDebugShadowTexture(5);
 
 	glfwSwapBuffers(window);
 	glfwPollEvents();

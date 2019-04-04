@@ -91,7 +91,7 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, float shadow)
          specular = light.specular * spec * vec3(texture(specularTexture, TexCoord));
     }
      
-    return (ambient + (1.0 - shadow) * (diffuse + specular));
+    return (ambient +  (diffuse + specular));
 }  
 
 vec3 CalcPointLight(PointLight light, 
@@ -171,7 +171,7 @@ vec3 CalcPointLight(PointLight light,
         }
     }   
    
-    return (ambient +  (diffuse + specular)); //(1.0 - shadow) * 
+    return (ambient +  (1.0 - shadow) *(diffuse + specular)); //
 } 
 
 float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadow_m)

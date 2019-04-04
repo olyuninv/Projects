@@ -252,7 +252,7 @@ namespace Lab6
 		{
 			glEnableVertexAttribArray(location);
 			glBindBuffer(GL_ARRAY_BUFFER, VBO);
-			glVertexAttribPointer(location, locationSize, GL_FLOAT, GL_TRUE, 8 * sizeof(float), (void*)(startVBO * 8 * sizeof(float) + BUFFER_OFFSET(offsetVBO * sizeof(GLfloat))));
+			glVertexAttribPointer(location, locationSize, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(startVBO * 8 * sizeof(float) + BUFFER_OFFSET(offsetVBO * sizeof(GLfloat))));
 		}
 
 		void bindVertexAttributeDebugDepth(int location, int locationSize, int startVBO, int offsetVBO)
@@ -377,6 +377,7 @@ namespace Lab6
 			glDeleteBuffers(1, &TBO);
 			glDeleteBuffers(1, &BTBO);
 			glDeleteFramebuffers(1, &depthMapFBO[0]);
+			glDeleteFramebuffers(1, &depthMapFBO[1]);
 		}
 
 		void deletePrograms()
