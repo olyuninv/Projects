@@ -70,9 +70,13 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, float shadow)
     vec3 lightDir = normalize(-light.direction);
     // diffuse shading
     float diff = max(dot(normal, lightDir), 0.0);
+
     // specular shading
-    vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+    vec3 halfwayDir = normalize(lightDir + viewDir);  
+    float spec = pow(max(dot(normal, halfwayDir), 0.0), 64.0);
+
+    //vec3 reflectDir = reflect(-lightDir, normal);
+    //float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
     
     // combine results
     vec3 ambient ;
@@ -130,6 +134,7 @@ vec3 CalcPointLight(PointLight light,
     else
     {
         ambient  = light.ambient  * vec3(texture(diffuseTexture, TexCoord));
+        ambient  *= attenuation;
           
         if (useNormalMap)
         {
@@ -162,10 +167,8 @@ vec3 CalcPointLight(PointLight light,
         }
         else
         {
-                ambient  = light.ambient  * vec3(texture(diffuseTexture, TexCoord));
                 diffuse  = light.diffuse  * diff * vec3(texture(diffuseTexture, TexCoord));
                 specular = light.specular * spec * objectColor;
-                ambient  *= attenuation;
                 diffuse  *= attenuation;
                 specular *= attenuation;
         }
@@ -183,7 +186,10 @@ float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadow_m)
 
     float currentDepth = projCoords.z;  
 
-    float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;  
+    float bias = 0.005;
+    float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0; 
+
+    //float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;  
 
     return shadow;
 }
