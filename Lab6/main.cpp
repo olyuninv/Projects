@@ -724,10 +724,10 @@ mat4 renderShadowsForPointLight(PointLight light, GLuint framebuffer, float fov,
 	glm::mat4 lightProjection, lightView;
 	glm::mat4 lightSpaceMatrix;
 
-	lightProjection = glm::perspective(fov, (GLfloat)SHADOW_WIDTH / (GLfloat)SHADOW_HEIGHT, near, far); // note that if you use a perspective projection matrix you'll have to change the light position as the current light position isn't enough to reflect the whole scene
-	//lightProjection = glm::ortho(-5.0f, -5.0f, -3.0f, 7.0f, -5.0f, 5.0f); //near, far); // Directional light
+	//lightProjection = glm::perspective(fov, (GLfloat)SHADOW_WIDTH / (GLfloat)SHADOW_HEIGHT, near, far); // note that if you use a perspective projection matrix you'll have to change the light position as the current light position isn't enough to reflect the whole scene
+	lightProjection = glm::ortho(-5.0f, 5.0f, -3.0f, 7.0f, -5.0f, 5.0f); //near, far); // Directional light
 
-	lightView = glm::lookAt(light.position /*-2.0f * dirLight.direction)*/ /*vec3(0.0f, 3.0f, 0.0f) */, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+	lightView = glm::lookAt(/*light.position */ /*-2.0f * dirLight.direction) */ vec3(1.0f, 3.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
 	lightSpaceMatrix = lightProjection * lightView;
 	
 	// render scene from light's point of view
@@ -794,7 +794,7 @@ void display()
 
 	mat4 lightSpaceMatrices[2];
 	lightSpaceMatrices[0] = renderShadowsForPointLight(pointLights[0], glutils.depthMapFBO[0], glm::radians(fov), 0.1f, 100.0f);
-	lightSpaceMatrices[1] = renderShadowsForPointLight(pointLights[1], glutils.depthMapFBO[1], glm::radians(fov), 0.1f, 100.0f);
+	//lightSpaceMatrices[1] = renderShadowsForPointLight(pointLights[1], glutils.depthMapFBO[1], glm::radians(fov), 0.1f, 100.0f);
 
 	//render 
 	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
