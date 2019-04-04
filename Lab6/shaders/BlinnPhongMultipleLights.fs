@@ -90,9 +90,9 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, float shadow)
     }
     else
     {
-         ambient  = light.ambient  * vec3(texture(diffuseTexture, TexCoord));
-         diffuse  = light.diffuse  * diff * vec3(texture(diffuseTexture, TexCoord));
-         specular = light.specular * spec * vec3(texture(specularTexture, TexCoord));
+         ambient  = light.ambient  * vec3(texture(diffuseTexture, vec2(TexCoord.x, -TexCoord.y)));
+         diffuse  = light.diffuse  * diff * vec3(texture(diffuseTexture, vec2(TexCoord.x, -TexCoord.y)));
+         specular = light.specular * spec * vec3(texture(specularTexture, vec2(TexCoord.x, -TexCoord.y)));
     }
      
     return (ambient +  (1.0 - shadow) * (diffuse + specular));
@@ -133,11 +133,9 @@ vec3 CalcPointLight(PointLight light,
     }
     else
     {
-        ambient  = light.ambient  * vec3(texture(diffuseTexture, TexCoord));
-        ambient  *= attenuation;
-          
         if (useNormalMap)
         {
+                ambient  = light.ambient  * vec3(texture(diffuseTexture, vec2(TexCoord.x, -TexCoord.y) ));
                 vec3 TextureNormal_tangentspace = normalize(texture(normalTexture, vec2(TexCoord.x, -TexCoord.y) ).rgb*2.0 - 1.0);            
 
                 vec3 n = TextureNormal_tangentspace;   // Normal of the computed fragment, in camera space    
@@ -152,13 +150,13 @@ vec3 CalcPointLight(PointLight light,
 
                 // diffuseComponent          
                 const float lightPower = 10.0f;
-                diffuse =  lightPower * (vec3(texture(diffuseTexture, TexCoord)) * cosTheta) / (distance * distance);               
+                diffuse =  lightPower * (vec3(texture(diffuseTexture, vec2(TexCoord.x, -TexCoord.y) )) * cosTheta) / (distance * distance);               
 
                 // specularComponent        
                 if (useSpecularMap)
                 {   
                   // Tangent space
-                    specular = light.specular * vec3(texture(specularTexture, TexCoord))  * pow(cosAlpha, 5)/ (distance*distance);
+                    specular = light.specular * vec3(texture(specularTexture, vec2(TexCoord.x, -TexCoord.y) ))  * pow(cosAlpha, 5)/ (distance*distance);
                 }
                 else
                 {   
@@ -167,7 +165,9 @@ vec3 CalcPointLight(PointLight light,
         }
         else
         {
-                diffuse  = light.diffuse  * diff * vec3(texture(diffuseTexture, TexCoord));
+                ambient  = light.ambient  * vec3(texture(diffuseTexture, -TexCoord));
+                ambient  *= attenuation;
+                diffuse  = light.diffuse  * diff * vec3(texture(diffuseTexture, -TexCoord));
                 specular = light.specular * spec * objectColor;
                 diffuse  *= attenuation;
                 specular *= attenuation;

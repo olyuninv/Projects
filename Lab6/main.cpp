@@ -579,6 +579,7 @@ void createShadowMap(int i)
 void init()
 {
 	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_CULL_FACE);
 	// glDepthFunc(GL_ALWAYS); no depth test
 	glEnable(GL_BLEND);// you enable blending function
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -756,8 +757,9 @@ mat4 renderShadowsForPointLight(PointLight light, GLuint framebuffer, float fov,
 	//glActiveTexture(GL_TEXTURE0);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, textures[1]);
-
+		
 	displayScene(glutils.DepthShader.ID, lightView);
+	
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	return lightSpaceMatrix;
@@ -814,8 +816,10 @@ void display()
 
 	mat4 lightSpaceMatrices[NUM_POINT_LIGHTS];
 
+	//glCullFace(GL_FRONT);
 	lightSpaceMatrices[0] = renderShadowsForPointLight(pointLights[0], glutils.depthMapFBO[0], glm::radians(fov), 0.1f, 100.0f);
 	//lightSpaceMatrices[1] = renderShadowsForPointLight(pointLights[1], glutils.depthMapFBO[1], glm::radians(fov), 0.1f, 100.0f);
+	//glCullFace(GL_BACK);
 
 	//render 
 	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
