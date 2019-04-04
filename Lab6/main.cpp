@@ -99,6 +99,7 @@ int numObjects = 0;
 unsigned int sphereIndex = 0;
 unsigned int cubeIndex = 0;
 unsigned int carpetIndex = 0;
+unsigned int teapotIndex = 0;
 
 //lighting position
 glm::vec3 lightPos(2.2f, 1.5f, 2.4f);
@@ -318,6 +319,21 @@ void createObjects()
 	sceneObjects[numObjects] = benchObject;
 	numObjects++;
 
+	// LOAD TEAPOT
+	const char* teapotFileName = "../Lab6/meshes/teapot/teapot.obj";
+	vector<objl::Mesh> meshesteapot = loadMeshes(teapotFileName);
+
+	std::vector<objl::Mesh> new_meshesteapot;
+	std::vector<TangentMesh> new_tangentMeshesteapot;
+
+	//recalculate meshes
+	CGObject::recalculateVerticesAndIndexes(meshesteapot, new_meshesteapot, new_tangentMeshesteapot);
+
+	CGObject teapotObject = loadObjObject(new_meshesteapot, new_tangentMeshesteapot, true, true, vec3(0.0f, 0.2f, 1.0f), vec3(0.3f, 0.3f, 0.3f), vec3(1.0f, 0.0f, 1.0f), 0.65f, NULL);
+	sceneObjects[numObjects] = teapotObject;
+	teapotIndex = numObjects;
+	numObjects++;
+
 	glutils.createVBO(n_vbovertices);
 
 	glutils.createIBO(n_ibovertices);
@@ -327,12 +343,14 @@ void createObjects()
 	addToObjectBuffer(&sphereObject);
 	addToObjectBuffer(&planeObject);
 	addToObjectBuffer(&benchObject);
+	addToObjectBuffer(&teapotObject);
 
 	addToIndexBuffer(&cubeObject);
 	addToIndexBuffer(&cylinderObject);
 	addToIndexBuffer(&sphereObject);
 	addToIndexBuffer(&planeObject);
 	addToIndexBuffer(&benchObject);
+	addToIndexBuffer(&teapotObject);
 
 	glutils.createTBO(n_vbovertices);
 	addToTangentBuffer(&cubeObject);
@@ -340,6 +358,7 @@ void createObjects()
 	addToTangentBuffer(&sphereObject);
 	addToTangentBuffer(&planeObject);
 	addToTangentBuffer(&benchObject);
+	addToTangentBuffer(&teapotObject);
 
 	glutils.createBTBO(n_vbovertices);
 	addToBitangentBuffer(&cubeObject);
@@ -347,6 +366,7 @@ void createObjects()
 	addToBitangentBuffer(&sphereObject);
 	addToBitangentBuffer(&planeObject);
 	addToBitangentBuffer(&benchObject);
+	addToBitangentBuffer(&teapotObject);
 
 	// Create Quad in a separate buffer
 	float quadVertices[] = {
@@ -834,6 +854,8 @@ void display()
 	displayLightBox(projection, view);
 	normalDraw(lightSpaceMatrices, view, projection);
 
+	sceneObjects[teapotIndex].rotateAngles.x += 0.01;
+
 	//drawDebugShadowTexture(4);
 
 	glfwSwapBuffers(window);
@@ -888,7 +910,7 @@ int main(void) {
 	{
 		display();
 	}
-
+	
 	// optional: de-allocate all resources once they've outlived their purpose:	
 	glutils.deleteVertexArrays();
 	glutils.deletePrograms();
