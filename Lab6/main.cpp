@@ -14,8 +14,11 @@
 #include <algorithm>
 #include <sstream>
 
-#include <GL/glew.h>
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
 
+#include <GL/glew.h>   
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
@@ -40,7 +43,8 @@ using namespace Lab6;
 // GLFW 
 GLFWwindow* window;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void mouse_pos_callback(GLFWwindow* window, double xpos, double ypos);
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 
@@ -51,6 +55,8 @@ const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 
 
 opengl_utils glutils;
+
+bool lbutton_down = false;
 
 // timing
 float deltaTime = 0.0f;	// time between current frame and last frame
@@ -96,14 +102,24 @@ unsigned int n_bitangents = 0;
 
 CGObject sceneObjects[MAX_OBJECTS];
 int numObjects = 0;
+
+// ImGUI definitions
+bool show_demo_window = true;
+bool show_another_window = false;
+ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+float increment = 0.1f;
+bool shadowSet = false;
+
+
 unsigned int sphereIndex = 0;
 unsigned int cubeIndex = 0;
 unsigned int carpetIndex = 0;
 unsigned int teapotIndex = 0;
 
-//lighting position
-glm::vec3 lightPos(2.2f, 1.5f, 2.4f);
-
+static void glfw_error_callback(int error, const char* description)
+{
+	fprintf(stderr, "Glfw Error %d: %s\n", error, description);
+}
 
 void addToObjectBuffer(CGObject *cg_object)
 {
@@ -589,7 +605,7 @@ void createShadowMap(int i)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
@@ -606,6 +622,7 @@ void init()
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
+
 
 	glutils = opengl_utils();
 
@@ -639,6 +656,59 @@ void init()
 
 	cout << "Finished loading" << endl;
 }
+
+void drawImgui(ImGuiIO& io)
+{
+	//glfwMakeContextCurrent(window);
+	io.WantCaptureMouse = true;
+	io.WantCaptureKeyboard = true;
+	//io.MousePos = ImVec2(0.0, 0.0);
+	//io.MouseDragThreshold = 20.0;
+	//io.MouseDrawCursor = true;
+	//io.WantSetMousePos = true;
+	//io.MouseDrawCursor = true;
+
+	// Start the Dear ImGui frame
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+
+	//// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
+	//if (show_demo_window)
+	//	ImGui::ShowDemoWindow(&show_demo_window);
+
+	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
+	{
+		//static int counter = 0;
+
+		ImGui::Begin("Pre-computed light fields");
+
+		ImGui::Text("Directional light shadow");
+		if (shadowSet)
+		{
+			ImTextureID imTexture = (void*)(intptr_t)textures[4];
+			ImGui::Image(imTexture, ImVec2(200, 200));
+		}
+		
+		ImGui::Text("Position light 1:");
+		ImGui::DragFloat3("Light1", &pointLights[0].position.x, increment, -5.0f, 5.0f, "%.1f");
+
+		ImGui::Text("Position light 2:");
+		ImGui::DragFloat3("Light2", &pointLights[1].position.x, increment, -5.0f, 5.0f, "%.1f");
+
+		ImGui::End();
+	}
+
+	// Rendering
+	int display_w, display_h;
+	glfwMakeContextCurrent(window);
+	glfwGetFramebufferSize(window, &display_w, &display_h);
+	glViewport(0, 0, display_w, display_h);
+	glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+	glClear(GL_COLOR_BUFFER_BIT);
+	ImGui::Render();
+}
+
 
 void displayCubeMap(glm::mat4 projection, glm::mat4 view)
 {
@@ -718,7 +788,7 @@ void displayScene(GLuint shaderId, mat4 view)
 			}
 
 			glutils.ColorShader.setVec3("objectColor", sceneObjects[i].color.r, sceneObjects[i].color.g, sceneObjects[i].color.b);
-			
+
 			if (i == carpetIndex)
 			{
 				glutils.ColorShader.setInt("useSolidColor", false);
@@ -763,24 +833,26 @@ mat4 renderShadowsForPointLight(PointLight light, GLuint framebuffer, float fov,
 
 	lightView = glm::lookAt(/*light.position */ -2.0f * dirLight.direction /* vec3(1.0f, 3.0f, 0.0f)*/, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
 	lightSpaceMatrix = lightProjection * lightView;
-	
+
 	// render scene from light's point of view
 	glutils.DepthShader.use();
 	glutils.DepthShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 
 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-	
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 
 	//glActiveTexture(GL_TEXTURE0);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, textures[1]);
-		
+
 	displayScene(glutils.DepthShader.ID, lightView);
-	
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	shadowSet = true;
 
 	return lightSpaceMatrix;
 }
@@ -818,11 +890,11 @@ void normalDraw(mat4* lightSpaceMatrix, mat4 view, mat4 projection)
 	glutils.ColorShader.setMat4("lightSpaceMatrix[0]", lightSpaceMatrix[0]);
 	glutils.ColorShader.setMat4("lightSpaceMatrix[1]", lightSpaceMatrix[1]);
 	glutils.ColorShader.setInt("shadowMap[0]", 4);
-	glutils.ColorShader.setInt("shadowMap[1]", 5);  
+	glutils.ColorShader.setInt("shadowMap[1]", 5);
 	displayScene(glutils.ColorShader.ID, view);
 }
 
-void display()
+void display(ImGuiIO& io)
 {
 	float currentFrame = glfwGetTime();
 	deltaTime = currentFrame - lastFrame;
@@ -830,6 +902,8 @@ void display()
 
 	// inpuT
 	processInput(window);
+
+	drawImgui(io);
 
 	// DRAW CUBEMAP
 	//displayCubeMap(projection, view);
@@ -858,12 +932,16 @@ void display()
 
 	//drawDebugShadowTexture(4);
 
+
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	glfwSwapBuffers(window);
 	glfwPollEvents();
 }
 
 int main(void) {
 	// Initialise GLFW
+
+	glfwSetErrorCallback(glfw_error_callback);
 	if (!glfwInit())
 	{
 		fprintf(stderr, "Failed to initialize GLFW\n");
@@ -888,12 +966,14 @@ int main(void) {
 	//detect key inputs
 	//glfwSetKeyCallback(window, keycallback);
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, 1);
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetMouseButtonCallback(window, mouse_button_callback);
+	glfwSetCursorPosCallback(window, mouse_pos_callback);
 	glfwSetScrollCallback(window, scroll_callback);
+	glfwSwapInterval(1); // Enable vsync
 
 	// Initialize GLEW
 	glewExperimental = true; // Needed for core profile
@@ -904,18 +984,59 @@ int main(void) {
 		return -1;
 	}
 
+	// Setup Dear ImGui context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
+	//io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
+
+	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad Controls
+
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
+	//ImGui::StyleColorsClassic();
+
+	// Setup Platform/Renderer bindings
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	const char* glsl_version = "#version 330";
+	ImGui_ImplOpenGL3_Init(glsl_version);
+
+	// Load Fonts
+	// - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
+	// - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
+	// - If the file cannot be loaded, the function will return NULL. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
+	// - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
+	// - Read 'misc/fonts/README.txt' for more instructions and details.
+	// - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
+	//io.Fonts->AddFontDefault();
+	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
+	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
+	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
+	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
+	//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
+	//IM_ASSERT(font != NULL);
+
+	//ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 	init();
 
 	while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0)
 	{
-		display();
+		display(io);
 	}
-	
+
 	// optional: de-allocate all resources once they've outlived their purpose:	
 	glutils.deleteVertexArrays();
 	glutils.deletePrograms();
 	glutils.deleteBuffers();
 
+	// Cleanup
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
+
+	glfwDestroyWindow(window);
 	glfwTerminate();
 	return 0;
 }
@@ -953,40 +1074,60 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 }
 
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+
+	if (button == GLFW_MOUSE_BUTTON_LEFT)
+	{
+		if (GLFW_PRESS == action)
+		{
+			lbutton_down = true;
+		}
+		else if (GLFW_RELEASE == action)
+		{
+			lbutton_down = false;
+			firstMouse = true;
+		}
+	}
+}
+
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
-void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+void mouse_pos_callback(GLFWwindow* window, double xpos, double ypos)
 {
-	if (firstMouse)
+	if (lbutton_down)
 	{
+		if (firstMouse)
+		{
+			lastX = xpos;
+			lastY = ypos;
+			firstMouse = false;
+		}
+
+		float xoffset = xpos - lastX;
+		float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
 		lastX = xpos;
 		lastY = ypos;
-		firstMouse = false;
+
+		float sensitivity = 0.1f; // change this value to your liking
+		xoffset *= sensitivity;
+		yoffset *= sensitivity;
+
+		myyaw += xoffset;
+		mypitch += yoffset;
+
+		// make sure that when pitch is out of bounds, screen doesn't get flipped
+		if (mypitch > 89.0f)
+			mypitch = 89.0f;
+		if (mypitch < -89.0f)
+			mypitch = -89.0f;
+
+		glm::vec3 front;
+		front.x = cos(glm::radians(myyaw)) * cos(glm::radians(mypitch));
+		front.y = sin(glm::radians(mypitch));
+		front.z = sin(glm::radians(myyaw)) * cos(glm::radians(mypitch));
+		cameraFront = glm::normalize(front);
 	}
-
-	float xoffset = xpos - lastX;
-	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-	lastX = xpos;
-	lastY = ypos;
-
-	float sensitivity = 0.1f; // change this value to your liking
-	xoffset *= sensitivity;
-	yoffset *= sensitivity;
-
-	myyaw += xoffset;
-	mypitch += yoffset;
-
-	// make sure that when pitch is out of bounds, screen doesn't get flipped
-	if (mypitch > 89.0f)
-		mypitch = 89.0f;
-	if (mypitch < -89.0f)
-		mypitch = -89.0f;
-
-	glm::vec3 front;
-	front.x = cos(glm::radians(myyaw)) * cos(glm::radians(mypitch));
-	front.y = sin(glm::radians(mypitch));
-	front.z = sin(glm::radians(myyaw)) * cos(glm::radians(mypitch));
-	cameraFront = glm::normalize(front);
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
