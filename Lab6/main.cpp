@@ -592,7 +592,10 @@ void createShadowMap_6Faces(int i)
 {
 	int activeTexture = 4 + i;
 
-	glActiveTexture(GL_TEXTURE + activeTexture);
+	if ( i == 0)
+		glActiveTexture(GL_TEXTURE5);
+	else
+		glActiveTexture(GL_TEXTURE6);
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, textures[activeTexture]);
 
@@ -614,7 +617,7 @@ void createShadowMap(int i)
 {
 	int activeTexture = 4 + i;
 
-	glActiveTexture(GL_TEXTURE + activeTexture);
+	glActiveTexture(GL_TEXTURE4);
 
 	glBindTexture(GL_TEXTURE_2D, textures[activeTexture]);
 
@@ -729,8 +732,8 @@ void drawImgui(ImGuiIO& io)
 		ImGui::Text("Light1 shadow map");
 		if (pointShadowSet)
 		{
-			ImTextureID imTexture = (void*)(intptr_t)textures[5];
-			ImGui::Image(imTexture, ImVec2(200, 200));
+		/*	ImTextureID imTexture = (void*)(intptr_t)textures[5];
+			ImGui::Image(imTexture, ImVec2(200, 200));*/
 		}
 
 		ImGui::Text("Position light 2:");
@@ -738,8 +741,8 @@ void drawImgui(ImGuiIO& io)
 		ImGui::Text("Light2 shadow map");
 		if (pointShadowSet)
 		{
-			ImTextureID imTexture = (void*)(intptr_t)textures[6];
-			ImGui::Image(imTexture, ImVec2(200, 200));
+			/*ImTextureID imTexture = (void*)(intptr_t)textures[6];
+			ImGui::Image(imTexture, ImVec2(200, 200));*/
 		}
 
 		ImGui::End();
@@ -941,9 +944,13 @@ void normalDraw(mat4 lightSpaceMatrix, mat4 view, mat4 projection, float far)
 
 	for (int i = 0; i < NUM_POINT_LIGHTS; i++)
 	{
-		glActiveTexture(GL_TEXTURE + (5+i));
+		if (i == 0)
+			glActiveTexture(GL_TEXTURE5);
+		else
+			glActiveTexture(GL_TEXTURE6);
+
 		glBindTexture(GL_TEXTURE_CUBE_MAP, textures[5+i]);
-		glutils.ColorShader.setInt("depthMap[" + std::to_string(i) + "]", textures[5 + i]);
+		glutils.ColorShader.setInt("depthMap[" + std::to_string(i) + "]", 5 + i);
 	}
 
 	//glutils.ColorShader.setInt("shadowMap[1]", 5);
