@@ -27,7 +27,7 @@ uniform mat3 modelView3x3;  // View * Model to bring everything to cameraspace
 
 uniform vec3 viewPos;	// Position of the camera in world space
 uniform PointLight pointLights[NR_POINT_LIGHTS];
-uniform mat4 lightSpaceMatrix[NR_POINT_LIGHTS];
+uniform mat4 lightSpaceMatrix;
 
 out vec2 TexCoord;   // UV
 out vec3 FragPos; //  Position_worldspace;
@@ -41,7 +41,7 @@ out vec3 EyeDirection_cameraspace;
 out vec3 EyeDirection_tangentspace; 
 out vec3 LightDirection_tangentspace[NR_POINT_LIGHTS];
 
-out vec4 FragPosLightSpace[NR_POINT_LIGHTS]; //  Position_worldspace;
+out vec4 FragPosLightSpace; //  Position_worldspace;
 
 void main()
 {
@@ -50,8 +50,7 @@ void main()
 	
 	TexCoord = texture;
 	FragPos = worldPosition.xyz;
-
-   
+	   
 	Normal = mat3(transpose(inverse(model))) * normal;
     	
 	vec3 unitNormal = normalize (Normal);
@@ -60,6 +59,9 @@ void main()
             
     reflectedVector = reflect (viewDirection, unitNormal);
 	refractedVector = refract (viewDirection, unitNormal, 1.0/ 1.52);  // TODO: eta?
+
+	// Used for Directional light shadow
+	FragPosLightSpace = lightSpaceMatrix * vec4(FragPos, 1.0);
 		
 	// Textures:
 	vec3 vertexPosition_cameraspace = ( view * worldPosition).xyz;
@@ -84,14 +86,12 @@ void main()
 	)); 
 	
 	EyeDirection_tangentspace =  TBN * EyeDirection_cameraspace;
-	
+		
 	for(int i = 0; i < NR_POINT_LIGHTS; i++)
 	{
 		vec3 LightPosition_cameraspace = ( view * vec4(pointLights[i].position, 1)).xyz;
 		vec3 LightDirection_cameraspace = normalize (LightPosition_cameraspace + EyeDirection_cameraspace);
 	
 		LightDirection_tangentspace[i] = TBN * LightDirection_cameraspace;
-
-		FragPosLightSpace[i] = lightSpaceMatrix[i] * vec4(FragPos, 1.0);
 	}
 }

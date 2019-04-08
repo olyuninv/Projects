@@ -83,12 +83,6 @@
     <None Include="shaders\cubeMap.vs">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="shaders\BlinnPhongWithTexture.fs">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\BlinnPhongWithTexture.vs">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="shaders\lighting.fs">
       <Filter>Shaders</Filter>
     </None>

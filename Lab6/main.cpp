@@ -780,8 +780,6 @@ void displayCubeMap(glm::mat4 projection, glm::mat4 view)
 
 void displayScene(GLuint shaderId, mat4 view)
 {
-
-
 	// DRAW objects
 	for (int i = 0; i < numObjects; i++)
 	{
@@ -931,16 +929,24 @@ void drawDebugShadowTexture(GLuint depthmap)
 
 }
 
-void normalDraw(mat4* lightSpaceMatrix, mat4 view, mat4 projection)
+void normalDraw(mat4 lightSpaceMatrix, mat4 view, mat4 projection, float far)
 {
 	// NORMAL SCENE DRAW
 	glutils.ColorShader.use();
 	glutils.updateUniformVariablesReflectance(glm::mat4(1.0), view, projection);
 	glutils.ColorShader.setVec3("viewPos", cameraPos.x, -cameraPos.y, cameraPos.z);
-	glutils.ColorShader.setMat4("lightSpaceMatrix[0]", lightSpaceMatrix[0]);
-	glutils.ColorShader.setMat4("lightSpaceMatrix[1]", lightSpaceMatrix[1]);
-	glutils.ColorShader.setInt("shadowMap[0]", 4);
-	glutils.ColorShader.setInt("shadowMap[1]", 5);
+	glutils.ColorShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
+	glutils.ColorShader.setInt("shadowMapDirectional", 4);
+	glutils.ColorShader.setFloat("far_plane", far);
+
+	for (int i = 0; i < NUM_POINT_LIGHTS; i++)
+	{
+		glActiveTexture(GL_TEXTURE + (5+i));
+		glBindTexture(GL_TEXTURE_CUBE_MAP, textures[5+i]);
+		glutils.ColorShader.setInt("depthMap[" + std::to_string(i) + "]", textures[5 + i]);
+	}
+
+	//glutils.ColorShader.setInt("shadowMap[1]", 5);
 	displayScene(glutils.ColorShader.ID, view);
 }
 
@@ -1018,15 +1024,16 @@ void display(ImGuiIO& io)
 	// DRAW CUBEMAP
 	//displayCubeMap(projection, view);
 
-	mat4 lightSpaceMatrices[NUM_POINT_LIGHTS];
-
 	//glCullFace(GL_FRONT);
-	lightSpaceMatrices[0] = renderShadowsDirectionalLight(dirLight, glutils.depthMapFBO[0], glm::radians(fov), 0.1f, 100.0f);
+	mat4 lightSpaceMatrix = renderShadowsDirectionalLight(dirLight, glutils.depthMapFBO[0], glm::radians(fov), 0.1f, 100.0f);
 	//glCullFace(GL_BACK);
+
+	float near = 0.1f;
+	float far = 100.0f;
 
 	for (int i = 0; i < NUM_POINT_LIGHTS; i++)
 	{
-		renderShadowsPointLights(pointLights[i], glutils.depthMapFBO[i + 1], i + 1, glm::radians(fov), 0.1f, 100.0f);
+		renderShadowsPointLights(pointLights[i], glutils.depthMapFBO[i + 1], i + 1, glm::radians(fov), near, far);
 	}
 
 	//render 
@@ -1036,16 +1043,16 @@ void display(ImGuiIO& io)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Update projection 
-	glm::mat4 projection = glm::perspective(glm::radians(fov), (float)(SCR_WIDTH) / (float)(SCR_HEIGHT), 0.1f, 100.0f);
+	
+	glm::mat4 projection = glm::perspective(glm::radians(fov), (float)(SCR_WIDTH) / (float)(SCR_HEIGHT), near, far);
 	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
 	displayLightBox(projection, view);
-	normalDraw(lightSpaceMatrices, view, projection);
+	normalDraw(lightSpaceMatrix, view, projection, far);
 
 	sceneObjects[teapotIndex].rotateAngles.x += 0.01;
 
 	//drawDebugShadowTexture(4);
-
 
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	glfwSwapBuffers(window);

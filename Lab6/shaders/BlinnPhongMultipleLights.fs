@@ -50,18 +50,21 @@ uniform PointLight pointLights[NR_POINT_LIGHTS];
 in vec3 EyeDirection_cameraspace;
 in vec3 EyeDirection_tangentspace;
 in vec3 LightDirection_tangentspace[NR_POINT_LIGHTS];
-in vec4 FragPosLightSpace[NR_POINT_LIGHTS];
+in vec4 FragPosLightSpace;
 
 //uniform samplerCube skybox;
 uniform sampler2D diffuseTexture;
 uniform sampler2D normalTexture;
 uniform sampler2D specularTexture;
 
-uniform sampler2D shadowMap[NR_POINT_LIGHTS];
+uniform sampler2D shadowMapDirectional;
+uniform samplerCube depthMap[NR_POINT_LIGHTS];
 
 uniform bool useSolidColor;
 uniform bool useNormalMap;
 uniform bool useSpecularMap;
+
+uniform float far_plane;
 
 out vec4 FragColor;   // Final color
 
@@ -174,7 +177,7 @@ vec3 CalcPointLight(PointLight light,
         }
     }   
    
-    return (ambient +  (diffuse + specular)); //(1.0 - shadow) *
+    return (ambient +  (1.0 - shadow) * (diffuse + specular)); 
 } 
 
 float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadow_m)
@@ -206,6 +209,21 @@ float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadow_m)
     return shadow;
 }
 
+float ShadowCalculationPoint(vec3 fragPosition, vec3 lightPos, samplerCube depthMapInstance)
+{
+    vec3 fragToLight = fragPosition - lightPos; 
+    float closestDepth = texture(depthMapInstance, fragToLight).r;
+
+    closestDepth *= far_plane;  
+
+    float currentDepth = length(fragToLight);  
+
+    float bias = 0.05; 
+    float shadow = currentDepth -  bias > closestDepth ? 1.0 : 0.0; 
+
+     return shadow;
+}
+
 void main()
 {
     // properties
@@ -215,21 +233,23 @@ void main()
     // phase 1: Directional lighting
     vec3 result;
 
-    float shadow [NR_POINT_LIGHTS];
-    for(int i = 0; i < NR_POINT_LIGHTS; i++)
-    {
-        shadow[i] = ShadowCalculation(FragPosLightSpace[i], shadowMap[i]);       
-    }
+    float shadowDir = ShadowCalculation(FragPosLightSpace, shadowMapDirectional);     
 
-    result += CalcDirLight(dirLight, norm, viewDir, shadow[0]);
+    result += CalcDirLight(dirLight, norm, viewDir, shadowDir);
     
     // phase 2: Point lights
+    float shadow[NR_POINT_LIGHTS];
     for(int i = 0; i < NR_POINT_LIGHTS; i++)
+    {
+        
+        shadow[i] = ShadowCalculationPoint(FragPos, pointLights[i].position, depthMap[i]);     
+        
         result += CalcPointLight(pointLights[i], 
                 LightDirection_tangentspace[i],
                 norm, FragPos, viewDir, 
                 shadow[i]); 
-        
+    }
+
     // phase 3: Spot light
     //result += CalcSpotLight(spotLight, norm, FragPos, viewDir);    
     

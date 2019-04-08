@@ -144,8 +144,6 @@
     <None Include="shaders\BlinnPhongMultipleLights.vs" />
     <None Include="shaders\cubeMap.fs" />
     <None Include="shaders\cubeMap.vs" />
-    <None Include="shaders\BlinnPhongWithTexture.fs" />
-    <None Include="shaders\BlinnPhongWithTexture.vs" />
     <None Include="shaders\debugDepthQuad.fs" />
     <None Include="shaders\debugDepthQuad.vs" />
     <None Include="shaders\depthShader_6sides.fs" />
