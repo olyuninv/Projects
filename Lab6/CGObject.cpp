@@ -27,6 +27,10 @@ namespace Lab6
 			{
 				glutils.linkCurrentBuffertoShaderDepth(this->VAOs[i], VBOindex, IBOindex);
 			}
+			else if (programID == glutils.DepthShaderPointLights.ID)
+			{
+				glutils.linkCurrentBuffertoShaderDepth6Sides(this->VAOs[i], VBOindex, IBOindex);
+			}
 
 			glDrawElements(GL_TRIANGLES, this->Meshes[i].Indices.size(), GL_UNSIGNED_INT, (void*)(IBOindex * sizeof(unsigned int)));
 			VBOindex += Meshes[i].Vertices.size();

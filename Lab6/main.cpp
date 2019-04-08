@@ -89,7 +89,7 @@ bool useSpecularMap = true;
 GLuint VAOs[MAX_OBJECTS];
 int numVAOs = 0;
 
-GLuint textures[4 + NUM_POINT_LIGHTS];
+GLuint textures[4 + NUM_POINT_LIGHTS + 1];
 
 unsigned int textureIDcubemap;
 unsigned int textureIDlotus;
@@ -596,7 +596,7 @@ void createShadowMap_6Faces(int i)
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, textures[activeTexture]);
 
-	for (unsigned int  j = 0; j < 6; ++j)
+	for (unsigned int j = 0; j < 6; ++j)
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, GL_DEPTH_COMPONENT,
 			SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
@@ -615,8 +615,9 @@ void createShadowMap(int i)
 	int activeTexture = 4 + i;
 
 	glActiveTexture(GL_TEXTURE + activeTexture);
-	
-	glBindTexture(GL_TEXTURE_2D, textures[4 + i]);
+
+	glBindTexture(GL_TEXTURE_2D, textures[activeTexture]);
+
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
 		SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -665,7 +666,7 @@ void init()
 	{
 		throw "could not attach shadow frame buffer";
 	}
-	
+
 	// point shadows
 	for (int i = 1; i < NUM_POINT_LIGHTS + 1; i++)
 	{
@@ -722,7 +723,7 @@ void drawImgui(ImGuiIO& io)
 			ImTextureID imTexture = (void*)(intptr_t)textures[4];
 			ImGui::Image(imTexture, ImVec2(200, 200));
 		}
-		
+
 		ImGui::Text("Position light 1:");
 		ImGui::DragFloat3("Light1", &pointLights[0].position.x, increment, -5.0f, 5.0f, "%.1f");
 		ImGui::Text("Light1 shadow map");
@@ -789,7 +790,7 @@ void displayScene(GLuint shaderId, mat4 view)
 			continue;
 
 		// Do not draw cube for direct shadow
-		if (shaderId == glutils.DepthShader.ID && i == cubeIndex)
+		if (shaderId == glutils.DepthShader.ID && i == cubeIndex || shaderId == glutils.DepthShaderPointLights.ID && i == cubeIndex)
 		{
 			continue;
 		}
@@ -946,7 +947,7 @@ void normalDraw(mat4* lightSpaceMatrix, mat4 view, mat4 projection)
 std::vector<glm::mat4> ConfigureShaderAndMatrices(vec3 lightPosition, float near, float far)
 {
 	glm::mat4 shadowProjection = glm::perspective(glm::radians(90.0f), (GLfloat)SHADOW_WIDTH / (GLfloat)SHADOW_HEIGHT, near, far); // note that if you use a perspective projection matrix you'll have to change the light position as the current light position isn't enough to reflect the whole scene
-	
+
 	std::vector<glm::mat4> shadowTransforms;
 	shadowTransforms.push_back(shadowProjection *
 		glm::lookAt(lightPosition, lightPosition + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
@@ -974,14 +975,19 @@ void renderShadowsPointLights(PointLight light, GLuint framebuffer, int i, float
 	glEnable(GL_DEPTH_TEST);
 
 	int activeTexture = 4 + i;
-	glActiveTexture(GL_TEXTURE + activeTexture);
+
+	if (i == 1)
+		glActiveTexture(GL_TEXTURE5);
+	else
+		glActiveTexture(GL_TEXTURE6);
+
 	glBindTexture(GL_TEXTURE_CUBE_MAP, textures[activeTexture]);
-	
+
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, textures[1]);
 
 	std::vector<glm::mat4> shadowsTransforms = ConfigureShaderAndMatrices(light.position, near, far);
-	
+
 	glutils.DepthShaderPointLights.use();
 
 	for (unsigned int j = 0; j < 6; ++j)
@@ -1018,7 +1024,10 @@ void display(ImGuiIO& io)
 	lightSpaceMatrices[0] = renderShadowsDirectionalLight(dirLight, glutils.depthMapFBO[0], glm::radians(fov), 0.1f, 100.0f);
 	//glCullFace(GL_BACK);
 
-	renderShadowsPointLights(pointLights[0], glutils.depthMapFBO[1], 1, glm::radians(fov), 0.1f, 100.0f);
+	for (int i = 0; i < NUM_POINT_LIGHTS; i++)
+	{
+		renderShadowsPointLights(pointLights[i], glutils.depthMapFBO[i + 1], i + 1, glm::radians(fov), 0.1f, 100.0f);
+	}
 
 	//render 
 	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
