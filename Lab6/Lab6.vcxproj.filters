@@ -113,6 +113,15 @@
     <None Include="shaders\debugDepthQuad.vs">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="shaders\depthShader_6sides.fs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\depthShader_6sides.geom">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\depthShader_6sides.vs">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">

@@ -148,6 +148,9 @@
     <None Include="shaders\BlinnPhongWithTexture.vs" />
     <None Include="shaders\debugDepthQuad.fs" />
     <None Include="shaders\debugDepthQuad.vs" />
+    <None Include="shaders\depthShader_6sides.fs" />
+    <None Include="shaders\depthShader_6sides.geom" />
+    <None Include="shaders\depthShader_6sides.vs" />
     <None Include="shaders\lighting.fs" />
     <None Include="shaders\lighting.vs" />
     <None Include="shaders\simpleDepthShader.fs" />

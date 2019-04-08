@@ -28,6 +28,7 @@ namespace Lab6
 		Shader LightingShader;
 		Shader DepthShader;
 		Shader DebugDepthShader;
+		Shader DepthShaderPointLights;
 
 		opengl_utils()
 		{
@@ -47,6 +48,7 @@ namespace Lab6
 		GLuint loc8;
 		GLuint loc9;
 		GLuint loc10;
+		GLuint loc11;
 
 		// Buffers
 		GLuint VBO;
@@ -54,102 +56,102 @@ namespace Lab6
 		GLuint TBO;
 		GLuint BTBO;
 
-		GLuint depthMapFBO[NUM_POINT_LIGHTS];
+		GLuint depthMapFBO[NUM_POINT_LIGHTS + 1];
 		GLuint quadVBO;
 
 		unsigned int lightVAO;
 		unsigned int quadVAO;
 
-		static GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path) {
+		//static GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path) {
 
-			// Create the shaders
-			GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-			GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+		//	// Create the shaders
+		//	GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+		//	GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
-			// Read the Vertex Shader code from the file
-			std::string VertexShaderCode;
-			std::ifstream VertexShaderStream(vertex_file_path, std::ios::in);
-			if (VertexShaderStream.is_open()) {
-				std::stringstream sstr;
-				sstr << VertexShaderStream.rdbuf();
-				VertexShaderCode = sstr.str();
-				VertexShaderStream.close();
-			}
-			else {
-				printf("impossible to open %s. are you in the right directory ? don't forget to read the faq !\n", vertex_file_path);
-				getchar();
-				return 0;
-			}
+		//	// Read the Vertex Shader code from the file
+		//	std::string VertexShaderCode;
+		//	std::ifstream VertexShaderStream(vertex_file_path, std::ios::in);
+		//	if (VertexShaderStream.is_open()) {
+		//		std::stringstream sstr;
+		//		sstr << VertexShaderStream.rdbuf();
+		//		VertexShaderCode = sstr.str();
+		//		VertexShaderStream.close();
+		//	}
+		//	else {
+		//		printf("impossible to open %s. are you in the right directory ? don't forget to read the faq !\n", vertex_file_path);
+		//		getchar();
+		//		return 0;
+		//	}
 
-			// Read the Fragment Shader code from the file
-			std::string FragmentShaderCode;
-			std::ifstream FragmentShaderStream(fragment_file_path, std::ios::in);
-			if (FragmentShaderStream.is_open()) {
-				std::stringstream sstr;
-				sstr << FragmentShaderStream.rdbuf();
-				FragmentShaderCode = sstr.str();
-				FragmentShaderStream.close();
-			}
+		//	// Read the Fragment Shader code from the file
+		//	std::string FragmentShaderCode;
+		//	std::ifstream FragmentShaderStream(fragment_file_path, std::ios::in);
+		//	if (FragmentShaderStream.is_open()) {
+		//		std::stringstream sstr;
+		//		sstr << FragmentShaderStream.rdbuf();
+		//		FragmentShaderCode = sstr.str();
+		//		FragmentShaderStream.close();
+		//	}
 
-			GLint Result = GL_FALSE;
-			int InfoLogLength;
+		//	GLint Result = GL_FALSE;
+		//	int InfoLogLength;
 
-			// Compile Vertex Shader
-			printf("Compiling shader : %s\n", vertex_file_path);
-			char const * VertexSourcePointer = VertexShaderCode.c_str();
-			glShaderSource(VertexShaderID, 1, &VertexSourcePointer, NULL);
-			glCompileShader(VertexShaderID);
+		//	// Compile Vertex Shader
+		//	printf("Compiling shader : %s\n", vertex_file_path);
+		//	char const * VertexSourcePointer = VertexShaderCode.c_str();
+		//	glShaderSource(VertexShaderID, 1, &VertexSourcePointer, NULL);
+		//	glCompileShader(VertexShaderID);
 
-			// Check Vertex Shader
-			glGetShaderiv(VertexShaderID, GL_COMPILE_STATUS, &Result);
-			glGetShaderiv(VertexShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-			if (InfoLogLength > 0) {
-				std::vector<char> VertexShaderErrorMessage(InfoLogLength + 1);
-				glGetShaderInfoLog(VertexShaderID, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
-				printf("%s\n", &VertexShaderErrorMessage[0]);
-			}
+		//	// Check Vertex Shader
+		//	glGetShaderiv(VertexShaderID, GL_COMPILE_STATUS, &Result);
+		//	glGetShaderiv(VertexShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+		//	if (InfoLogLength > 0) {
+		//		std::vector<char> VertexShaderErrorMessage(InfoLogLength + 1);
+		//		glGetShaderInfoLog(VertexShaderID, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
+		//		printf("%s\n", &VertexShaderErrorMessage[0]);
+		//	}
 
-			// Compile Fragment Shader
-			printf("Compiling shader : %s\n", fragment_file_path);
-			char const * FragmentSourcePointer = FragmentShaderCode.c_str();
-			glShaderSource(FragmentShaderID, 1, &FragmentSourcePointer, NULL);
-			glCompileShader(FragmentShaderID);
+		//	// Compile Fragment Shader
+		//	printf("Compiling shader : %s\n", fragment_file_path);
+		//	char const * FragmentSourcePointer = FragmentShaderCode.c_str();
+		//	glShaderSource(FragmentShaderID, 1, &FragmentSourcePointer, NULL);
+		//	glCompileShader(FragmentShaderID);
 
-			// Check Fragment Shader
-			glGetShaderiv(FragmentShaderID, GL_COMPILE_STATUS, &Result);
-			glGetShaderiv(FragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-			if (InfoLogLength > 0) {
-				std::vector<char> FragmentShaderErrorMessage(InfoLogLength + 1);
-				glGetShaderInfoLog(FragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
-				printf("%s\n", &FragmentShaderErrorMessage[0]);
-			}
+		//	// Check Fragment Shader
+		//	glGetShaderiv(FragmentShaderID, GL_COMPILE_STATUS, &Result);
+		//	glGetShaderiv(FragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+		//	if (InfoLogLength > 0) {
+		//		std::vector<char> FragmentShaderErrorMessage(InfoLogLength + 1);
+		//		glGetShaderInfoLog(FragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
+		//		printf("%s\n", &FragmentShaderErrorMessage[0]);
+		//	}
 
-			// Link the program
-			printf("Linking program\n");
-			GLuint ProgramID = glCreateProgram();
-			glAttachShader(ProgramID, VertexShaderID);
-			glAttachShader(ProgramID, FragmentShaderID);
-			glLinkProgram(ProgramID);
-			printf("Finished linking\n");
+		//	// Link the program
+		//	printf("Linking program\n");
+		//	GLuint ProgramID = glCreateProgram();
+		//	glAttachShader(ProgramID, VertexShaderID);
+		//	glAttachShader(ProgramID, FragmentShaderID);
+		//	glLinkProgram(ProgramID);
+		//	printf("Finished linking\n");
 
 
-			// Check the program
-			glGetProgramiv(ProgramID, GL_LINK_STATUS, &Result);
-			glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-			if (InfoLogLength > 0) {
-				std::vector<char> ProgramErrorMessage(InfoLogLength + 1);
-				glGetProgramInfoLog(ProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
-				printf("%s\n", &ProgramErrorMessage[0]);
-			}
+		//	// Check the program
+		//	glGetProgramiv(ProgramID, GL_LINK_STATUS, &Result);
+		//	glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+		//	if (InfoLogLength > 0) {
+		//		std::vector<char> ProgramErrorMessage(InfoLogLength + 1);
+		//		glGetProgramInfoLog(ProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
+		//		printf("%s\n", &ProgramErrorMessage[0]);
+		//	}
 
-			glDetachShader(ProgramID, VertexShaderID);
-			glDetachShader(ProgramID, FragmentShaderID);
+		//	glDetachShader(ProgramID, VertexShaderID);
+		//	glDetachShader(ProgramID, FragmentShaderID);
 
-			glDeleteShader(VertexShaderID);
-			glDeleteShader(FragmentShaderID);
+		//	glDeleteShader(VertexShaderID);
+		//	glDeleteShader(FragmentShaderID);
 
-			return ProgramID;
-		}
+		//	return ProgramID;
+		//}
 
 		void createShaders()
 		{
@@ -159,7 +161,7 @@ namespace Lab6
 			LightingShader = Shader("../Lab6/shaders/lighting.vs", "../Lab6/shaders/lighting.fs");
 			DepthShader = Shader("../Lab6/shaders/simpleDepthShader.vs", "../Lab6/shaders/simpleDepthShader.fs");
 			DebugDepthShader = Shader("../Lab6/shaders/debugDepthQuad.vs", "../Lab6/shaders/debugDepthQuad.fs");
-
+			DepthShaderPointLights = Shader("../Lab6/shaders/depthShader_6sides.vs", "../Lab6/shaders/depthShader_6sides.fs", "../Lab6/shaders/depthShader_6sides.geom");
 		}
 
 		void setupLightBox()
@@ -246,6 +248,8 @@ namespace Lab6
 
 			loc9= glGetAttribLocation(DebugDepthShader.ID, "aPos");
 			loc10 = glGetAttribLocation(DebugDepthShader.ID, "aTexCoords");
+
+			loc11 = glGetAttribLocation(DepthShaderPointLights.ID, "aPos");
 		}
 
 		void bindVertexAttribute(int location, int locationSize, int startVBO, int offsetVBO)
@@ -300,6 +304,16 @@ namespace Lab6
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 		}
 
+		void linkCurrentBuffertoShaderDepth6Sides(GLuint VAOindex, int startVBO, int startIBO)
+		{
+			glBindVertexArray(VAOindex);
+
+			glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+			bindVertexAttribute(loc11, 3, startVBO, 0);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+		}
+
 		void linkCurrentBuffertoShaderDebugDepth()
 		{
 			glBindVertexArray(quadVAO);
@@ -309,6 +323,8 @@ namespace Lab6
 			bindVertexAttributeDebugDepth(loc9, 3, 0, 0);
 			bindVertexAttributeDebugDepth(loc10, 2, 0, 3);
 		}
+
+		
 		
 		void updateUniformVariablesCubeMap(glm::mat4 view, glm::mat4 persp_proj)
 		{
@@ -363,6 +379,20 @@ namespace Lab6
 
 			updateUniformVariablesShadows(model);
 		}
+
+		void updateUniformVariablesPointShadows(glm::mat4 model)
+		{
+			DepthShaderPointLights.setMat4("model", model);
+		}
+
+		void updateUniformVariablesPointShadows(glm::mat4 model, glm::mat4 view, glm::mat4 persp_proj)
+		{
+			DepthShaderPointLights.setMat4("projection", persp_proj);
+			DepthShaderPointLights.setMat4("view", view);
+
+			updateUniformVariablesShadows(model);
+		}
+
 
 		void deleteVertexArrays()
 		{

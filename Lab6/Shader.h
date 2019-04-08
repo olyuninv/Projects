@@ -1,3 +1,5 @@
+// Source code: https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/shader.h
+
 #pragma once
 
 #include <GL/glew.h>
@@ -28,6 +30,7 @@ public:
 		std::ifstream vShaderFile;
 		std::ifstream fShaderFile;
 		std::ifstream gShaderFile;
+
 		// ensure ifstream objects can throw exceptions:
 		vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 		fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -75,6 +78,7 @@ public:
 		glShaderSource(fragment, 1, &fShaderCode, NULL);
 		glCompileShader(fragment);
 		checkCompileErrors(fragment, "FRAGMENT");
+
 		// if geometry shader is given, compile geometry shader
 		unsigned int geometry;
 		if (geometryPath != nullptr)
@@ -85,6 +89,7 @@ public:
 			glCompileShader(geometry);
 			checkCompileErrors(geometry, "GEOMETRY");
 		}
+
 		// shader Program
 		ID = glCreateProgram();
 		glAttachShader(ID, vertex);
