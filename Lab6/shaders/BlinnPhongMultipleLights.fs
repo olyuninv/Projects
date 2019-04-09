@@ -218,16 +218,35 @@ float ShadowCalculation(vec4 fragPosLightSpace, sampler2D shadow_m)
 float ShadowCalculationPoint(vec3 fragPosition, vec3 lightPos, samplerCube depthMapInstance)
 {
     vec3 fragToLight = fragPosition - lightPos; 
-    float closestDepth = texture(depthMapInstance, fragToLight).r;
+    //float closestDepth = texture(depthMapInstance, fragToLight).r;
 
-    closestDepth *= far_plane;  
+    //closestDepth *= far_plane;  
 
     float currentDepth = length(fragToLight);  
 
     float bias = 0.05; 
-    float shadow = currentDepth -  bias > closestDepth ? 1.0 : 0.0; 
+    //float shadow = currentDepth -  bias > closestDepth ? 1.0 : 0.0; 
+    float shadow = 0.0;
+    float samples = 4.0;
+    float offset  = 0.1;
 
-     return shadow;
+    for(float x = -offset; x < offset; x += offset / (samples * 0.5))
+    {
+        for(float y = -offset; y < offset; y += offset / (samples * 0.5))
+        {
+            for(float z = -offset; z < offset; z += offset / (samples * 0.5))
+            {
+                float closestDepth = texture(depthMapInstance, fragToLight + vec3(x, y, z)).r; 
+                closestDepth *= far_plane;   // Undo mapping [0;1]
+                if(currentDepth - bias > closestDepth)
+                    shadow += 1.0;
+            }
+        }
+    }
+
+    shadow /= (samples * samples * samples);
+
+    return shadow;
 }
 
 void main()
