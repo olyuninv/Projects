@@ -53,6 +53,7 @@ const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1100;
 const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 
+static float suzanneDirection = -1.0f;
 
 opengl_utils glutils;
 
@@ -118,6 +119,7 @@ unsigned int sphereIndex = 0;
 unsigned int cubeIndex = 0;
 unsigned int carpetIndex = 0;
 unsigned int teapotIndex = 0;
+unsigned int suzanneIndex = 0;
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -353,6 +355,22 @@ void createObjects()
 	teapotIndex = numObjects;
 	numObjects++;
 
+	// LOAD SUZANNE
+	const char* suzanneFileName = "../Lab6/meshes/suzanne/suzanne_sm.obj";
+	vector<objl::Mesh> meshessuzanne = loadMeshes(suzanneFileName);
+
+	std::vector<objl::Mesh> new_meshessuzanne;
+	std::vector<TangentMesh> new_tangentMeshessuzanne;
+
+	//recalculate meshes
+	CGObject::recalculateVerticesAndIndexes(meshessuzanne, new_meshessuzanne, new_tangentMeshessuzanne);
+
+	CGObject suzanneObject = loadObjObject(new_meshessuzanne, new_tangentMeshessuzanne, true, true, vec3(-4.0f, 0.7f, 4.0f), vec3(0.3f, 0.3f, 0.3f), vec3(255 / 255.0f, 215 / 255.0f, 0 / 255.0f), 0.65f, NULL);
+	suzanneObject.rotateAngles = vec3(0.0f, 1.57f, 0.0f);
+	sceneObjects[numObjects] = suzanneObject;
+	suzanneIndex = numObjects;
+	numObjects++;
+	
 	glutils.createVBO(n_vbovertices);
 
 	glutils.createIBO(n_ibovertices);
@@ -363,6 +381,7 @@ void createObjects()
 	addToObjectBuffer(&planeObject);
 	addToObjectBuffer(&benchObject);
 	addToObjectBuffer(&teapotObject);
+	addToObjectBuffer(&suzanneObject);
 
 	addToIndexBuffer(&cubeObject);
 	addToIndexBuffer(&cylinderObject);
@@ -370,6 +389,7 @@ void createObjects()
 	addToIndexBuffer(&planeObject);
 	addToIndexBuffer(&benchObject);
 	addToIndexBuffer(&teapotObject);
+	addToIndexBuffer(&suzanneObject);
 
 	glutils.createTBO(n_vbovertices);
 	addToTangentBuffer(&cubeObject);
@@ -378,6 +398,7 @@ void createObjects()
 	addToTangentBuffer(&planeObject);
 	addToTangentBuffer(&benchObject);
 	addToTangentBuffer(&teapotObject);
+	addToTangentBuffer(&suzanneObject);
 
 	glutils.createBTBO(n_vbovertices);
 	addToBitangentBuffer(&cubeObject);
@@ -386,6 +407,7 @@ void createObjects()
 	addToBitangentBuffer(&planeObject);
 	addToBitangentBuffer(&benchObject);
 	addToBitangentBuffer(&teapotObject);
+	addToBitangentBuffer(&suzanneObject);
 
 	// Create Quad in a separate buffer
 	float quadVertices[] = {
@@ -547,7 +569,7 @@ void setupLighting()
 	dirLight.specular = glm::vec3(0.5f, 0.5f, 0.5f);
 
 	pointLights[0].position = glm::vec3(2.2f, 1.5f, 2.4f);
-	pointLights[0].color = glm::vec3(1.0, 0.0, 0.0);
+	pointLights[0].color = glm::vec3(1.0, 0.6, 0.6);
 	pointLights[0].ambient = glm::vec3(0.05f, 0.05f, 0.05f);
 	pointLights[0].diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
 	pointLights[0].specular = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -556,7 +578,7 @@ void setupLighting()
 	pointLights[0].attenuation.exp = 0.032f;
 
 	pointLights[1].position = glm::vec3(-2.2f, 1.5f, -2.4f);
-	pointLights[1].color = glm::vec3(0.0, 1.0, 0.0);
+	pointLights[1].color = glm::vec3(0.6, 0.6, 1.0);
 	pointLights[1].ambient = glm::vec3(0.05f, 0.05f, 0.05f);
 	pointLights[1].diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
 	pointLights[1].specular = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -566,7 +588,7 @@ void setupLighting()
 
 	glutils.ColorShader.use();
 
-	glutils.ColorShader.setVec3("dirLight.direction", dirLight.color);
+	glutils.ColorShader.setVec3("dirLight.color", dirLight.color);
 	glutils.ColorShader.setVec3("dirLight.direction", dirLight.direction);
 	glutils.ColorShader.setVec3("dirLight.ambient", dirLight.ambient);
 	glutils.ColorShader.setVec3("dirLight.diffuse", dirLight.diffuse);
@@ -720,24 +742,28 @@ void drawImgui(ImGuiIO& io)
 		ImGui::Checkbox("Light 1 On", &light1On);
 		ImGui::Text("Position light 1:");
 		ImGui::DragFloat3("Light1", &pointLights[0].position.x, increment, -5.0f, 5.0f, "%.1f");
-		ImGui::Text("Light1 shadow map");
-		if (pointShadowSet)
-		{
-		/*	ImTextureID imTexture = (void*)(intptr_t)textures[5];
-			ImGui::Image(imTexture, ImVec2(200, 200));*/
-		}
+		ImGui::Text("Color light 1:"); 
+		ImGui::DragFloat3("Light1 color", &pointLights[0].color.x, increment, 0.0f, 1.0f, "%.1f");
+		//ImGui::Text("Light1 shadow map");
+		//if (pointShadowSet)
+		//{
+		///*	ImTextureID imTexture = (void*)(intptr_t)textures[5];
+		//	ImGui::Image(imTexture, ImVec2(200, 200));*/
+		//}
 
 		ImGui::Separator;
 
 		ImGui::Checkbox("Light 2 On", &light2On);
 		ImGui::Text("Position light 2:");
 		ImGui::DragFloat3("Light2", &pointLights[1].position.x, increment, -5.0f, 5.0f, "%.1f");
-		ImGui::Text("Light2 shadow map");
-		if (pointShadowSet)
-		{
-			/*ImTextureID imTexture = (void*)(intptr_t)textures[6];
-			ImGui::Image(imTexture, ImVec2(200, 200));*/
-		}
+		ImGui::Text("Color light 2:");
+		ImGui::DragFloat3("Light2 color", &pointLights[1].color.x, increment, 0.0f, 1.0f, "%.1f");
+		//ImGui::Text("Light2 shadow map");
+		//if (pointShadowSet)
+		//{
+		//	/*ImTextureID imTexture = (void*)(intptr_t)textures[6];
+		//	ImGui::Image(imTexture, ImVec2(200, 200));*/
+		//}
 
 		ImGui::End();
 	}
@@ -940,6 +966,7 @@ void normalDraw(mat4 lightSpaceMatrix, mat4 view, mat4 projection, float far)
 	glutils.ColorShader.setBool("light2On", light2On);
 	// point lights
 	glutils.ColorShader.setVec3("pointLights[0].position", pointLights[0].position);
+	glutils.ColorShader.setVec3("pointLights[0].color", pointLights[0].color);
 	glutils.ColorShader.setVec3("pointLights[0].ambient", pointLights[0].ambient);
 	glutils.ColorShader.setVec3("pointLights[0].diffuse", pointLights[0].diffuse);
 	glutils.ColorShader.setVec3("pointLights[0].specular", pointLights[0].specular);
@@ -949,6 +976,7 @@ void normalDraw(mat4 lightSpaceMatrix, mat4 view, mat4 projection, float far)
 
 	// point light 2
 	glutils.ColorShader.setVec3("pointLights[1].position", pointLights[1].position);
+	glutils.ColorShader.setVec3("pointLights[1].color", pointLights[1].color);
 	glutils.ColorShader.setVec3("pointLights[1].ambient", pointLights[1].ambient);
 	glutils.ColorShader.setVec3("pointLights[1].diffuse", pointLights[1].diffuse);
 	glutils.ColorShader.setVec3("pointLights[1].specular", pointLights[1].specular);
@@ -1072,6 +1100,18 @@ void display(ImGuiIO& io)
 	normalDraw(lightSpaceMatrix, view, projection, far);
 
 	sceneObjects[teapotIndex].rotateAngles.x += 0.01;
+	
+	//static float cosAngle = 0.0f;
+
+	///*sceneObjects[suzanneIndex].position.z = sceneObjects[suzanneIndex].position.z * cos(cosAngle);
+	//cosAngle += 0.005;*/
+
+	if (sceneObjects[suzanneIndex].position.z > 4.0f)
+		 suzanneDirection = -1.0f;
+	else if (sceneObjects[suzanneIndex].position.z < 0.0f)
+		 suzanneDirection = 1.0f;
+	
+	sceneObjects[suzanneIndex].position.z += 0.01f * suzanneDirection;
 
 	//drawDebugShadowTexture(4);
 

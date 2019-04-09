@@ -13,6 +13,7 @@ struct Material {
   
 struct PointLight {
     vec3 position;
+    vec3 color;
 
     float constant;
     float linear;
@@ -24,6 +25,7 @@ struct PointLight {
 };
 
 struct DirLight {
+    vec3 color;
     vec3 direction;  
     vec3 ambient;
     vec3 diffuse;
@@ -92,14 +94,14 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, float shadow)
     if (useSolidColor)
     {
         ambient  = light.ambient  * objectColor;
-        diffuse  = light.diffuse  * diff * objectColor;
-        specular = light.specular * spec * objectColor;
+        diffuse  = light.diffuse  * diff * objectColor * light.color;
+        specular = light.specular * spec * objectColor * light.color;
     }
     else
     {
          ambient  = light.ambient  * vec3(texture(diffuseTexture, vec2(TexCoord.x, -TexCoord.y)));
-         diffuse  = light.diffuse  * diff * vec3(texture(diffuseTexture, vec2(TexCoord.x, -TexCoord.y)));
-         specular = light.specular * spec * vec3(texture(specularTexture, vec2(TexCoord.x, -TexCoord.y)));
+         diffuse  = light.diffuse  * diff * vec3(texture(diffuseTexture, vec2(TexCoord.x, -TexCoord.y))) * light.color;
+         specular = light.specular * spec * vec3(texture(specularTexture, vec2(TexCoord.x, -TexCoord.y))) * light.color;
     }
      
     return (ambient +  (1.0 - shadow) * (diffuse + specular));
@@ -132,8 +134,8 @@ vec3 CalcPointLight(PointLight light,
     if (useSolidColor)
     {
         ambient  = light.ambient  * objectColor;
-        diffuse  = light.diffuse  * diff * objectColor;
-        specular = light.specular * spec * objectColor;
+        diffuse  = light.diffuse  * diff * objectColor * light.color;
+        specular = light.specular * spec * objectColor * light.color;
         ambient  *= attenuation;
         diffuse  *= attenuation;
         specular *= attenuation;
@@ -157,25 +159,25 @@ vec3 CalcPointLight(PointLight light,
 
                 // diffuseComponent          
                 const float lightPower = 10.0f;
-                diffuse =  lightPower * (vec3(texture(diffuseTexture, vec2(TexCoord.x, -TexCoord.y) )) * cosTheta) / (distance * distance);               
+                diffuse =  lightPower * light.color * (vec3(texture(diffuseTexture, vec2(TexCoord.x, -TexCoord.y) )) * cosTheta) / (distance * distance);               
 
                 // specularComponent        
                 if (useSpecularMap)
                 {   
                   // Tangent space
-                    specular = light.specular * vec3(texture(specularTexture, vec2(TexCoord.x, -TexCoord.y) ))  * pow(cosAlpha, 5)/ (distance*distance);
+                    specular = light.specular *  light.color * vec3(texture(specularTexture, vec2(TexCoord.x, -TexCoord.y) ))  * pow(cosAlpha, 5)/ (distance*distance);
                 }
                 else
                 {   
-                    specular = light.specular * objectColor;
+                    specular = light.specular *  light.color * objectColor;
                 }
         }
         else
         {
                 ambient  = light.ambient  * vec3(texture(diffuseTexture, -TexCoord));
                 ambient  *= attenuation;
-                diffuse  = light.diffuse  * diff * vec3(texture(diffuseTexture, -TexCoord));
-                specular = light.specular * spec * objectColor;
+                diffuse  = light.diffuse  * diff * vec3(texture(diffuseTexture, -TexCoord)) * light.color;
+                specular = light.specular * spec * objectColor * light.color;
                 diffuse  *= attenuation;
                 specular *= attenuation;
         }
