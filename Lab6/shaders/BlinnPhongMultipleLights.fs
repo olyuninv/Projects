@@ -66,6 +66,10 @@ uniform bool useSpecularMap;
 
 uniform float far_plane;
 
+uniform bool dirLightOn;
+uniform bool light1On;
+uniform bool light2On;
+
 out vec4 FragColor;   // Final color
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, float shadow)
@@ -235,19 +239,22 @@ void main()
 
     float shadowDir = ShadowCalculation(FragPosLightSpace, shadowMapDirectional);     
 
-    result += CalcDirLight(dirLight, norm, viewDir, shadowDir);
+    if (dirLightOn)
+        result += CalcDirLight(dirLight, norm, viewDir, shadowDir);
     
     // phase 2: Point lights
     float shadow[NR_POINT_LIGHTS];
     for(int i = 0; i < NR_POINT_LIGHTS; i++)
     {
+        if (light1On && i == 0 || light2On && i == 1)
+        {
+            shadow[i] = ShadowCalculationPoint(FragPos, pointLights[i].position, depthMap[i]);     
         
-        shadow[i] = ShadowCalculationPoint(FragPos, pointLights[i].position, depthMap[i]);     
-        
-        result += CalcPointLight(pointLights[i], 
-                LightDirection_tangentspace[i],
-                norm, FragPos, viewDir, 
-                shadow[i]); 
+            result += CalcPointLight(pointLights[i], 
+                    LightDirection_tangentspace[i],
+                    norm, FragPos, viewDir, 
+                    shadow[i]); 
+        }
     }
 
     // phase 3: Spot light

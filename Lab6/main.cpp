@@ -110,6 +110,9 @@ ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 float increment = 0.1f;
 bool shadowSet = false;
 bool pointShadowSet = false;
+bool dirLightOn = true;
+bool light1On = true;
+bool light2On = true;
 
 unsigned int sphereIndex = 0;
 unsigned int cubeIndex = 0;
@@ -345,7 +348,7 @@ void createObjects()
 	//recalculate meshes
 	CGObject::recalculateVerticesAndIndexes(meshesteapot, new_meshesteapot, new_tangentMeshesteapot);
 
-	CGObject teapotObject = loadObjObject(new_meshesteapot, new_tangentMeshesteapot, true, true, vec3(0.0f, 0.2f, 1.0f), vec3(0.3f, 0.3f, 0.3f), vec3(1.0f, 0.0f, 1.0f), 0.65f, NULL);
+	CGObject teapotObject = loadObjObject(new_meshesteapot, new_tangentMeshesteapot, true, true, vec3(0.0f, 0.7f, 1.0f), vec3(0.3f, 0.3f, 0.3f), vec3(1.0f, 0.0f, 1.0f), 0.65f, NULL);
 	sceneObjects[numObjects] = teapotObject;
 	teapotIndex = numObjects;
 	numObjects++;
@@ -569,23 +572,7 @@ void setupLighting()
 	glutils.ColorShader.setVec3("dirLight.diffuse", dirLight.diffuse);
 	glutils.ColorShader.setVec3("dirLight.specular", dirLight.specular);
 
-	// point lights
-	glutils.ColorShader.setVec3("pointLights[0].position", pointLights[0].position);
-	glutils.ColorShader.setVec3("pointLights[0].ambient", pointLights[0].ambient);
-	glutils.ColorShader.setVec3("pointLights[0].diffuse", pointLights[0].diffuse);
-	glutils.ColorShader.setVec3("pointLights[0].specular", pointLights[0].specular);
-	glutils.ColorShader.setFloat("pointLights[0].constant", pointLights[0].attenuation.constant);
-	glutils.ColorShader.setFloat("pointLights[0].linear", pointLights[0].attenuation.linear);
-	glutils.ColorShader.setFloat("pointLights[0].quadratic", pointLights[0].attenuation.exp);
-
-	// point light 2
-	glutils.ColorShader.setVec3("pointLights[1].position", pointLights[1].position);
-	glutils.ColorShader.setVec3("pointLights[1].ambient", pointLights[1].ambient);
-	glutils.ColorShader.setVec3("pointLights[1].diffuse", pointLights[1].diffuse);
-	glutils.ColorShader.setVec3("pointLights[1].specular", pointLights[1].specular);
-	glutils.ColorShader.setFloat("pointLights[1].constant", pointLights[1].attenuation.constant);
-	glutils.ColorShader.setFloat("pointLights[1].linear", pointLights[1].attenuation.linear);
-	glutils.ColorShader.setFloat("pointLights[1].quadratic", pointLights[1].attenuation.exp);
+	
 }
 
 void createShadowMap_6Faces(int i)
@@ -720,6 +707,8 @@ void drawImgui(ImGuiIO& io)
 		bool imguiBool = true;
 		ImGui::Begin("Pre-computed light fields", &imguiBool, ImVec2(576, 680));
 
+		ImGui::Checkbox("Use directional light", &dirLightOn);
+		
 		ImGui::Text("Directional light shadow map");
 		if (shadowSet)
 		{
@@ -727,6 +716,8 @@ void drawImgui(ImGuiIO& io)
 			ImGui::Image(imTexture, ImVec2(200, 200));
 		}
 
+		ImGui::Separator;
+		ImGui::Checkbox("Light 1 On", &light1On);
 		ImGui::Text("Position light 1:");
 		ImGui::DragFloat3("Light1", &pointLights[0].position.x, increment, -5.0f, 5.0f, "%.1f");
 		ImGui::Text("Light1 shadow map");
@@ -736,6 +727,9 @@ void drawImgui(ImGuiIO& io)
 			ImGui::Image(imTexture, ImVec2(200, 200));*/
 		}
 
+		ImGui::Separator;
+
+		ImGui::Checkbox("Light 2 On", &light2On);
 		ImGui::Text("Position light 2:");
 		ImGui::DragFloat3("Light2", &pointLights[1].position.x, increment, -5.0f, 5.0f, "%.1f");
 		ImGui::Text("Light2 shadow map");
@@ -941,6 +935,26 @@ void normalDraw(mat4 lightSpaceMatrix, mat4 view, mat4 projection, float far)
 	glutils.ColorShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 	glutils.ColorShader.setInt("shadowMapDirectional", 4);
 	glutils.ColorShader.setFloat("far_plane", far);
+	glutils.ColorShader.setBool("dirLightOn", dirLightOn);
+	glutils.ColorShader.setBool("light1On", light1On);
+	glutils.ColorShader.setBool("light2On", light2On);
+	// point lights
+	glutils.ColorShader.setVec3("pointLights[0].position", pointLights[0].position);
+	glutils.ColorShader.setVec3("pointLights[0].ambient", pointLights[0].ambient);
+	glutils.ColorShader.setVec3("pointLights[0].diffuse", pointLights[0].diffuse);
+	glutils.ColorShader.setVec3("pointLights[0].specular", pointLights[0].specular);
+	glutils.ColorShader.setFloat("pointLights[0].constant", pointLights[0].attenuation.constant);
+	glutils.ColorShader.setFloat("pointLights[0].linear", pointLights[0].attenuation.linear);
+	glutils.ColorShader.setFloat("pointLights[0].quadratic", pointLights[0].attenuation.exp);
+
+	// point light 2
+	glutils.ColorShader.setVec3("pointLights[1].position", pointLights[1].position);
+	glutils.ColorShader.setVec3("pointLights[1].ambient", pointLights[1].ambient);
+	glutils.ColorShader.setVec3("pointLights[1].diffuse", pointLights[1].diffuse);
+	glutils.ColorShader.setVec3("pointLights[1].specular", pointLights[1].specular);
+	glutils.ColorShader.setFloat("pointLights[1].constant", pointLights[1].attenuation.constant);
+	glutils.ColorShader.setFloat("pointLights[1].linear", pointLights[1].attenuation.linear);
+	glutils.ColorShader.setFloat("pointLights[1].quadratic", pointLights[1].attenuation.exp);
 
 	for (int i = 0; i < NUM_POINT_LIGHTS; i++)
 	{
